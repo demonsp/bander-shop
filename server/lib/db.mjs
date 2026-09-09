@@ -162,7 +162,7 @@ export function logAudit(actor, action, target, meta = {}) {
     target: target || '',
     meta: sanitizeMeta(meta),
   });
-  if (state.audit.length > 4000) state.audit.length = 4000;
+  if (state.audit.length > 12000) state.audit.length = 12000;
 }
 
 function sanitizeMeta(meta) {

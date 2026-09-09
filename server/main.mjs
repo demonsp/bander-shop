@@ -244,7 +244,7 @@ const server = http.createServer(async (req, res) => {
         ctx.params = m.params;
         await m.route.handler(ctx);
         // ثبت ممیزی فراگیر: هر نوشتن روی API لاگ می‌شود
-        if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && pathname.startsWith('/api')) {
+        if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && pathname.startsWith('/api') && !pathname.startsWith('/api/system/')) {
           try { logAudit(ctx.user || null, `api.${method.toLowerCase()}`, pathname, {}); } catch { /* noop */ }
         }
         return;
