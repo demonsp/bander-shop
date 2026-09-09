@@ -8,6 +8,27 @@ const stripMarks = (s) => s.replace(/[\u0001\u0002]/g, '');
 
 function trusted(str) { return S1 + stripMarks(String(str ?? '')) + S2; }
 
+// ── سد سراسری: نشانگرهای کنترلی هرگز به DOM نرسند ─────────────
+// هر انتساب innerHTML / insertAdjacentHTML از این پس پاک‌سازی می‌شود؛
+// این همان باگ «جعبه‌های عجیب/لبهٔ بریده» بود که در همهٔ نسخه‌ها می‌دیدیم.
+try {
+  if (typeof Element !== 'undefined') {
+    const d = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+    if (d && d.set && d.configurable !== false) {
+      Object.defineProperty(Element.prototype, 'innerHTML', {
+        configurable: true,
+        enumerable: d.enumerable,
+        get() { return d.get.call(this); },
+        set(v) { d.set.call(this, typeof v === 'string' && (v.includes(S1) || v.includes(S2)) ? stripMarks(v) : v); },
+      });
+    }
+    const ia = Element.prototype.insertAdjacentHTML;
+    if (ia) Element.prototype.insertAdjacentHTML = function (pos, v) {
+      return ia.call(this, pos, typeof v === 'string' && (v.includes(S1) || v.includes(S2)) ? stripMarks(v) : v);
+    };
+  }
+} catch { /* محیط‌های بدون DOM واقعی */ }
+
 /** خروجی خام (بدون escape) — فقط برای قطعات مطمئن و داخلی */
 export const raw = (s) => trusted(s);
 
