@@ -5,6 +5,7 @@ import { DEFAULT_PAGES, DEFAULT_SETTINGS, ORDER_STATUSES, TICKET_CATEGORIES } fr
 import { hashPassword, generateTotpSecret, PERMISSIONS } from './lib/auth.mjs';
 import { nowISO, uid, sha256 } from './lib/util.mjs';
 import { writeProductImages } from './art.mjs';
+import { IG_BRANDS, IG_CATEGORIES, IG_RAW } from './ig-products.mjs';
 
 // ── بارکد EAN-13 با رقم کنترلی ──────────────────────────────
 export function ean13(digits12) {
@@ -504,6 +505,11 @@ const RAW = [
     'Call your child and see their location, with an SOS button.',
     ['کودک', 'سیم کارت', 'SOS']],
 ];
+
+// محصولات صفحهٔ اینستاگرام فروشگاه (@jam.greenapple)
+IG_CATEGORIES.forEach((c) => { if (!CATEGORIES.some((x) => x.id === c.id)) CATEGORIES.push(c); });
+IG_BRANDS.forEach((b) => { if (!BRANDS.some((x) => x.id === b.id)) BRANDS.push(b); });
+RAW.push(...IG_RAW);
 
 function slugify(s) {
   return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 48) || 'item';

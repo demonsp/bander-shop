@@ -1175,8 +1175,10 @@ body.boot-slow .splash-slow{display:block}
 .marquee-track{display:flex;gap:10px;width:max-content;animation:marq 34s linear infinite}
 .marquee:hover .marquee-track{animation-play-state:paused}
 @keyframes marq{to{transform:translateX(-50%)}}
-.partner-chip{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);font-size:12.5px;white-space:nowrap}
+.partner-chip{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);font-size:12.5px;white-space:nowrap;color:var(--text-1);text-decoration:none;transition:border-color var(--dur),transform var(--dur)}
+.partner-chip:hover{border-color:var(--accent);transform:translateY(-1px)}
 .partner-chip .ic{width:15px;height:15px;color:var(--accent)}
+.pt-logo{width:27px;height:27px;object-fit:contain;background:#fff;border-radius:8px;padding:3px;flex:none;border:1px solid var(--border)}
 .pt-row{gap:8px;margin-bottom:8px}
 /* ── صفحه آمار ── */
 .page-head{margin:6px 0 14px}

@@ -109,6 +109,7 @@ function addAsset(rel) {
   ASSETS['/' + rel] = `data:${mime};base64,${b.toString('base64')}`;
 }
 for (const f of readdirSync(join(ROOT, 'public/assets/img/products'))) addAsset(`assets/img/products/${f}`);
+for (const f of readdirSync(join(ROOT, 'public/assets/img/brands'))) addAsset(`assets/img/brands/${f}`);
 for (const f of ['assets/img/hero-port.svg', 'assets/img/favicon.svg', 'assets/img/og-cover.svg']) addAsset(f);
 for (const f of readdirSync(join(ROOT, 'public/assets/fonts'))) addAsset(`assets/fonts/${f}`);
 

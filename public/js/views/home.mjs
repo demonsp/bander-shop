@@ -46,7 +46,13 @@ export async function render() {
       ${sectionHead({ titleIcon: 'store', title: t('home.partnersTitle') })}
       <div class="marquee" aria-label="${t('home.partnersTitle')}">
         <div class="marquee-track">
-          ${[...S.settings.partners.items, ...S.settings.partners.items].map((p) => h`<span class="partner-chip">${icon('check')} <b>${isFa() ? p.fa : (p.en || p.fa)}</b></span>`).join('')}
+          ${[...S.settings.partners.items, ...S.settings.partners.items].map((p) => {
+            const br = (S.brands || []).find((b) => b.name === p.fa || (p.en && (b.nameEn === p.en || b.nameEn?.toLowerCase() === p.en.toLowerCase())));
+            const href = br ? `#/products?brand=${br.id}` : `#/search?q=${encodeURIComponent(p.fa)}`;
+            return h`<a class="partner-chip" href="${href}" title="${isFa() ? p.fa : (p.en || p.fa)}">
+              <img class="pt-logo" src="/assets/img/brands/${br ? br.id : 'no_name'}.svg" alt="" loading="lazy" decoding="async">
+              <b>${isFa() ? p.fa : (p.en || p.fa)}</b></a>`;
+          }).join('')}
         </div>
       </div>
     </section>` : ''}
