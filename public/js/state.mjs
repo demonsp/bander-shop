@@ -212,7 +212,12 @@ export async function boot() {
   S.installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
 
   let data = null;
-  try { data = await api.get('/api/bootstrap'); } catch (e) { console.warn('[state] bootstrap failed', e); }
+  const t0 = Date.now();
+  for (let attempt = 0; attempt < 6 && !data; attempt++) {
+    if (attempt) await new Promise((r) => setTimeout(r, 4000));
+    try { data = await api.get('/api/bootstrap'); } catch (e) { console.warn('[state] bootstrap failed', e); }
+    if (!data && Date.now() - t0 > 6000) emit('boot-slow');
+  }
   if (data) {
     S.serverTime = data.serverTime;
     S.sleeping = !!data.sleeping;

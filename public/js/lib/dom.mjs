@@ -56,7 +56,7 @@ export function el(tag, attrs = {}, children = []) {
 }
 
 export function icon(name, cls = '') {
-  return raw(`<svg class="ic ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`);
+  return raw(`<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${name}"/></svg>`);
 }
 
 /** آیکون دسته‌بندی بر اساس glyph */

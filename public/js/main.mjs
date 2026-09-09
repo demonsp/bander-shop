@@ -689,6 +689,7 @@ function registerSW() {
 }
 
 // ── شروع ────────────────────────────────────────────────────
+on('boot-slow', () => document.body.classList.add('boot-slow'));
 init().catch((e) => {
   console.error('[boot]', e);
   const splash = qs('#bootSplash');

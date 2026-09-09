@@ -43,3 +43,8 @@ setInterval(async () => {
   misses = ok ? 0 : misses + 1;
   if (misses >= 3 && restarts < 20) { misses = 0; restartServer(); }
 }, EVERY);
+
+// ── گرم نگه‌داشتن نمونهٔ ابری Render (هر ۸ دقیقه) ─────────────
+const REMOTE = process.env.REMOTE_KEEPALIVE || 'https://bander-mobile.onrender.com/api/system/status';
+setInterval(() => { fetch(REMOTE, { signal: AbortSignal.timeout(30000) }).then((r) => console.log('[keepalive] remote ping', r.status)).catch((e) => console.log('[keepalive] remote ping failed', e.message)); }, 8 * 60000);
+fetch(REMOTE, { signal: AbortSignal.timeout(30000) }).catch(() => {});
