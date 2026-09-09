@@ -606,6 +606,7 @@ act('reload', () => location.reload());
 let forceHandle = null;
 function maybeForcePasswordChange() {
   if (!S.me?.mustChangePassword) return;
+  try { if (sessionStorage.getItem('bm_pwd_later')) return; } catch { /* private mode */ }
   forceHandle = modal({
     title: t('acc.passwordChange'),
     dismissible: false,
@@ -618,9 +619,15 @@ function maybeForcePasswordChange() {
         <label class="field"><span class="label">${t('acc.newPassword2')}</span><input class="input" type="password" name="next" autocomplete="new-password" required><span class="hint">${t('auth.passwordRules')}</span></label>
         <label class="field"><span class="label">${t('common.passwordConfirm')}</span><input class="input" type="password" name="confirm" autocomplete="new-password" required></label>
         <button class="btn btn-primary btn-block" type="submit">${t('common.save')}</button>
+        <button class="btn btn-ghost btn-block mt-s" type="button" data-act="pwd-later">${t('auth.pwdLater')}</button>
       </form>`,
   });
 }
+act('pwd-later', () => {
+  try { sessionStorage.setItem('bm_pwd_later', '1'); } catch { /* private mode */ }
+  forceHandle?.close();
+  toast(t('auth.pwdLaterToast'));
+});
 act('force-pass', async (e, form) => {
   const d = new FormData(form);
   if (d.get('next') !== d.get('confirm')) { toastError(lang() === 'fa' ? 'تکرار رمز یکسان نیست.' : 'Passwords do not match.'); return; }
