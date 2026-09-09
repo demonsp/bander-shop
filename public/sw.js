@@ -1,5 +1,5 @@
 /* سرویس‌ورکر گرین اپل — پوستهٔ آفلاین + کش هوشمند */
-const VERSION = 'bm-v25';
+const VERSION = 'bm-v26';
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 const DATA = `${VERSION}-data`;
@@ -171,6 +171,7 @@ const JS_PRECACHE = [
   '/js/views/checkout.mjs',
   '/js/views/compare.mjs',
   '/js/views/home.mjs',
+  '/js/views/lottery.mjs',
   '/js/views/not-found.mjs',
   '/js/views/order-detail.mjs',
   '/js/views/page.mjs',

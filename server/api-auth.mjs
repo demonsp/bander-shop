@@ -115,6 +115,20 @@ function startSession(ctx, user, remember = true) {
   return session;
 }
 
+/** بررسی مسدودسازی: موبایل/ایمیل/نام کاربری */
+function banHit(state, vals) {
+  const list = state.bans || [];
+  if (!list.length) return null;
+  const norm = (x) => String(x == null ? '' : x).trim().toLowerCase();
+  for (const b of list) {
+    const bv = norm(b.value);
+    if (!bv) continue;
+    for (const v of vals) if (norm(v) === bv) return b;
+  }
+  return null;
+}
+const bannedErr = () => forbidden('banned', 'دسترسی شما به سایت مسدود شده است. با پشتیبانی تماس بگیرید.');
+
 export function registerAuth(router) {
   // ── ارسال کد یک‌بارمصرف ─────────────────────────────────
   // ── کپچا «من ربات نیستم» (خودکفا، بدون سرویس بیرونی) ───────
@@ -175,6 +189,7 @@ export function registerAuth(router) {
     const password = V.password(ctx.body?.password);
     const accepted = V.bool(ctx.body?.acceptTerms);
     if (!accepted) throw badRequest('terms_required', 'پذیرش قوانین و مقررات و حریم خصوصی الزامی است.');
+    if (banHit(state, [ctx.body?.username, ctx.body?.phone, ctx.body?.email])) throw bannedErr();
 
     let username = ''; let phone = ''; let email = ''; let code = '';
     if (mode === 'username') {
@@ -255,6 +270,7 @@ export function registerAuth(router) {
     const password = String(ctx.body?.password || '');
     const remember = V.bool(ctx.body?.remember, true);
     const identifier = identifierRaw.trim().toLowerCase();
+    if (banHit(state, [identifier])) throw bannedErr();
     const lockKey = failKey(identifier, ctx.ip);
     const locked = isLocked(lockKey);
     if (locked) throw new (await import('./lib/util.mjs')).HttpError(423, 'locked', `به دلیل تلاش‌های ناموفق زیاد، تا ${locked} ثانیه دیگر نمی‌توانی وارد شوی.`);
@@ -265,6 +281,7 @@ export function registerAuth(router) {
       u.username === identifier || u.phone === identifierRaw || u.email === identifier ||
       u.phone === identifierRaw.replace(/\D/g, '') || u.email === identifierRaw.toLowerCase());
 
+    if (user && banHit(state, [user.phone, user.email, user.username])) throw bannedErr();
     if (!user || !verifyPassword(password, user.passwordHash)) {
       const left = registerFailure(lockKey);
       logAudit(null, 'auth.login.failed', identifierRaw.slice(0, 60), { ip: ctx.ip });

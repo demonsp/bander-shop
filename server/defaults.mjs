@@ -65,6 +65,7 @@ export const DEFAULT_SETTINGS = {
   features: {
     wallet: true,
     plus: true,
+    lottery: true,
     insurance: true,
     tickets: true,
     reviews: true,

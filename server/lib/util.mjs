@@ -271,3 +271,6 @@ export function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 export function titleCase(s) {
   return String(s || '').replace(/\w\S*/g, (t) => t[0].toUpperCase() + t.slice(1).toLowerCase());
 }
+
+/** برچسب بیلد جاری — برای نمایش در پنل ادمین و status */
+export const BUILD = 'bm-v26';

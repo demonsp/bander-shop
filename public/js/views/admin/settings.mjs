@@ -16,6 +16,21 @@ const L = (fa, en) => (isFa() ? fa : en);
 
 // ── تعریف فیلدها ────────────────────────────────────────────
 const FIELDS = {
+  mailsms: [
+    { k: 'mail', label: () => t('adm.mailCfg'), type: 'group', fields: [
+      { k: 'enabled', label: () => t('adm.mailEnabled'), type: 'bool' },
+      { k: 'host', label: () => 'SMTP host', type: 'text' },
+      { k: 'port', label: () => 'SMTP port', type: 'number', min: 1, max: 65535 },
+      { k: 'user', label: () => t('common.username'), type: 'text' },
+      { k: 'pass', label: () => t('common.password'), type: 'text' },
+      { k: 'from', label: () => t('adm.mailFrom'), type: 'text' },
+    ] },
+    { k: 'sms', label: () => t('adm.smsCfg'), type: 'group', fields: [
+      { k: 'enabled', label: () => t('adm.smsEnabled'), type: 'bool' },
+      { k: 'apiKey', label: () => t('adm.smsKey'), type: 'text' },
+      { k: 'sender', label: () => t('adm.smsSender'), type: 'text' },
+    ] },
+  ],
   store: [
     { k: 'name', label: () => L('نام فروشگاه', 'Store name'), type: 'text' },
     { k: 'nameEn', label: () => L('نام (انگلیسی)', 'Name (EN)'), type: 'text' },
@@ -23,6 +38,7 @@ const FIELDS = {
     { k: 'taglineEn', label: () => L('شعار (انگلیسی)', 'Tagline (EN)'), type: 'text' },
     { k: 'phone', label: () => t('contact.phone'), type: 'text' },
     { k: 'phone2', label: () => t('contact.mobile'), type: 'text' },
+    { k: 'phone3', label: () => L('شمارهٔ سوم (اختیاری)', 'Third phone (optional)'), type: 'text' },
     { k: 'whatsapp', label: () => t('contact.whatsapp'), type: 'text' },
     { k: 'email', label: () => t('common.email'), type: 'text' },
     { k: 'city', label: () => t('common.city'), type: 'text' },
@@ -140,6 +156,7 @@ const TABS = {
     { id: 'currency', icon: 'wallet', label: () => L('واحد پول', 'Currency') },
     { id: 'partners', icon: 'star', label: () => t('adm.sPartners') },
     { id: 'contact', icon: 'headset', label: () => t('common.support') },
+    { id: 'mailsms', icon: 'send', label: () => t('adm.mailsms') },
   ],
   theme: [
     { id: 'theme', icon: 'sun', label: () => t('adm.sTheme') },
@@ -219,6 +236,18 @@ function renderField(f, value) {
             <input class="input mono" name="${f.k}.lat" value="${value?.lat ?? ''}" placeholder="lat" data-fnum="1">
             <input class="input mono" name="${f.k}.lng" value="${value?.lng ?? ''}" placeholder="lng" data-fnum="1">
             <button type="button" class="btn btn-ghost btn-sm" data-act="adm-set-geo" data-lat="${f.k}.lat" data-lng="${f.k}.lng">${icon('pin')} ${t('contact.allowLocation')}</button>
+          </div>
+        </div>`;
+    case 'group':
+      return h`
+        <div class="span-2 group-box">
+          <strong class="small">${label}</strong>
+          <div class="form-grid mt-s">
+            ${f.fields.map((sf) => sf.type === 'bool'
+              ? h`<div class="span-2">${switchField({ label: sf.label(), name: `${f.k}.${sf.k}`, checked: value?.[sf.k] !== false })}</div>`
+              : sf.type === 'number'
+                ? field({ label: sf.label(), name: `${f.k}.${sf.k}`, type: 'number', value: value?.[sf.k] ?? '' })
+                : field({ label: sf.label(), name: `${f.k}.${sf.k}`, value: value?.[sf.k] ?? '', type: sf.k === 'pass' || sf.k === 'apiKey' ? 'password' : 'text' })).join('')}
           </div>
         </div>`;
     case 'kv':
@@ -359,6 +388,16 @@ function collect(form, section) {
       case 'kv': {
         const o = {};
         for (const k of f.keys) o[k] = String(form.querySelector(`[name="${f.k}.${k}"]`)?.value ?? '');
+        out[f.k] = o;
+        break;
+      }
+      case 'group': {
+        const o = {};
+        for (const sf of f.fields) {
+          const el = form.querySelector(`[name="${f.k}.${sf.k}"]`);
+          if (!el) continue;
+          o[sf.k] = sf.type === 'bool' ? el.checked : sf.type === 'number' ? Number(el.value || 0) : String(el.value ?? '');
+        }
         out[f.k] = o;
         break;
       }

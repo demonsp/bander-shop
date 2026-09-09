@@ -211,6 +211,7 @@ function contactHtml(page) {
           <div class="contact-list mt">
             ${st.phone ? h`<div class="row"><span class="muted small">${t('contact.phone')}</span><a class="mono" href="tel:${st.phone}">${fmtTel(st.phone)}</a></div>` : ''}
             ${st.phone2 ? h`<div class="row"><span class="muted small">${t('contact.mobile')}</span><a class="mono" href="tel:${st.phone2}">${fmtTel(st.phone2)}</a></div>` : ''}
+            ${st.phone3 ? h`<div class="row"><span class="muted small">${t('contact.phone3')}</span><a class="mono" href="tel:${st.phone3}">${fmtTel(st.phone3)}</a></div>` : ''}
             ${st.whatsapp ? h`<div class="row"><span class="muted small">${t('contact.whatsapp')}</span><span class="mono">${fmtNum(st.whatsapp)}</span></div>` : ''}
             ${st.email ? h`<div class="row"><span class="muted small">${t('common.email')}</span><span class="mono small">${esc(st.email)}</span></div>` : ''}
           </div>

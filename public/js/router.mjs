@@ -21,6 +21,7 @@ export const routes = [
   { pattern: '/checkout/done/:id', load: () => import('./views/checkout-done.mjs'), title: () => t('checkout.successTitle') },
   { pattern: '/pay/:id', load: () => import('./views/pay.mjs'), title: () => t('common.payment') },
   { pattern: '/compare', load: () => import('./views/compare.mjs'), title: () => t('compare.title'), guard: 'feature:compare' },
+  { pattern: '/lottery', load: () => import('./views/lottery.mjs'), title: () => t('lot.title') },
   { pattern: '/price-check', load: () => import('./views/price-check.mjs'), title: () => t('priceCheck.title'), guard: 'feature:priceCheckDevice' },
 
   { pattern: '/auth', load: () => import('./views/auth.mjs'), title: () => t('auth.title') },

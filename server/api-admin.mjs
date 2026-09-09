@@ -14,6 +14,9 @@ import { publicOrder, restoreStock } from './api-shop.mjs';
 import { PERMISSIONS, hashPassword, generateTotpSecret, destroyUserSessions } from './lib/auth.mjs';
 import { ean13 } from './seed.mjs';
 import { listBackups, createBackup, restoreBackup, readBackup } from './lib/backup.mjs';
+import { tgBroadcast, tgSend, telegramEnabled } from './lib/telegram.mjs';
+import { sendMail, mailConfigured } from './lib/mail.mjs';
+import { sendSms, smsConfigured } from './lib/sms.mjs';
 import { productSvg, writeProductImages } from './art.mjs';
 import { ORDER_STATUSES } from './defaults.mjs';
 
@@ -29,6 +32,17 @@ function ssrfSafe(urlStr) {
   if (/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|0\.|169\.254\.|\[?::1)/.test(host)) return null;
   if (host === 'localhost' || host.endsWith('.local') || host.endsWith('.internal')) return null;
   return u;
+}
+
+function lotteryEntries(st, l) {
+  const ids = new Set((l.manual || []));
+  if (l.entryMode === 'orders') {
+    for (const o of st.orders || []) {
+      if (o.status === 'cancelled') continue;
+      if (o.createdAt >= l.createdAt && (!l.endsAt || o.createdAt <= l.endsAt)) ids.add(o.userId);
+    }
+  }
+  return [...ids].filter((id) => st.users.some((u) => u.id === id));
 }
 
 export function registerAdmin(router) {
@@ -737,6 +751,8 @@ export function registerAdmin(router) {
         orders: st.orders.filter((o) => o.userId === u.id).length,
         spent: st.orders.filter((o) => o.userId === u.id && o.payment?.status === 'paid').reduce((a, b) => a + b.total, 0),
         createdAt: u.createdAt, lastLoginAt: u.lastLoginAt, loginCount: u.loginCount || 0,
+        lastIp: u.lastIp || '', lastAgent: u.lastAgent || null, addresses: (u.addresses || []).length,
+        banned: (st.bans || []).some((b) => (b.type === 'phone' && b.value === String(u.phone || '').toLowerCase()) || (b.type === 'email' && b.value === String(u.email || '').toLowerCase()) || (b.type === 'username' && b.value === String(u.username || '').toLowerCase())),
       })),
       permissions: PERMISSIONS,
     });
@@ -902,13 +918,49 @@ export function registerAdmin(router) {
     const level = V.oneOf(ctx.body?.level, ['info', 'success', 'warning', 'error'], 'level', 'info');
     const type = V.oneOf(ctx.body?.type, ['announcement', 'news', 'offer', 'system'], 'type', 'announcement');
     if (link && !/^(#|\/|https?:\/\/)/.test(link)) throw badRequest('invalid_link', 'لینک معتبر نیست.');
-    const n = await db.tx((st) => {
-      if (userId && !st.users.some((u) => u.id === userId)) throw notFound('not_found', 'کاربر یافت نشد.');
-      const rec = pushNotification(st, { userId, type, level, title, titleEn, body, bodyEn, link });
-      logAudit(ctx.user, 'notification.send', title, { userId: userId || 'all' });
-      return rec;
+    const channels = Array.isArray(ctx.body?.channels) && ctx.body.channels.length
+      ? ctx.body.channels.filter((c) => ['site', 'telegram', 'email', 'sms'].includes(c))
+      : ['site'];
+    let rec = null;
+    if (channels.includes('site')) {
+      rec = await db.tx((st) => {
+        if (userId && !st.users.some((u) => u.id === userId)) throw notFound('not_found', 'کاربر یافت نشد.');
+        return pushNotification(st, { userId, type, level, title, titleEn, body, bodyEn, link });
+      });
+    }
+    const results = {};
+    const textMsg = `${title}\n${body || ''}`.trim();
+    if (channels.includes('telegram')) {
+      if (telegramEnabled()) { try { results.telegram = await tgBroadcast(textMsg); } catch (e) { results.telegram = { error: String(e.message) }; } }
+      else results.telegram = { error: 'disabled' };
+    }
+    const targets = await db.read((st) => {
+      const list = userId ? st.users.filter((u) => u.id === userId) : st.users.filter((u) => u.role === 'user');
+      return list.slice(0, 300).map((u) => ({ email: u.email || '', phone: u.phone || '' }));
     });
-    sendJson(ctx.res, 200, { ok: true, notification: publicNotification(n) });
+    if (channels.includes('email')) {
+      if (!mailConfigured()) results.email = { error: 'not_configured' };
+      else {
+        let okc = 0; let fail = 0;
+        for (const t of targets.filter((x) => x.email)) { try { await sendMail({ to: t.email, subject: title, body: textMsg }); okc++; } catch { fail++; } }
+        results.email = { ok: okc, fail };
+      }
+    }
+    if (channels.includes('sms')) {
+      if (!smsConfigured()) results.sms = { error: 'not_configured' };
+      else {
+        let okc = 0; let fail = 0;
+        for (const t of targets.filter((x) => x.phone)) { try { await sendSms(t.phone, textMsg); okc++; } catch { fail++; } }
+        results.sms = { ok: okc, fail };
+      }
+    }
+    await db.tx((st) => {
+      st.outbox = st.outbox || [];
+      st.outbox.unshift({ id: uid('obx'), at: nowISO(), by: ctx.user.username, title, channels, results });
+      if (st.outbox.length > 120) st.outbox.length = 120;
+      logAudit(ctx.user, 'notification.send', title, { userId: userId || 'all', channels: channels.join(',') });
+    });
+    sendJson(ctx.res, 200, { ok: true, notification: rec ? publicNotification(rec) : null, results });
   });
 
   A('GET', '/api/admin/notifications', 'notifications.send', async (ctx) => {
@@ -997,6 +1049,127 @@ export function registerAdmin(router) {
       'Content-Length': String(buf.length),
     });
     ctx.res.end(buf);
+  });
+
+  // ── مسدودسازی (بن/آن‌بن) ──
+  A('GET', '/api/admin/bans', 'users.view', async (ctx) => {
+    sendJson(ctx.res, 200, { ok: true, items: ctx.state.bans || [] });
+  });
+  A('POST', '/api/admin/bans', 'users.manage', async (ctx) => {
+    const type = V.oneOf(ctx.body?.type, ['ip', 'phone', 'email', 'username'], 'type');
+    const value = V.str(ctx.body?.value, { min: 3, max: 120, field: 'مقدار' }).trim().toLowerCase();
+    const reason = V.optStr(ctx.body?.reason, { max: 200, field: 'دلیل' });
+    const exists = await db.read((st) => (st.bans || []).some((b) => b.type === type && b.value === value));
+    if (exists) throw conflict('exists', 'این مقدار قبلاً مسدود شده است.');
+    const rec = await db.tx((st) => {
+      const b = { id: uid('ban'), type, value, reason, at: nowISO(), by: ctx.user.username };
+      st.bans = st.bans || [];
+      st.bans.unshift(b);
+      logAudit(ctx.user, 'ban.add', `${type}:${value}`, { reason });
+      return b;
+    });
+    sendJson(ctx.res, 200, { ok: true, ban: rec });
+  });
+  A('DELETE', '/api/admin/bans/:id', 'users.manage', async (ctx) => {
+    await db.tx((st) => {
+      const b = (st.bans || []).find((x) => x.id === ctx.params.id);
+      if (!b) throw notFound('not_found', 'موردی یافت نشد.');
+      st.bans = st.bans.filter((x) => x.id !== ctx.params.id);
+      logAudit(ctx.user, 'ban.remove', `${b.type}:${b.value}`, {});
+    });
+    sendJson(ctx.res, 200, { ok: true });
+  });
+
+  // ── بازدیدکنندگان ──
+  A('GET', '/api/admin/visitors', 'users.view', async (ctx) => {
+    const q = String(ctx.query.get('q') || '').trim().toLowerCase();
+    let list = ctx.state.visitors || [];
+    if (q) list = list.filter((v) => `${v.ip} ${v.os} ${v.device} ${v.browser} ${v.path} ${v.userId || ''}`.toLowerCase().includes(q));
+    sendJson(ctx.res, 200, { ok: true, items: list.slice(0, 400), total: (ctx.state.visitors || []).length });
+  });
+
+  // ── بات تلگرام ──
+  A('GET', '/api/admin/telegram', 'settings.edit', async (ctx) => {
+    const tg = ctx.state.settings?.telegram || {};
+    sendJson(ctx.res, 200, { ok: true, enabled: !!tg.enabled, tokenSet: !!tg.token, welcome: tg.welcome || '', inbox: (ctx.state.telegramInbox || []).slice(0, 60), subs: Object.keys(ctx.state.telegramSubs || {}).length });
+  });
+  A('POST', '/api/admin/telegram', 'settings.edit', async (ctx) => {
+    await db.tx((st) => {
+      st.settings.telegram = st.settings.telegram || {};
+      if (ctx.body?.enabled !== undefined) st.settings.telegram.enabled = V.bool(ctx.body.enabled);
+      if (ctx.body?.token !== undefined) st.settings.telegram.token = V.optStr(ctx.body.token, { max: 80, field: 'توکن' }).trim();
+      if (ctx.body?.welcome !== undefined) st.settings.telegram.welcome = V.optStr(ctx.body.welcome, { max: 400, field: 'خوش‌آمد' });
+      logAudit(ctx.user, 'telegram.settings', '', {});
+    });
+    sendJson(ctx.res, 200, { ok: true });
+  });
+  A('POST', '/api/admin/telegram/reply', 'settings.edit', async (ctx) => {
+    const chatId = V.str(ctx.body?.chatId, { min: 1, max: 40, field: 'چت' });
+    const text = V.str(ctx.body?.text, { min: 1, max: 800, field: 'متن' });
+    try { await tgSend(chatId, text); } catch (e) { throw badRequest('tg_fail', `ارسال ناموفق: ${e.message}`); }
+    await db.tx((st) => {
+      const item = (st.telegramInbox || []).find((x) => x.chatId === String(chatId));
+      if (item) item.replied = true;
+      logAudit(ctx.user, 'telegram.reply', String(chatId), {});
+    });
+    sendJson(ctx.res, 200, { ok: true });
+  });
+  A('POST', '/api/admin/telegram/test', 'settings.edit', async (ctx) => {
+    const chatId = V.str(ctx.body?.chatId, { min: 1, max: 40, field: 'چت' });
+    try { await tgSend(chatId, 'ping', {}); } catch (e) { throw badRequest('tg_fail', `اتصال ناموفق: ${e.message}`); }
+    sendJson(ctx.res, 200, { ok: true });
+  });
+
+  // ── قرعه‌کشی ──
+  A('GET', '/api/admin/lotteries', 'settings.edit', async (ctx) => {
+    const st = ctx.state;
+    const items = (st.lotteries || []).map((l) => ({ ...l, entries: lotteryEntries(st, l).length }));
+    sendJson(ctx.res, 200, { ok: true, items });
+  });
+  A('POST', '/api/admin/lotteries', 'settings.edit', async (ctx) => {
+    const title = V.str(ctx.body?.title, { min: 3, max: 120, field: 'عنوان' });
+    const prize = V.str(ctx.body?.prize, { min: 2, max: 200, field: 'جایزه' });
+    const endsAt = V.str(ctx.body?.endsAt, { min: 4, max: 40, field: 'پایان' });
+    const winnersCount = Math.max(1, Math.min(50, Number(ctx.body?.winnersCount || 1)));
+    const entryMode = V.oneOf(ctx.body?.entryMode, ['orders', 'manual'], 'entryMode', 'orders');
+    const rec = await db.tx((st) => {
+      const l = { id: uid('lot'), title, prize, endsAt, winnersCount, entryMode, status: 'active', winners: [], manual: [], createdAt: nowISO(), by: ctx.user.username };
+      st.lotteries = st.lotteries || [];
+      st.lotteries.unshift(l);
+      logAudit(ctx.user, 'lottery.create', title, {});
+      return l;
+    });
+    sendJson(ctx.res, 200, { ok: true, lottery: rec });
+  });
+  A('POST', '/api/admin/lotteries/:id/run', 'settings.edit', async (ctx) => {
+    const out = await db.tx((st) => {
+      const l = (st.lotteries || []).find((x) => x.id === ctx.params.id);
+      if (!l) throw notFound('not_found', 'قرعه‌کشی یافت نشد.');
+      if (l.status === 'drawn') throw conflict('drawn', 'قبلاً قرعه‌کشی شده است.');
+      const pool = lotteryEntries(st, l);
+      if (!pool.length) throw badRequest('no_entries', 'شرکت‌کننده‌ای وجود ندارد.');
+      const winners = [];
+      const copy = [...pool];
+      for (let i = 0; i < Math.min(l.winnersCount, copy.length); i++) {
+        const idx = Math.floor(Math.random() * copy.length);
+        winners.push(copy.splice(idx, 1)[0]);
+      }
+      l.winners = winners.map((uidv) => ({ userId: uidv, name: st.users.find((u) => u.id === uidv)?.name || uidv, at: nowISO() }));
+      l.status = 'drawn';
+      for (const w of l.winners) pushNotification(st, { userId: w.userId, type: 'announcement', level: 'success', title: `تبریک! برندهٔ قرعه‌کشی ${l.title} شدی`, body: `جایزه: ${l.prize}` });
+      logAudit(ctx.user, 'lottery.run', l.title, { winners: l.winners.length });
+      return l;
+    });
+    sendJson(ctx.res, 200, { ok: true, lottery: out });
+  });
+  A('POST', '/api/admin/lotteries/:id/close', 'settings.edit', async (ctx) => {
+    await db.tx((st) => {
+      const l = (st.lotteries || []).find((x) => x.id === ctx.params.id);
+      if (!l) throw notFound('not_found', 'قرعه‌کشی یافت نشد.');
+      l.status = 'closed';
+      logAudit(ctx.user, 'lottery.close', l.title, {});
+    });
+    sendJson(ctx.res, 200, { ok: true });
   });
 
   A('GET', '/api/admin/audit', 'audit.view', async (ctx) => {

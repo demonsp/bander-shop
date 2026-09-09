@@ -42,6 +42,11 @@ export const EMPTY = () => ({
   visitSessions: {},// { sessionIdHash: 'YYYY-MM-DD' } برای بازدید یکتا
   stats: { ordersTotal: 0, revenueTotal: 0 },
   imageHashes: {},  // productId -> {dhash, hist}
+  bans: [],         // {id,type:'ip'|'phone'|'email'|'username',value,reason,at,by}
+  visitors: [],     // رکورد بازدیدکنندگان (جدیدترین اول)
+  lotteries: [],    // قرعه‌کشی‌ها
+  telegramInbox: [],// پیام‌های بات تلگرام
+  telegramSubs: {}, // chatId -> name
 });
 
 let state = EMPTY();

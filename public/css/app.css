@@ -1232,3 +1232,16 @@ body.boot-slow .splash-slow{display:block}
 .badge-item.got{border-style:solid;border-color:color-mix(in srgb, var(--accent) 55%, transparent);background:color-mix(in srgb, var(--accent) 10%, transparent);color:var(--text);opacity:1}
 .badge-item.got .bi-ic{color:var(--accent)}
 .badge-item b{font-size:12px}
+
+/* ── هالهٔ دنبال‌کنندهٔ موس ── */
+#cursorHalo{position:fixed;z-index:60;width:26px;height:26px;border-radius:50%;pointer-events:none;opacity:0;translate:-50% -50%;background:radial-gradient(circle, color-mix(in srgb, var(--accent) 45%, transparent) 0%, transparent 70%);border:1px solid color-mix(in srgb, var(--accent) 55%, transparent);transition:opacity .25s, width .18s, height .18s;mix-blend-mode:screen}
+html.halo-on #cursorHalo{opacity:.85}
+html.halo-hot #cursorHalo{width:44px;height:44px;opacity:.95}
+@media (pointer:coarse){#cursorHalo{display:none}}
+html.eco #cursorHalo{display:none}
+html.reduce-motion #cursorHalo{display:none}
+/* حالت eco: توقف انیمیشن‌ها برای کاربر بی‌فعال */
+html.eco .marquee-track{visibility:hidden}
+html.eco .ticker-track{animation-play-state:paused}
+
+.group-box{border:1px dashed var(--border);border-radius:12px;padding:12px}

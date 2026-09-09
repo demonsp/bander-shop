@@ -5,7 +5,7 @@ import { html as h, icon, esc, fmtNum, fmtMoney, fmtDate, timeAgo, applyDyn } fr
 import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
 import { tableHtml, field, selectField, switchField, textareaField, emptyState, errorState } from '../../components.mjs';
-import { toastSuccess, toastApiError, modal, confirmDelete, withBusy } from '../../ui.mjs';
+import { toastSuccess, toastApiError, modal, confirmDelete, withBusy, confirmDialog } from '../../ui.mjs';
 import { act } from '../../actions.mjs';
 import { refresh } from '../../router.mjs';
 
@@ -18,6 +18,8 @@ export async function render(ctx) {
   const sec = ctx.params.section;
   if (sec === 'ads') return adsView();
   if (sec === 'notifications') return notificationsView();
+  if (sec === 'telegram') return telegramView();
+  if (sec === 'lottery') return lotteryView();
   return couponsView();
 }
 
@@ -283,6 +285,16 @@ async function notificationsView() {
             })}
             ${field({ label: t('common.link'), name: 'link', hint: '#/products' })}
             ${field({ label: L('شناسهٔ کاربر (خالی = همه)', 'User id (empty = everyone)'), name: 'userId' })}
+            <div class="span-2">
+              <span class="label">${t('adm.channels')}</span>
+              <div class="row row-wrap mt-s">
+                <label class="check"><input type="checkbox" name="ch_site" checked><span class="box">${icon('check')}</span><span>${t('adm.chSite')}</span></label>
+                <label class="check"><input type="checkbox" name="ch_telegram"><span class="box">${icon('check')}</span><span>${t('adm.chTelegram')}</span></label>
+                <label class="check"><input type="checkbox" name="ch_email"><span class="box">${icon('check')}</span><span>${t('adm.chEmail')}</span></label>
+                <label class="check"><input type="checkbox" name="ch_sms"><span class="box">${icon('check')}</span><span>${t('adm.chSms')}</span></label>
+              </div>
+              <p class="hint">${t('adm.channelsHint')}</p>
+            </div>
           </div>
           <button class="btn btn-primary mt-s" type="submit">${icon('send')} ${t('common.send')}</button>
         </form>
@@ -325,12 +337,15 @@ act('adm-notif-send', async (e, form) => {
     level: fd.get('level'), type: fd.get('type'),
     link: String(fd.get('link') || '').trim(),
     userId: String(fd.get('userId') || '').trim(),
+    channels: ['site', 'telegram', 'email', 'sms'].filter((c) => fd.get(`ch_${c}`)),
   };
   if (payload.title.length < 3) return;
   await withBusy(form.querySelector('button[type=submit]'), async () => {
     try {
-      await api.post('/api/admin/notifications', payload);
-      toastSuccess(t('misc.sent'));
+      const r = await api.post('/api/admin/notifications', payload);
+      const res = r.results || {};
+      const extra = Object.entries(res).map(([k, v]) => `${k}: ${v.error ? '✗' : `✓${v.ok ?? ''}`}`).join(' ');
+      toastSuccess(extra ? `${t('misc.sent')} — ${extra}` : t('misc.sent'), { timeout: 4200 });
       refresh(true);
     } catch (err) { toastApiError(err); }
   });
@@ -340,3 +355,132 @@ export function mount(root) {
   applyDyn(root);
   return null;
 }
+
+// ── بات تلگرام ──────────────────────────────────────────────
+async function telegramView() {
+  let r = null;
+  try { r = await api.get('/api/admin/telegram'); } catch (err) { return errorState({ title: err?.message || t('err.generic') }); }
+  return h`
+    <div class="cart-grid">
+      <div class="col">
+        <form class="card" data-act="adm-tg-save">
+          <strong>${icon('send')} ${t('adm.telegram')}</strong>
+          <p class="muted small mt-s">${t('adm.tgHint')}</p>
+          <div class="form-grid mt-s">
+            <div class="span-2">${switchField({ label: t('adm.tgEnabled'), name: 'enabled', checked: !!r.enabled })}</div>
+            <div class="span-2">${field({ label: t('adm.tgToken'), name: 'token', hint: t('adm.tgTokenHint'), type: 'password' })}</div>
+            <div class="span-2">${textareaField({ label: t('adm.tgWelcome'), name: 'welcome', rows: 2, value: r.welcome || '' })}</div>
+          </div>
+          <button class="btn btn-primary mt-s" type="submit">${icon('check')} ${t('common.save')}</button>
+        </form>
+        <form class="card mt" data-act="adm-tg-test">
+          <strong>${icon('zap')} ${t('adm.tgTest')}</strong>
+          <div class="row mt-s">
+            <input class="input" name="chatId" placeholder="chat id" required>
+            <button class="btn btn-ghost" type="submit">${t('common.send')}</button>
+          </div>
+        </form>
+      </div>
+      <aside class="col">
+        <div class="card">
+          <strong>${icon('chat')} ${t('adm.tgInbox')} (${fmtNum(r.inbox?.length || 0)}) · ${t('adm.tgSubs')}: ${fmtNum(r.subs || 0)}</strong>
+          <div class="notif-list mt-s">
+            ${(r.inbox || []).slice(0, 30).map((m) => h`
+              <div class="notif-item lv-info">
+                <div class="row row-between"><strong class="tiny">${esc(m.name)}</strong><span class="tiny muted">${timeAgo(m.at)}</span></div>
+                <p class="tiny mt-s">${esc(m.text)}</p>
+                <form class="row mt-s" data-act="adm-tg-reply" data-chat="${esc(m.chatId)}">
+                  <input class="input" name="text" placeholder="${t('adm.tgReplyPh')}" required>
+                  <button class="btn btn-ghost btn-sm" type="submit">${icon('send')}</button>
+                </form>
+              </div>`) }
+            ${!(r.inbox || []).length ? h`<p class="muted small">${t('adm.tgInboxEmpty')}</p>` : ''}
+          </div>
+        </div>
+      </aside>
+    </div>`;
+}
+act('adm-tg-save', async (e, form) => {
+  e.preventDefault();
+  const payload = { enabled: !!form.enabled?.checked };
+  if (form.token?.value) payload.token = form.token.value;
+  if (form.welcome !== undefined) payload.welcome = form.welcome.value;
+  await withBusy(form.querySelector('button[type=submit]'), async () => {
+    try { await api.post('/api/admin/telegram', payload); toastSuccess(t('common.saved')); refresh(true); }
+    catch (err) { toastApiError(err); }
+  });
+});
+act('adm-tg-test', async (e, form) => {
+  e.preventDefault();
+  try { await api.post('/api/admin/telegram/test', { chatId: form.chatId.value }); toastSuccess(t('misc.sent')); }
+  catch (err) { toastApiError(err); }
+});
+act('adm-tg-reply', async (e, form) => {
+  e.preventDefault();
+  try { await api.post('/api/admin/telegram/reply', { chatId: form.dataset.chat, text: form.text.value }); toastSuccess(t('misc.sent')); form.text.value = ''; }
+  catch (err) { toastApiError(err); }
+});
+
+// ── قرعه‌کشی ────────────────────────────────────────────────
+async function lotteryView() {
+  let r = null;
+  try { r = await api.get('/api/admin/lotteries'); } catch (err) { return errorState({ title: err?.message || t('err.generic') }); }
+  return h`
+    <div class="cart-grid">
+      <div class="col">
+        <form class="card" data-act="adm-lot-create">
+          <strong>${icon('gift2')} ${t('adm.lotteryNew')}</strong>
+          <div class="form-grid mt-s">
+            ${field({ label: t('common.title'), name: 'title', required: true })}
+            ${field({ label: t('adm.lotPrize'), name: 'prize', required: true })}
+            ${field({ label: t('adm.lotEnds'), name: 'endsAt', type: 'datetime-local', required: true })}
+            ${field({ label: t('adm.lotWinners'), name: 'winnersCount', type: 'number', value: '1' })}
+            <div class="span-2">${selectField({ label: t('adm.lotMode'), name: 'entryMode', options: [{ value: 'orders', label: t('adm.lotModeOrders') }, { value: 'manual', label: t('adm.lotModeManual') }] })}</div>
+          </div>
+          <button class="btn btn-primary mt-s" type="submit">${icon('plus')} ${t('common.create')}</button>
+        </form>
+      </div>
+      <aside class="col">
+        <div class="card">
+          <strong>${icon('gift2')} ${t('adm.lottery')} (${fmtNum(r.items?.length || 0)})</strong>
+          <div class="notif-list mt-s">
+            ${(r.items || []).map((l) => h`
+              <div class="notif-item lv-${l.status === 'drawn' ? 'success' : l.status === 'active' ? 'info' : 'warning'}">
+                <div class="row row-between"><strong class="tiny">${esc(l.title)}</strong><span class="tiny muted">${l.status}</span></div>
+                <p class="tiny mt-s">${t('adm.lotPrize')}: ${esc(l.prize)} · ${t('adm.lotEntries')}: ${fmtNum(l.entries || 0)} · ${t('adm.lotEnds')}: ${esc(l.endsAt || '')}</p>
+                ${l.winners?.length ? h`<p class="tiny mt-s b">${t('adm.lotWinnersList')}: ${l.winners.map((w) => esc(w.name)).join('، ')}</p>` : ''}
+                ${l.status === 'active' ? h`<div class="row mt-s">
+                  <button class="btn btn-primary btn-sm" data-act="adm-lot-run" data-id="${l.id}">${icon('sparkles')} ${t('adm.lotRun')}</button>
+                  <button class="btn btn-ghost btn-sm" data-act="adm-lot-close" data-id="${l.id}">${icon('close')} ${t('adm.lotClose')}</button>
+                </div>` : ''}
+              </div>`)}
+            ${!(r.items || []).length ? h`<p class="muted small">${t('adm.lotEmpty')}</p>` : ''}
+          </div>
+        </div>
+      </aside>
+    </div>`;
+}
+act('adm-lot-create', async (e, form) => {
+  e.preventDefault();
+  const endsAt = new Date(form.endsAt.value).toISOString();
+  await withBusy(form.querySelector('button[type=submit]'), async () => {
+    try {
+      await api.post('/api/admin/lotteries', { title: form.title.value, prize: form.prize.value, endsAt, winnersCount: Number(form.winnersCount.value || 1), entryMode: form.entryMode.value });
+      toastSuccess(t('common.saved')); refresh(true);
+    } catch (err) { toastApiError(err); }
+  });
+});
+act('adm-lot-run', async (e, el) => {
+  const ok = await confirmDialog({ text: t('adm.lotRunWarn'), danger: true });
+  if (!ok) return;
+  await withBusy(el, async () => {
+    try { const r = await api.post(`/api/admin/lotteries/${el.dataset.id}/run`, {}); toastSuccess(`${t('adm.lotDone')}: ${(r.lottery?.winners || []).map((w) => w.name).join('، ')}`, { timeout: 6000 }); refresh(true); }
+    catch (err) { toastApiError(err); }
+  });
+});
+act('adm-lot-close', async (e, el) => {
+  await withBusy(el, async () => {
+    try { await api.post(`/api/admin/lotteries/${el.dataset.id}/close`, {}); toastSuccess(t('adm.lotClosed')); refresh(true); }
+    catch (err) { toastApiError(err); }
+  });
+});

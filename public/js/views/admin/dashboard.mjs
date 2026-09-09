@@ -5,9 +5,10 @@
 import { html as h, icon, esc, fmtNum, fmtMoney, fmtDate, timeAgo } from '../../lib/dom.mjs';
 import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
+import { act } from '../../actions.mjs';
 import { can } from '../../state.mjs';
 import { kpiCard, barChart, tableHtml, productImage, statusBadge } from '../../components.mjs';
-import { errorState } from '../../ui.mjs';
+import { errorState, confirmDialog, toastSuccess, toastApiError, withBusy } from '../../ui.mjs';
 
 export async function render() {
   let d = null;
@@ -101,3 +102,21 @@ function awaitCard(ic, label, count, href) {
 }
 
 export function mount() { return null; }
+
+act('adm-sys-restart', async (e, el) => {
+  const ok = await confirmDialog({ text: t('adm.sysRestartWarn'), danger: true });
+  if (!ok) return;
+  await withBusy(el, async () => {
+    try { await api.post('/api/admin/system/restart', {}); toastSuccess(t('adm.sysRestarting')); setTimeout(() => location.reload(), 6000); }
+    catch (err) { toastApiError(err); }
+  });
+});
+act('adm-sys-reset', async (e, el) => {
+  const what = el.dataset.what;
+  const ok = await confirmDialog({ text: t(`adm.resetWarn.${what}`), danger: true });
+  if (!ok) return;
+  await withBusy(el, async () => {
+    try { await api.post('/api/admin/system/reset', { what }); toastSuccess(t('adm.resetDone')); }
+    catch (err) { toastApiError(err); }
+  });
+});

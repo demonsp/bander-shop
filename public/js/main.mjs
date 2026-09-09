@@ -37,6 +37,9 @@ async function init() {
   recordVisit();
   subscribeEvents();
   wireSleepHeartbeat();
+  wireCursorHalo();
+  wireEcoMode();
+  sendVisitBeacon();
   wireSearchShortcut();
   maybeCouponFromUrl();
   maybeConsent();
@@ -108,6 +111,7 @@ function renderNav() {
     { key: '/new', href: '#/products?sort=newest', icon: 'sparkles', label: t('nav.new'), show: true },
     { key: '/pages/stats', href: '#/stats', icon: 'chart', label: t('nav.stats'), show: feat('publicStats') },
     { key: '/price-check', href: '#/price-check', icon: 'barcode', label: t('priceCheck.title'), show: feat('priceCheckDevice') },
+    { key: '/lottery', href: '#/lottery', icon: 'gift2', label: t('lot.nav'), show: true },
     { key: '/pages/about', href: '#/pages/about', icon: 'store', label: t('nav.about'), show: true },
     { key: '/pages/contact', href: '#/pages/contact', icon: 'map', label: t('nav.contact'), show: true },
   ].filter((x) => x.show);
@@ -526,6 +530,7 @@ function subscribeEvents() {
 // ── ضربان قلب: هم وضعیت خاموش/روشن را تازه می‌کند، هم سرویس را گرم نگه می‌دارد
 function wireSleepHeartbeat() {
   const tick = async () => {
+    if (document.documentElement.classList.contains('eco')) return; // حالت eco: بدون ترافیک
     try {
       const r = await api.get('/api/system/status');
       const was = !!S.sleeping;
@@ -738,3 +743,66 @@ init().catch((e) => {
   const splash = qs('#bootSplash');
   if (splash) splash.innerHTML = h`<div class="empty"><h4>${t('err.generic')}</h4><button class="btn btn-primary" data-act="reload">${t('common.retry')}</button></div>`;
 });
+
+// ── هالهٔ موس ──────────────────────────────────────────────
+function wireCursorHalo() {
+  if (!matchMedia('(pointer:fine)').matches) return;
+  const halo = qs('#cursorHalo');
+  if (!halo) return;
+  let x = innerWidth / 2, y = innerHeight / 2, cx = x, cy = y, raf = 0;
+  const tick = () => {
+    cx += (x - cx) * 0.22; cy += (y - cy) * 0.22;
+    halo.style.left = `${cx.toFixed(1)}px`; halo.style.top = `${cy.toFixed(1)}px`;
+    raf = requestAnimationFrame(tick);
+  };
+  document.addEventListener('pointermove', (e) => {
+    if (document.documentElement.classList.contains('eco')) return;
+    x = e.clientX; y = e.clientY;
+    document.documentElement.classList.add('halo-on');
+    if (!raf) raf = requestAnimationFrame(tick);
+    const hot = e.target.closest?.('a, button, [role="button"], .pcard, .gal-thumb');
+    document.documentElement.classList.toggle('halo-hot', !!hot);
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => { document.documentElement.classList.remove('halo-on'); });
+}
+
+// ── حالت eco برای کاربر بی‌فعال: توقف پولینگ و انیمیشن بدون از دست دادن صفحه ──
+const ECO_IDLE_MS = 4 * 60 * 1000;
+let ecoTimer = 0;
+export function ecoPaused() { return document.documentElement.classList.contains('eco'); }
+function wireEcoMode() {
+  const enter = () => {
+    if (document.documentElement.classList.contains('eco')) return;
+    document.documentElement.classList.add('eco');
+    document.dispatchEvent(new CustomEvent('eco', { detail: { on: true } }));
+  };
+  const leave = () => {
+    if (!document.documentElement.classList.contains('eco')) return;
+    document.documentElement.classList.remove('eco');
+    document.dispatchEvent(new CustomEvent('eco', { detail: { on: false } }));
+    // تازه‌سازی بی‌صدا: همان صفحه می‌ماند، فقط داده‌ها به‌روز می‌شوند
+    import('./state.mjs').then((sm) => sm.refreshBootstrap?.({ silent: true })).catch(() => {});
+  };
+  const arm = () => { clearTimeout(ecoTimer); ecoTimer = setTimeout(enter, ECO_IDLE_MS); };
+  for (const ev of ['pointerdown', 'keydown', 'wheel', 'touchstart', 'pointermove']) document.addEventListener(ev, () => { if (document.documentElement.classList.contains('eco')) leave(); arm(); }, { passive: true, capture: true });
+  arm();
+}
+
+// ── بیکن بازدیدکننده: یک‌بار در هر نشست ──
+function sendVisitBeacon() {
+  try {
+    if (sessionStorage.getItem('bm_vis')) {
+      // فقط به‌روزرسانی مسیر در ناوبری‌ها
+      return;
+    }
+    sessionStorage.setItem('bm_vis', '1');
+    const payload = {
+      screen: `${screen.width}x${screen.height}`,
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+      lang: navigator.language || '',
+      ref: document.referrer ? document.referrer.slice(0, 200) : '',
+      path: location.hash.replace('#', '') || '/',
+    };
+    import('./lib/api.mjs').then((a) => a.api.post('/api/track', payload)).catch(() => {});
+  } catch { /* noop */ }
+}

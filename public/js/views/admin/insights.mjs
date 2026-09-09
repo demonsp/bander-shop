@@ -18,6 +18,7 @@ let ACTIONS = [];
 export async function render(ctx) {
   const sec = ctx.params.section;
   if (sec === 'stats') return stats();
+  if (sec === 'visitors') return visitors();
   if (sec === 'data') return data();
   return audit();
 }
@@ -263,3 +264,32 @@ export function mount(root, ctx) {
   }
   return null;
 }
+
+const VF = { q: '' };
+async function visitors() {
+  let r = { items: [], total: 0 };
+  try { r = await api.get(api.url('/api/admin/visitors', { q: VF.q || '' })); }
+  catch (err) { return errorState({ title: err?.message || t('err.generic') }); }
+  return h`
+    <div class="row row-between row-wrap mb">
+      <h2 class="section-title">${icon('users')} ${t('adm.visitors')} <span class="muted small">(${fmtNum(r.total || 0)})</span></h2>
+      <form class="row" data-act="adm-vis-filter">
+        <input class="input" name="q" value="${esc(VF.q || '')}" placeholder="${t('common.search')}">
+        <button class="btn btn-ghost" type="submit">${icon('search')}</button>
+      </form>
+    </div>
+    <div class="card">
+      ${r.items?.length ? h`<div class="table-wrap"><table class="table">
+        <thead><tr><th>${t('common.date')}</th><th>IP</th><th>${t('adm.uDevice')}</th><th>${t('adm.uBrowser')}</th><th>${t('adm.uRegion')}</th><th>${t('adm.uPath')}</th><th>${t('common.user')}</th></tr></thead>
+        <tbody>${r.items.map((v) => h`<tr>
+          <td class="tiny nowrap">${fmtDate(v.at)}</td>
+          <td class="mono tiny">${esc(v.ip || '')}</td>
+          <td class="tiny">${esc(v.os || '')} · ${esc(v.device || '')}${v.screen ? h`<div class="muted tiny">${esc(v.screen)}</div>` : ''}</div></td>
+          <td class="tiny">${esc(v.browser || '')}</td>
+          <td class="tiny">${esc(v.tz || '')}<div class="muted tiny">${esc(v.lang || '')}</div></td>
+          <td class="mono tiny">${esc(v.path || '/')}</td>
+          <td class="tiny">${v.userId ? h`<a href="#/admin/users/${v.userId}">${icon('user')}</a>` : h`<span class="muted">${t('adm.guest')}</span>`}</td>
+        </tr>`)}</tbody></table></div>` : emptyState({ icon: 'users', title: t('common.noResult') })}
+    </div>`;
+}
+act('adm-vis-filter', (e, form) => { e.preventDefault(); VF.q = form.q.value; refresh(true); });

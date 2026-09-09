@@ -28,6 +28,7 @@ async function load() {
 }
 
 async function list() {
+  const bansCard = await bansPanel();
   let r = null;
   try { r = await load(); } catch (err) { return errorState({ title: err?.message || t('err.generic') }); }
   return h`
@@ -58,7 +59,7 @@ async function list() {
       [
         { label: t('common.user') }, { label: t('common.phone') }, { label: t('adm.uRole') },
         { label: t('common.balance'), cls: 'num' }, { label: t('acc.plus'), cls: 'num' },
-        { label: t('common.orders'), cls: 'num' }, { label: t('common.status') }, { label: '', cls: 'num' },
+        { label: t('common.orders'), cls: 'num' }, { label: t('adm.uDevice') }, { label: t('common.status') }, { label: '', cls: 'num' },
       ],
       CACHE.map((u) => h`
         <tr>
@@ -72,8 +73,12 @@ async function list() {
           <td class="num">${fmtNum(u.wallet || 0)}</td>
           <td class="num">${u.plus ? h`<span class="badge-pill bp-accent">${t('common.active')}</span>` : h`<span class="muted">—</span>`}</td>
           <td class="num">${fmtNum(u.orders || 0)}<div class="tiny muted">${fmtMoney(u.spent || 0)}</div></td>
-          <td>${u.status === 'blocked' ? h`<span class="badge-pill bp-danger">${t('adm.uBlocked')}</span>` : h`<span class="badge-pill bp-success">${t('common.active')}</span>`}</td>
-          <td>${can('users.manage') ? h`<a class="btn btn-ghost btn-xs" href="#/admin/users/${u.id}">${icon('edit')}</a>` : ''}</td>
+          <td class="tiny">${u.lastAgent ? h`<span>${u.lastAgent.os} · ${u.lastAgent.device}</span><div class="muted mono tiny">${esc(u.lastIp || '')}</div>` : h`<span class="muted">—</span>`}</td>
+          <td>${u.banned ? h`<span class="badge-pill bp-danger">${t('adm.banned')}</span>` : u.status === 'blocked' ? h`<span class="badge-pill bp-danger">${t('adm.uBlocked')}</span>` : h`<span class="badge-pill bp-success">${t('common.active')}</span>`}</td>
+          <td><div class="row row-end">
+            ${can('users.manage') ? h`<button class="btn ${u.banned ? 'btn-success' : 'btn-danger'} btn-xs" data-act="adm-u-ban-toggle" data-id="${u.id}" data-val="${esc(u.phone || u.username)}" data-banned="${u.banned ? '1' : ''}" title="${u.banned ? t('adm.unban') : t('adm.ban')}">${icon(u.banned ? 'check' : 'lock')}</button>` : ''}
+            ${can('users.manage') ? h`<a class="btn btn-ghost btn-xs" href="#/admin/users/${u.id}">${icon('edit')}</a>` : ''}
+          </div></td>
         </tr>`),
       { emptyText: t('common.noResult') },
     )}`;
@@ -288,3 +293,53 @@ export function mount(root) {
   applyDyn(root);
   return null;
 }
+
+async function bansPanel() {
+  if (!can('users.manage')) return '';
+  let r = { items: [] };
+  try { r = await api.get('/api/admin/bans'); } catch { return ''; }
+  return h`
+    <div class="card mb">
+      <strong>${icon('lock')} ${t('adm.bans')}</strong>
+      <form class="form-grid mt-s" data-act="adm-ban-add">
+        ${selectField({ label: t('adm.banType'), name: 'type', options: [{ value: 'ip', label: 'IP' }, { value: 'phone', label: t('contact.mobile') }, { value: 'email', label: t('common.email') }, { value: 'username', label: t('common.username') }] })}
+        ${field({ label: t('adm.banValue'), name: 'value', required: true })}
+        ${field({ label: t('adm.banReason'), name: 'reason' })}
+        <button class="btn btn-danger" type="submit">${icon('lock')} ${t('adm.ban')}</button>
+      </form>
+      ${r.items?.length ? h`<div class="table-wrap mt-s"><table class="table">
+        <thead><tr><th>${t('adm.banType')}</th><th>${t('adm.banValue')}</th><th>${t('adm.banReason')}</th><th>${t('common.date')}</th><th></th></tr></thead>
+        <tbody>${r.items.map((b) => h`<tr>
+          <td class="tiny">${b.type}</td><td class="mono tiny">${esc(b.value)}</td><td class="tiny muted">${esc(b.reason || '')}</td><td class="tiny">${fmtDate(b.at)}</td>
+          <td><button class="btn btn-success btn-xs" data-act="adm-ban-del" data-id="${b.id}">${icon('check')} ${t('adm.unban')}</button></td>
+        </tr>`)}</tbody></table></div>` : h`<p class="muted small mt-s">${t('adm.bansEmpty')}</p>`}
+    </div>`;
+}
+
+act('adm-ban-add', async (e, form) => {
+  e.preventDefault();
+  try {
+    await api.post('/api/admin/bans', { type: form.type.value, value: form.value.value, reason: form.reason?.value || '' });
+    toastSuccess(t('adm.banDone')); refresh(true);
+  } catch (err) { toastApiError(err); }
+});
+act('adm-ban-del', async (e, el) => {
+  await withBusy(el, async () => {
+    try { await api.del(`/api/admin/bans/${el.dataset.id}`); toastSuccess(t('adm.unbanDone')); refresh(true); }
+    catch (err) { toastApiError(err); }
+  });
+});
+act('adm-u-ban-toggle', async (e, el) => {
+  const banned = el.dataset.banned === '1';
+  if (banned) {
+    const r = await api.get('/api/admin/bans');
+    const b = (r.items || []).find((x) => x.value === String(el.dataset.val || '').toLowerCase());
+    if (!b) { toastError(t('err.generic')); return; }
+    try { await api.del(`/api/admin/bans/${b.id}`); toastSuccess(t('adm.unbanDone')); refresh(true); }
+    catch (err) { toastApiError(err); }
+    return;
+  }
+  const type = /^09\d{9}$/.test(el.dataset.val || '') ? 'phone' : (el.dataset.val || '').includes('@') ? 'email' : 'username';
+  try { await api.post('/api/admin/bans', { type, value: el.dataset.val, reason: t('adm.banByAdmin') }); toastSuccess(t('adm.banDone')); refresh(true); }
+  catch (err) { toastApiError(err); }
+});

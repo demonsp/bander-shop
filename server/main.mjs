@@ -10,7 +10,7 @@ import {
   getQuery, parseCookie, readJsonBody, securityHeaders, sendJson, serveStatic,
   setCookie, clearCookie, clientIp, PUBLIC_DIR,
 } from './lib/http.mjs';
-import { HttpError, makeRateLimiter, randomToken, uid, nowISO } from './lib/util.mjs';
+import {  HttpError, makeRateLimiter, randomToken, uid, nowISO, BUILD, V  } from './lib/util.mjs';
 import { findSession, touchSession, checkCsrf, hasPerm, requirePerm, issueCsrf, destroySession } from './lib/auth.mjs';
 import { heartbeatAll, publicStats, pushNotification } from './lib/helpers.mjs';
 import { registerCatalog } from './api-catalog.mjs';
@@ -43,10 +43,37 @@ const SLEEP_ALLOW = ['/api/system/wake', '/api/system/status'];
 const sleepAllowed = (path) =>
   SLEEP_ALLOW.includes(path) || path.startsWith('/api/auth/') || path.startsWith('/api/admin/') || path.startsWith('/api/me');
 
+// ── ثبت بازدیدکننده (یک بار در هر نشست + مسیرها) ──
+router.post('/api/track', async (ctx) => {
+  const b = ctx.body || {};
+  const ua = String(ctx.req.headers['user-agent'] || '');
+  const v = parseAgent(ua);
+  const rec = {
+    id: uid('vis'), at: nowISO(), ip: clientIp(ctx.req), ua: ua.slice(0, 180),
+    os: v.os, device: v.device, browser: v.browser,
+    screen: V.optStr(b.screen, { max: 24, field: 'screen' }),
+    tz: V.optStr(b.tz, { max: 48, field: 'tz' }),
+    lang: V.optStr(b.lang, { max: 12, field: 'lang' }),
+    ref: V.optStr(b.ref, { max: 200, field: 'ref' }),
+    path: V.optStr(b.path, { max: 120, field: 'path' }),
+    userId: ctx.user?.id || null,
+  };
+  await db.tx((st) => {
+    st.visitors = st.visitors || [];
+    st.visitors.unshift(rec);
+    if (st.visitors.length > 6000) st.visitors.length = 6000;
+    if (rec.userId) {
+      const u = st.users.find((x) => x.id === rec.userId);
+      if (u) { u.lastIp = rec.ip; u.lastAgent = { os: rec.os, device: rec.device, browser: rec.browser, at: rec.at }; }
+    }
+  });
+  sendJson(ctx.res, 200, { ok: true });
+});
+
 router.get('/api/system/status', async (ctx) => {
   const m = ctx.state.meta || {};
   sendJson(ctx.res, 200, {
-    ok: true, sleeping: !!m.sleeping, since: m.sleepSince || null, by: m.sleepBy || '',
+    ok: true, sleeping: !!m.sleeping, since: m.sleepSince || null, by: m.sleepBy || '', build: BUILD,
     uptime: Math.round(process.uptime()), time: nowISO(),
   });
 });
@@ -67,6 +94,26 @@ router.post('/api/system/wake', async (ctx) => {
     st.meta = { ...(st.meta || {}), sleeping: false, sleepSince: null, autoWakeAt: null, wokeAt: nowISO(), wokeBy: ctx.user.username };
     logAudit(ctx.user, 'system.wake', '', {});
   });
+
+// ── کنسول سامانه: ریستارت و ریست بخش‌ها (فقط مدیر) ──
+router.post('/api/admin/system/restart', async (ctx) => {
+  ctx.requireUser(); ctx.requirePerm('settings.edit');
+  logAudit(ctx.user, 'system.restart', 'server', {});
+  sendJson(ctx.res, 200, { ok: true, restarting: true });
+  setTimeout(() => process.exit(0), 700); // Render خودکار دوباره بالا می‌آورد
+});
+router.post('/api/admin/system/reset', async (ctx) => {
+  ctx.requireUser(); ctx.requirePerm('settings.edit');
+  const what = V.oneOf(ctx.body?.what, ['audit', 'carts', 'visits', 'visitors'], 'what');
+  await db.tx((st) => {
+    if (what === 'audit') st.audit = [];
+    if (what === 'carts') st.carts = st.carts.filter((c) => c.userId);
+    if (what === 'visits') { st.visits = {}; st.visitSessions = {}; }
+    if (what === 'visitors') st.visitors = [];
+  });
+  logAudit(ctx.user, 'system.reset', what, {});
+  sendJson(ctx.res, 200, { ok: true, what });
+});
   pushNotification(ctx.state, { type: 'system', level: 'success', title: 'فروشگاه روشن شد', body: 'خرید دوباره فعال است.', link: '#/' });
   sendJson(ctx.res, 200, { ok: true, sleeping: false });
 });
@@ -114,6 +161,16 @@ function normalizeSettings(state) {
 }
 
 import { startBackupScheduler } from './lib/backup.mjs';
+import { startTelegramBot } from './lib/telegram.mjs';
+
+/** تجزیهٔ User-Agent: سیستم‌عامل، دستگاه، مرورگر */
+function parseAgent(ua) {
+  const u = String(ua || '');
+  const os = /Windows NT 10/.test(u) ? 'Windows 10/11' : /Windows/.test(u) ? 'Windows' : /Android/.test(u) ? 'Android' : /iPhone|iPad|iPod/.test(u) ? 'iOS' : /Mac OS X/.test(u) ? 'macOS' : /Linux/.test(u) ? 'Linux' : 'نامشخص';
+  const device = /Mobile|Android|iPhone/.test(u) ? 'موبایل' : /Tablet|iPad/.test(u) ? 'تبلت' : 'دسکتاپ';
+  const browser = /Edg\//.test(u) ? 'Edge' : /OPR\//.test(u) ? 'Opera' : /Chrome\//.test(u) ? 'Chrome' : /Safari\//.test(u) && /Version\//.test(u) ? 'Safari' : /Firefox\//.test(u) ? 'Firefox' : 'نامشخص';
+  return { os, device, browser };
+}
 
 const server = http.createServer(async (req, res) => {
   const started = process.hrtime.bigint();
@@ -124,6 +181,14 @@ const server = http.createServer(async (req, res) => {
   const ip = clientIp(req);
   const ua = String(req.headers['user-agent'] || '').slice(0, 200);
   const cookies = parseCookie(req.headers.cookie || '');
+  // مسدودسازی IP: قبل از هر چیز بررسی می‌شود
+  const ipBan = (db.raw.bans || []).find((b) => b.type === 'ip' && b.value === ip);
+  if (ipBan) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.writeHead(403);
+    res.end(JSON.stringify({ ok: false, code: 'banned', message: 'دسترسی شما مسدود شده است. با پشتیبانی تماس بگیرید.' }));
+    return;
+  }
   const xff = String(req.headers['x-forwarded-proto'] || '').toLowerCase();
   const proto = xff === 'https' ? 'https' : 'http';
   const host = String(req.headers.host || `localhost:${PORT}`).slice(0, 200);
@@ -339,6 +404,7 @@ setInterval(async () => {
   normalizeSettings(db.raw);
   db.markDirty();
   startBackupScheduler();
+  startTelegramBot();
   server.listen(PORT, HOST, () => {
     const st = db.raw;
     const owner = st.users.find((u) => u.role === 'owner');

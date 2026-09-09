@@ -666,6 +666,36 @@ export function registerShop(router) {
   });
 
   // ── پیشنهاد / شکایت / گزارش خطا ─────────────────────────
+  // ── قرعه‌کشی عمومی ──
+  router.get('/api/lotteries', async (ctx) => {
+    const st = ctx.state;
+    const me = ctx.user;
+    const items = (st.lotteries || []).filter((l) => l.status !== 'closed' || (l.winners || []).length).slice(0, 10).map((l) => {
+      const pool = lotteryPool(st, l);
+      return {
+        id: l.id, title: l.title, prize: l.prize, endsAt: l.endsAt, status: l.status,
+        winners: (l.winners || []).map((w) => w.name),
+        entries: pool.length,
+        myEntry: me ? pool.includes(me.id) : false,
+        entryMode: l.entryMode,
+      };
+    });
+    sendJson(ctx.res, 200, { ok: true, items, enabled: st.settings?.features?.lottery !== false });
+  });
+  router.post('/api/lotteries/:id/join', async (ctx) => {
+    ctx.requireUser();
+    const rec = await db.tx((st) => {
+      const l = (st.lotteries || []).find((x) => x.id === ctx.params.id);
+      if (!l || l.status !== 'active') throw badRequest('not_active', 'این قرعه‌کشی فعال نیست.');
+      l.manual = l.manual || [];
+      if (l.manual.includes(ctx.user.id)) throw conflict('joined', 'قبلاً شرکت کرده‌اید.');
+      l.manual.push(ctx.user.id);
+      logAudit(ctx.user, 'lottery.join', l.title, {});
+      return l;
+    });
+    sendJson(ctx.res, 200, { ok: true, entries: (rec.manual || []).length });
+  });
+
   router.post('/api/feedback', async (ctx) => {
     requireCaptcha(ctx, !ctx.user); // فقط برای مهمان‌ها
     const type = V.oneOf(ctx.body?.type, ['suggestion', 'complaint', 'bug'], 'type', 'suggestion');
@@ -728,6 +758,17 @@ export function restoreStock(st, order) {
     const p = st.products.find((x) => x.id === it.productId);
     if (p) { p.stock = (p.stock || 0) + it.qty; p.sold = Math.max(0, (p.sold || 0) - it.qty); }
   }
+}
+
+function lotteryPool(st, l) {
+  const ids = new Set(l.manual || []);
+  if (l.entryMode === 'orders') {
+    for (const o of st.orders || []) {
+      if (o.status === 'cancelled') continue;
+      if (o.createdAt >= l.createdAt && (!l.endsAt || o.createdAt <= l.endsAt)) ids.add(o.userId);
+    }
+  }
+  return [...ids].filter((id) => st.users.some((u) => u.id === id));
 }
 
 export function publicOrder(o, { full = false } = {}) {

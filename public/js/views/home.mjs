@@ -202,12 +202,37 @@ export function mount() {
   let last = performance.now();
   let raf = 0;
   const speed = 42; // پیکسل بر ثانیه
-  const half = () => track.scrollWidth / 2 || 1;
+  // نصف دقیق شامل نصف فاصلهٔ بین آیتم‌ها تا درز لوپ دیده نشود
+  const half = () => {
+    const gap = parseFloat(getComputedStyle(track).gap || '10') || 10;
+    return (track.scrollWidth + gap) / 2 || 1;
+  };
+  // اگر محتوای پایه کوتاه‌تر از ۱٫۶ برابر viewport است، پایه را چند برابر کن
+  // و همیشه دقیقاً دو کپی نگه دار تا لوپ بدون درز بماند
+  const ensureCopies = () => {
+    const gap = parseFloat(getComputedStyle(track).gap || '10') || 10;
+    const kids = [...track.children];
+    if (!kids.length) return;
+    const n0 = track.dataset.base ? Number(track.dataset.base) : kids.length / 2;
+    const base = kids.slice(0, n0);
+    const baseW = base.reduce((a, el) => a + el.offsetWidth + gap, 0);
+    let mult = 1;
+    while (baseW * mult < innerWidth * 1.6 && mult < 4) mult++;
+    track.dataset.base = String(n0);
+    const want = n0 * mult * 2;
+    if (kids.length === want) return;
+    const frag = document.createDocumentFragment();
+    for (let c = 0; c < 2; c++) for (let m2 = 0; m2 < mult; m2++) base.forEach((el) => frag.appendChild(el.cloneNode(true)));
+    track.innerHTML = '';
+    track.appendChild(frag);
+  };
+  ensureCopies();
+  addEventListener('resize', ensureCopies, { passive: true });
   const wrap = () => { const hw = half(); if (pos <= -hw) pos += hw; if (pos > 0) pos -= hw; };
   const tick = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (!dragging) pos -= speed * dt;
+    if (!dragging && !document.documentElement.classList.contains('eco')) pos -= speed * dt;
     wrap();
     track.style.transform = `translateX(${pos.toFixed(1)}px)`;
     raf = requestAnimationFrame(tick);
