@@ -173,7 +173,7 @@ export const securityHeaders = (req) => ({
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'geolocation=(self), camera=(self), microphone=(), payment=(), usb=(self), serial=(self), bluetooth=(), interest-cohort=()',
+  'Permissions-Policy': 'geolocation=(self), camera=(self), microphone=(self), payment=()',
   'Content-Security-Policy': [
     "default-src 'self'",
     "script-src 'self'",

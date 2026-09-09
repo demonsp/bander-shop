@@ -330,6 +330,8 @@ function wireSearch() {
   document.addEventListener('click', (e) => { if (!e.target.closest('.searchbox')) closeBox(); });
 
   box.addEventListener('click', (e) => {
+    // آیتم‌های لینک‌دار (دسته/محصول): با ناوبری بسته شوند و روی صفحهٔ بعد نمانند
+    if (e.target.closest('a.sg-item')) { closeBox(); return; }
     const item = e.target.closest('[data-q]');
     if (!item) return;
     e.preventDefault();
@@ -337,6 +339,8 @@ function wireSearch() {
     closeBox();
     goSearch(item.dataset.q);
   });
+  // ایمنی: با هر تغییر مسیر، جعبهٔ پیشنهادها بسته شود
+  window.addEventListener('hashchange', closeBox);
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -683,9 +687,10 @@ function wireSearchShortcut() {
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   if (settings().features?.offlineMode === false) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => { /* محیط بدون SW */ });
-  });
+  const doReg = () => navigator.serviceWorker.register('/sw.js').catch(() => { /* محیط بدون SW */ });
+  // init پس از رویداد load اجرا می‌شود؛ پس اگر load گذشته، همین حالا ثبت کن
+  if (document.readyState === 'complete') doReg();
+  else window.addEventListener('load', doReg, { once: true });
 }
 
 // ── شروع ────────────────────────────────────────────────────

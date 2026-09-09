@@ -143,13 +143,16 @@ const server = http.createServer(async (req, res) => {
     if (method === 'OPTIONS') { res.writeHead(204, { Allow: 'GET,POST,PATCH,DELETE,OPTIONS' }); return res.end(); }
     if (/\.\./.test(pathname) || /[\x00-\x1f]/.test(pathname)) return respond(400, 'bad_path', 'مسیر نامعتبر است.');
 
-    // محدودسازی نرخ کلی
-    const rl = limiter.hit(`global:${ip}`, Math.round(900 * RATE_SCALE), 60 * 1000);
-    if (!rl.ok) {
-      res.setHeader('Retry-After', String(rl.retryAfter));
-      return respond(429, 'too_many_requests', 'تعداد درخواست‌ها زیاد است. کمی صبر کن.');
+    // محدودسازی نرخ کلی — فایل‌های استاتیک شمرده نمی‌شوند (موج نصب سرویس‌ورکر)
+    const isStatic = pathname.startsWith('/assets/') || pathname.startsWith('/js/') || pathname.startsWith('/css/') || pathname === '/sw.js' || pathname === '/manifest.webmanifest';
+    if (!isStatic) {
+      const rl = limiter.hit(`global:${ip}`, Math.round(1800 * RATE_SCALE), 60 * 1000);
+      if (!rl.ok) {
+        res.setHeader('Retry-After', String(rl.retryAfter));
+        return respond(429, 'too_many_requests', 'تعداد درخواست‌ها زیاد است. کمی صبر کن.');
+      }
+      res.setHeader('X-RateLimit-Remaining', String(rl.remaining ?? ''));
     }
-    res.setHeader('X-RateLimit-Remaining', String(rl.remaining ?? ''));
 
     const state = db.raw;
     const isApi = pathname.startsWith('/api/');

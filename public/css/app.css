@@ -72,7 +72,7 @@
 /* ── ریست ────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+html{-webkit-text-size-adjust:100%}
 body{
   margin:0;font-family:var(--font);font-size:15px;line-height:1.85;
   background:var(--bg);color:var(--text);
@@ -826,7 +826,7 @@ kbd{background:var(--surface-3);border:1px solid var(--border);border-bottom-wid
   .btn-lg{width:100%}
   .modal{width:100%;border-radius:20px 20px 0 0;max-height:92vh;align-self:flex-end;margin:0}
   .overlay{align-items:flex-end;padding:0}
-  .toast-root{inset-inline:10px;bottom:calc(76px + env(safe-area-inset-bottom));max-width:none}
+  .toast-root{inset-inline:10px;bottom:calc(142px + env(safe-area-inset-bottom));max-width:none}
   .table{min-width:520px}
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .pc-name{font-size:12.8px}

@@ -1,5 +1,5 @@
 /* سرویس‌ورکر بندر موبایل — پوستهٔ آفلاین + کش هوشمند */
-const VERSION = 'bm-v23';
+const VERSION = 'bm-v24';
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 const DATA = `${VERSION}-data`;
@@ -32,10 +32,177 @@ const PRECACHE = [
   '/assets/fonts/Vazirmatn-ExtraBold.woff2',
 ];
 
+// فهرست ماژول‌ها به‌صورت خودکار توسط tools/gen-sw-precache.mjs به‌روز می‌شود
+const JS_PRECACHE = [
+  '/assets/img/brands/anker.svg',
+  '/assets/img/brands/apple.svg',
+  '/assets/img/brands/baseus.svg',
+  '/assets/img/brands/dji.svg',
+  '/assets/img/brands/greenlion.svg',
+  '/assets/img/brands/hoco.svg',
+  '/assets/img/brands/huawei.svg',
+  '/assets/img/brands/jbl.svg',
+  '/assets/img/brands/lenovo.svg',
+  '/assets/img/brands/no_name.svg',
+  '/assets/img/brands/philips.svg',
+  '/assets/img/brands/porodo.svg',
+  '/assets/img/brands/realme.svg',
+  '/assets/img/brands/remax.svg',
+  '/assets/img/brands/samsung.svg',
+  '/assets/img/brands/sandisk.svg',
+  '/assets/img/brands/sony.svg',
+  '/assets/img/brands/soundcore.svg',
+  '/assets/img/brands/xiaomi.svg',
+  '/assets/img/products/p001.svg',
+  '/assets/img/products/p002.svg',
+  '/assets/img/products/p003.svg',
+  '/assets/img/products/p004.svg',
+  '/assets/img/products/p005.svg',
+  '/assets/img/products/p006.svg',
+  '/assets/img/products/p007.svg',
+  '/assets/img/products/p008.svg',
+  '/assets/img/products/p009.svg',
+  '/assets/img/products/p010.svg',
+  '/assets/img/products/p011.svg',
+  '/assets/img/products/p012.svg',
+  '/assets/img/products/p013.svg',
+  '/assets/img/products/p014.svg',
+  '/assets/img/products/p015.svg',
+  '/assets/img/products/p016.svg',
+  '/assets/img/products/p017.svg',
+  '/assets/img/products/p018.svg',
+  '/assets/img/products/p019.svg',
+  '/assets/img/products/p020.svg',
+  '/assets/img/products/p021.svg',
+  '/assets/img/products/p022.svg',
+  '/assets/img/products/p023.svg',
+  '/assets/img/products/p024.svg',
+  '/assets/img/products/p025.svg',
+  '/assets/img/products/p026.svg',
+  '/assets/img/products/p027.svg',
+  '/assets/img/products/p028.svg',
+  '/assets/img/products/p029.svg',
+  '/assets/img/products/p030.svg',
+  '/assets/img/products/p031.svg',
+  '/assets/img/products/p032.svg',
+  '/assets/img/products/p033.svg',
+  '/assets/img/products/p034.svg',
+  '/assets/img/products/p035.svg',
+  '/assets/img/products/p036.svg',
+  '/assets/img/products/p037.svg',
+  '/assets/img/products/p038.svg',
+  '/assets/img/products/p039.svg',
+  '/assets/img/products/p040.svg',
+  '/assets/img/products/p041.svg',
+  '/assets/img/products/p042.svg',
+  '/assets/img/products/p043.svg',
+  '/assets/img/products/p044.svg',
+  '/assets/img/products/p045.svg',
+  '/assets/img/products/p046.svg',
+  '/assets/img/products/p047.svg',
+  '/assets/img/products/p048.svg',
+  '/assets/img/products/p049.svg',
+  '/assets/img/products/p050.svg',
+  '/assets/img/products/p051.svg',
+  '/assets/img/products/p052.svg',
+  '/assets/img/products/p053.svg',
+  '/assets/img/products/p054.svg',
+  '/assets/img/products/p055.svg',
+  '/assets/img/products/p056.svg',
+  '/assets/img/products/p057.svg',
+  '/assets/img/products/p058.svg',
+  '/assets/img/products/p059.svg',
+  '/assets/img/products/p060.svg',
+  '/assets/img/products/p061.svg',
+  '/assets/img/products/p062.svg',
+  '/assets/img/products/p063.svg',
+  '/assets/img/products/p064.svg',
+  '/assets/img/products/p065.svg',
+  '/assets/img/products/p066.svg',
+  '/assets/img/products/p067.svg',
+  '/assets/img/products/p068.svg',
+  '/assets/img/products/p069.svg',
+  '/assets/img/products/p070.svg',
+  '/assets/img/products/p071.svg',
+  '/assets/img/products/p072.svg',
+  '/assets/img/products/p073.svg',
+  '/assets/img/products/p074.svg',
+  '/assets/img/products/p075.svg',
+  '/assets/img/products/p076.svg',
+  '/assets/img/products/p077.svg',
+  '/assets/img/products/p078.svg',
+  '/assets/img/products/p079.svg',
+  '/assets/img/products/p080.svg',
+  '/assets/img/products/p081.svg',
+  '/assets/img/products/p082.svg',
+  '/assets/img/products/p083.svg',
+  '/css/app.css',
+  '/js/actions.mjs',
+  '/js/chat.mjs',
+  '/js/components.mjs',
+  '/js/i18n.mjs',
+  '/js/lib/api.mjs',
+  '/js/lib/dom.mjs',
+  '/js/lib/vision.mjs',
+  '/js/main.mjs',
+  '/js/map.mjs',
+  '/js/router.mjs',
+  '/js/state.mjs',
+  '/js/ui.mjs',
+  '/js/views/account.mjs',
+  '/js/views/admin/catalog.mjs',
+  '/js/views/admin/dashboard.mjs',
+  '/js/views/admin/devices.mjs',
+  '/js/views/admin/feedback.mjs',
+  '/js/views/admin/index.mjs',
+  '/js/views/admin/insights.mjs',
+  '/js/views/admin/marketing.mjs',
+  '/js/views/admin/orders.mjs',
+  '/js/views/admin/pages.mjs',
+  '/js/views/admin/products.mjs',
+  '/js/views/admin/reviews.mjs',
+  '/js/views/admin/settings.mjs',
+  '/js/views/admin/tickets.mjs',
+  '/js/views/admin/users.mjs',
+  '/js/views/auth.mjs',
+  '/js/views/cart.mjs',
+  '/js/views/catalog.mjs',
+  '/js/views/checkout-done.mjs',
+  '/js/views/checkout.mjs',
+  '/js/views/compare.mjs',
+  '/js/views/home.mjs',
+  '/js/views/not-found.mjs',
+  '/js/views/order-detail.mjs',
+  '/js/views/page.mjs',
+  '/js/views/pay.mjs',
+  '/js/views/price-check.mjs',
+  '/js/views/product.mjs',
+  '/js/views/search-image.mjs',
+  '/js/views/stats.mjs',
+  '/js/views/ticket-detail.mjs',
+];
+
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
     await Promise.allSettled(PRECACHE.map((u) => cache.add(new Request(u, { cache: 'reload' }))));
+    // ماژول‌ها و css را پیش‌کش کن تا اولین بازدید هم آفلاین کامل کار کند
+    const rc = await caches.open(RUNTIME);
+    // صف با هم‌روندی محدود تا سرور تک‌رشته‌ای زیر بار موج نصب نخوابد
+    const queue = [...JS_PRECACHE];
+    const workers = await Promise.allSettled([1, 2, 3, 4, 5, 6].map(async () => {
+      while (queue.length) {
+        const u = queue.shift();
+        try { await rc.add(new Request(u, { cache: 'reload' })); }
+        catch { try { await rc.add(new Request(u, { cache: 'reload' })); } catch { /* رد شو */ } }
+      }
+    }));
+    // بوت‌استرپ را همان موقع نصب پیش‌کش کن تا اولین بازدید هم آفلاین کار کند
+    try {
+      const dc = await caches.open(DATA);
+      const r = await fetch('/api/bootstrap');
+      if (r.ok) await putSafe(dc, new Request('/api/bootstrap'), r);
+    } catch { /* هنوز آنلاین نیست */ }
     await self.skipWaiting();
   })());
 });
@@ -111,6 +278,9 @@ self.addEventListener('fetch', (event) => {
       if (hit) return hit;
       const res = await network;
       if (res) return res;
+      // آفلاین با query نسخهٔ جدید: نسخهٔ کش‌شدهٔ بدون query قابل قبول است
+      const stale = await cache.match(req, { ignoreSearch: true });
+      if (stale) return stale;
       const shell = await caches.open(SHELL);
       return (await shell.match(req)) || Response.error();
     })());
