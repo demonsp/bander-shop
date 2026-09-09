@@ -1,5 +1,5 @@
 /* سرویس‌ورکر بندر موبایل — پوستهٔ آفلاین + کش هوشمند */
-const VERSION = 'bm-v13';
+const VERSION = 'bm-v14';
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 const DATA = `${VERSION}-data`;

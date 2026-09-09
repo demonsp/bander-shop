@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  داده‌های اولیهٔ فروشگاه: دسته‌ها، برندها، محصولات، کاربران نمونه
+//  داده‌های اولیه‌ی فروشگاه: دسته‌ها، برندها، محصولات، کاربران نمونه
 // ─────────────────────────────────────────────────────────────
 import { DEFAULT_PAGES, DEFAULT_SETTINGS, ORDER_STATUSES, TICKET_CATEGORIES } from './defaults.mjs';
 import { hashPassword, generateTotpSecret, PERMISSIONS } from './lib/auth.mjs';
@@ -68,13 +68,13 @@ const BRANDS = [
 const RAW = [
   ['کابل شارژ تایپ‌سی به تایپ‌سی ۱۰۰ وات بیسوس', 'Baseus USB-C to USB-C 100W Cable', 'cables', 'baseus', 245000, 310000, 14, 'original', 6, 'cable',
     { 'طول': '۱ متر', 'توان': '۱۰۰ وات (PD)', 'روکش': 'کنف بافته', 'سرعت انتقال داده': '۴۸۰ مگابیت بر ثانیه' },
-    'کابل بافتهٔ مقاوم با قابلیت شارژ فوق‌سریع PD تا ۱۰۰ وات؛ مناسب مک‌بوک، گوشی‌های تایپ‌سی و پاوربانک. روکش کنفی در برابر گره و پارگی مقاوم است.',
+    'کابل بافته‌ی مقاوم با قابلیت شارژ فوق‌سریع PD تا ۱۰۰ وات؛ مناسب مک‌بوک، گوشی‌های تایپ‌سی و پاوربانک. روکش کنفی در برابر گره و پارگی مقاوم است.',
     'Braided 100W PD cable for laptops, phones and power banks with a tangle-resistant nylon jacket.',
     ['شارژ سریع', 'تایپ سی', 'کابل بافته']],
 
   ['کابل لایتنینگ به تایپ‌سی اپل اصل', 'Apple Lightning to USB-C Cable (Original)', 'cables', 'apple', 1180000, 1350000, 5, 'original', 3, 'cable',
     { 'طول': '۱ متر', 'نوع': 'لایتنینگ به تایپ‌سی', 'سازگاری': 'آیفون ۵ تا ۱۴', 'اصل': 'بله' },
-    'کابل اورجینال اپل برای شارژ سریع آیفون با آداپتور تایپ‌سی. دارای تراشهٔ MFi و سازگاری کامل با iOS.',
+    'کابل اورجینال اپل برای شارژ سریع آیفون با آداپتور تایپ‌سی. دارای تراشه‌ی MFi و سازگاری کامل با iOS.',
     'Genuine Apple Lightning to USB-C cable with MFi chip for fast iPhone charging.',
     ['اپل اصل', 'لایتنینگ', 'شارژ سریع']],
 
@@ -86,7 +86,7 @@ const RAW = [
 
   ['کابل سه سر (تایپ‌سی/لایتنینگ/میکرو) ریمکس', 'Remax 3-in-1 Multi Cable', 'cables', 'remax', 195000, 0, 9, 'original', 3, 'cable',
     { 'طول': '۱.۲ متر', 'سرعت': '۳ آمپر', 'سرهای خروجی': 'تایپ‌سی، لایتنینگ، میکرو' },
-    'یک کابل با سه سر خروجی؛ گزینهٔ عالی برای ماشین و مسافرت که همهٔ گوشی‌ها را پوشش می‌دهد.',
+    'یک کابل با سه سر خروجی؛ گزینه‌ی عالی برای ماشین و مسافرت که همه‌ی گوشی‌ها را پوشش می‌دهد.',
     'A single cable with three connectors — perfect for the car and travel.',
     ['سه سر', 'مسافرتی']],
 
@@ -134,7 +134,7 @@ const RAW = [
 
   ['قاب سیلیکونی آیفون ۱۳ پرو مکس', 'Silicone Case iPhone 13 Pro Max', 'cases', 'apple', 385000, 460000, 12, 'highcopy', 1, 'case',
     { 'سازگاری': 'iPhone 13 Pro Max', 'جنس': 'سیلیکون مایع', 'ویژگی': 'پوشش کامل دکمه‌ها' },
-    'قاب سیلیکونی نرم با پوشش داخلی مخملی و لبهٔ بلند برای محافظت از دوربین.',
+    'قاب سیلیکونی نرم با پوشش داخلی مخملی و لبه‌ی بلند برای محافظت از دوربین.',
     'Soft liquid-silicone case with microfiber lining and raised camera lip.',
     ['آیفون ۱۳', 'سیلیکونی']],
 
@@ -152,7 +152,7 @@ const RAW = [
 
   ['قاب ضدضربه سامسونگ Galaxy A54', 'Rugged Case Samsung Galaxy A54', 'cases', 'greenlion', 340000, 420000, 10, 'highcopy', 1, 'case',
     { 'سازگاری': 'Galaxy A54 5G', 'جنس': 'TPU دوبل', 'رنگ‌بندی': 'مشکی، سرمه‌ای' },
-    'قاب دولایه با ضربه‌گیر گوشه، مناسب استفادهٔ روزمره و کارگاهی.',
+    'قاب دولایه با ضربه‌گیر گوشه، مناسب استفاده‌ی روزمره و کارگاهی.',
     'Dual-layer case with corner bumpers for daily and workshop use.',
     ['سامسونگ', 'ضدضربه']],
 
@@ -164,7 +164,7 @@ const RAW = [
 
   ['گلس شیشه‌ای سامسونگ Galaxy S24', 'Tempered Glass Samsung Galaxy S24', 'glass', 'greenlion', 265000, 0, 15, 'highcopy', 1, 'glass',
     { 'سازگاری': 'Galaxy S24', 'سختی': '9H', 'پوشش': 'تمام‌صفحه' },
-    'گلس شفاف با چسبندگی کامل و لبهٔ 2.5D؛ نصب آسان بدون حباب.',
+    'گلس شفاف با چسبندگی کامل و لبه‌ی 2.5D؛ نصب آسان بدون حباب.',
     'Clear full-cover glass with 2.5D edges and bubble-free installation.',
     ['سامسونگ', 'گلس']],
 
@@ -176,7 +176,7 @@ const RAW = [
 
   ['محافظ دوربین آیفون ۱۳ (۳ عددی)', 'Camera Lens Protector iPhone 13 (3-pack)', 'glass', 'no_name', 145000, 190000, 20, 'generic', 1, 'glass',
     { 'سازگاری': 'iPhone 13 / 13 Pro', 'تعداد': '۳ عدد', 'جنس': 'شیشه + حلقه فلزی' },
-    'سه عدد محافظ لنز دوربین با حلقهٔ فلزی؛ ارزان‌ترین بیمه برای دوربین گوشی.',
+    'سه عدد محافظ لنز دوربین با حلقه‌ی فلزی؛ ارزان‌ترین بیمه برای دوربین گوشی.',
     'Three metal-ring lens protectors — the cheapest insurance for your camera.',
     ['محافظ لنز', 'آیفون ۱۳']],
 
@@ -194,13 +194,13 @@ const RAW = [
 
   ['پاوربانک مگنتی ۵۰۰۰ بیسوس', 'Baseus Magnetic 5000mAh Power Bank', 'powerbank', 'baseus', 1250000, 0, 4, 'original', 12, 'powerbank',
     { 'ظرفیت': '۵۰۰۰ میلی‌آمپر ساعت', 'خروجی': '۱۵ وات وایرلس', 'ویژگی': 'چسبان مگنتی به پشت گوشی' },
-    'بدون کابل به پشت آیفون می‌چسبد و شارژ می‌کند؛ پایهٔ تاشو هم دارد.',
+    'بدون کابل به پشت آیفون می‌چسبد و شارژ می‌کند؛ پایه‌ی تاشو هم دارد.',
     'Snaps to the back of your iPhone with a foldable kickstand.',
     ['مگنتی', 'وایرلس']],
 
   ['پاوربانک خورشیدی ۳۰۰۰۰ ضدآب', 'Solar 30000mAh Waterproof Power Bank', 'powerbank', 'oraimo', 1150000, 1350000, 3, 'highcopy', 6, 'powerbank',
     { 'ظرفیت': '۳۰۰۰۰ میلی‌آمپر ساعت', 'پنل خورشیدی': 'دارد', 'چراغ': 'LED دو حالته', 'مقاومت': 'ضد پاشش آب' },
-    'مناسب کمپ، لنج و سفرهای جنوبی؛ با پنل خورشیدی و چراغ قوهٔ داخلی.',
+    'مناسب کمپ، لنج و سفرهای جنوبی؛ با پنل خورشیدی و چراغ قوه‌ی داخلی.',
     'Ideal for camping and boats, with a solar panel and built-in torch.',
     ['خورشیدی', 'کمپ', 'ضدآب']],
 
@@ -230,7 +230,7 @@ const RAW = [
 
   ['دانگل OTG تایپ‌سی به USB', 'USB-C to USB OTG Adapter', 'dongles', 'hoco', 85000, 110000, 25, 'original', 1, 'dongle',
     { 'ورودی': 'تایپ‌سی', 'خروجی': 'USB-A 3.0', 'جنس': 'آلومینیوم' },
-    'فلش، ماوس یا کیبورد را به گوشی وصل کن؛ بدنهٔ آلومینیومی و انتقال پرسرعت.',
+    'فلش، ماوس یا کیبورد را به گوشی وصل کن؛ بدنه‌ی آلومینیومی و انتقال پرسرعت.',
     'Connect flash drives, mice or keyboards to your phone.',
     ['OTG', 'تایپ سی']],
 
@@ -260,7 +260,7 @@ const RAW = [
 
   ['اسپیکر قابل حمل شیائومی', 'Xiaomi Portable Bluetooth Speaker', 'speakers', 'xiaomi', 1250000, 1420000, 7, 'original', 12, 'speaker',
     { 'توان': '۵ وات', 'باتری': '۱۳ ساعت', 'ویژگی': 'اتصال دوگانه استریو' },
-    'دو اسپیکر را به هم وصل کن و صدای استریو بساز؛ بدنهٔ فلزی و بند آویز.',
+    'دو اسپیکر را به هم وصل کن و صدای استریو بساز؛ بدنه‌ی فلزی و بند آویز.',
     'Pair two for stereo; metal body with a carry strap.',
     ['شیائومی', 'استریو']],
 
@@ -278,12 +278,12 @@ const RAW = [
 
   ['هدفون بی‌سیم سونی WH-CH520', 'Sony WH-CH520 Wireless Headphones', 'earbuds', 'sony', 3450000, 3850000, 2, 'original', 12, 'audio',
     { 'باتری': '۵۰ ساعت', 'درایور': '۳۰ میلی‌متر', 'ویژگی': 'شارژ سریع ۳ دقیقه = ۱.۵ ساعت' },
-    'سبک، با باتری ۵۰ ساعته و صدای متعادل سونی؛ مناسب استفادهٔ طولانی.',
+    'سبک، با باتری ۵۰ ساعته و صدای متعادل سونی؛ مناسب استفاده‌ی طولانی.',
     'Lightweight with 50-hour battery and balanced Sony sound.',
     ['سونی', 'هدفون', 'باتری ۵۰ ساعت']],
 
   ['هندزفری سیمی تایپ‌سی با میکروفون', 'USB-C Wired Earphones with Mic', 'earbuds', 'hoco', 285000, 0, 16, 'original', 1, 'audio',
-    { 'رابط': 'تایپ‌سی (DAC داخلی)', 'میکروفون': 'دارد', 'کنترل': 'دکمهٔ پاسخ و ولوم' },
+    { 'رابط': 'تایپ‌سی (DAC داخلی)', 'میکروفون': 'دارد', 'کنترل': 'دکمه‌ی پاسخ و ولوم' },
     'برای گوشی‌های بدون جک ۳.۵؛ بدون نیاز به تبدیل و با کیفیت صدای پایدار.',
     'For phones without a headphone jack — no adapter needed.',
     ['سیمی', 'تایپ سی']],
@@ -306,15 +306,15 @@ const RAW = [
     'For podcasts, streaming and vocals with studio-quality results.',
     ['پادکست', 'استودیو']],
 
-  ['پایهٔ میکروفون رومیزی بوم', 'Desktop Boom Microphone Stand', 'stands', 'no_name', 480000, 560000, 6, 'generic', 1, 'mics',
+  ['پایه‌ی میکروفون رومیزی بوم', 'Desktop Boom Microphone Stand', 'stands', 'no_name', 480000, 560000, 6, 'generic', 1, 'mics',
     { 'نوع': 'بوم رومیزی با گیره', 'ارتفاع': 'تا ۷۰ سانتی‌متر', 'جنس': 'فلز' },
-    'بازوی متحرک با گیرهٔ محکم برای میکروفون‌های استودیویی؛ میز را خلوت نگه می‌دارد.',
+    'بازوی متحرک با گیره‌ی محکم برای میکروفون‌های استودیویی؛ میز را خلوت نگه می‌دارد.',
     'Adjustable boom arm with a strong clamp for studio mics.',
     ['پایه میکروفون', 'استودیو']],
 
   ['رینگ لایت ۲۶ سانت با سه‌پایه', '26cm Ring Light with Tripod', 'ringlight', 'farassoo', 780000, 920000, 9, 'original', 3, 'content',
     { 'قطر': '۲۶ سانتی‌متر', 'نور': 'سه حالت رنگی با ۱۰ سطح روشنایی', 'ارتفاع سه‌پایه': 'تا ۲.۱ متر', 'منبع تغذیه': 'USB' },
-    'نور یکنواخت برای لایو، عکاسی محصول و آرایش؛ گیرهٔ موبایل و ریموت بلوتوثی همراه دارد.',
+    'نور یکنواخت برای لایو، عکاسی محصول و آرایش؛ گیره‌ی موبایل و ریموت بلوتوثی همراه دارد.',
     'Even light for lives, product shots and makeup, with phone holder and Bluetooth remote.',
     ['رینگ لایت', 'لایو', 'عکاسی']],
 
@@ -324,7 +324,7 @@ const RAW = [
     'Tiny and rechargeable — always fits in your bag.',
     ['رینگ لایت جیبی', 'شارژی']],
 
-  ['سه‌پایهٔ موبایل تاشو ۱.۶ متری', 'Foldable 1.6m Phone Tripod', 'stands', 'tesco', 540000, 0, 7, 'original', 3, 'content',
+  ['سه‌پایه‌ی موبایل تاشو ۱.۶ متری', 'Foldable 1.6m Phone Tripod', 'stands', 'tesco', 540000, 0, 7, 'original', 3, 'content',
     { 'ارتفاع': '۴۵ تا ۱۶۰ سانتی‌متر', 'هد': 'چرخش ۳۶۰ درجه', 'ریموت': 'بلوتوثی جداشونده' },
     'سبک و تاشو برای ولاگ، تایم‌لپس و عکس دسته‌جمعی.',
     'Light and foldable for vlogs, timelapse and group photos.',
@@ -332,7 +332,7 @@ const RAW = [
 
   ['ساعت هوشمند Haylou RS5', 'Haylou RS5 Smart Watch', 'smartwatch', 'haylou', 1450000, 1690000, 6, 'original', 12, 'wearable',
     { 'صفحه': 'AMOLED ۱.۹ اینچ', 'باتری': '۱۰ روز', 'مقاومت': 'IP68', 'سنسور': 'ضربان قلب، اکسیژن خون، خواب' },
-    'صفحهٔ AMOLED روشن حتی زیر آفتاب، تماس بلوتوثی و بیش از ۱۰۰ حالت ورزشی.',
+    'صفحه‌ی AMOLED روشن حتی زیر آفتاب، تماس بلوتوثی و بیش از ۱۰۰ حالت ورزشی.',
     'Bright AMOLED display, Bluetooth calling and 100+ sport modes.',
     ['ساعت هوشمند', 'AMOLED', 'تماس']],
 
@@ -344,7 +344,7 @@ const RAW = [
 
   ['ساعت هوشمند شیائومی Redmi Watch 4', 'Xiaomi Redmi Watch 4', 'smartwatch', 'xiaomi', 2850000, 3150000, 5, 'original', 12, 'wearable',
     { 'صفحه': 'AMOLED ۱.۹۷ اینچ', 'باتری': '۲۰ روز', 'بدنه': 'آلومینیوم', 'GPS': 'دارد' },
-    'بدنهٔ آلومینیومی، GPS داخلی و باتری سه هفته‌ای؛ بهترین انتخاب میان‌رده.',
+    'بدنه‌ی آلومینیومی، GPS داخلی و باتری سه هفته‌ای؛ بهترین انتخاب میان‌رده.',
     'Aluminium body, built-in GPS and a three-week battery.',
     ['شیائومی', 'GPS', 'باتری ۲۰ روز']],
 
@@ -360,21 +360,21 @@ const RAW = [
     'Smooth, sweat-free fingertips for mobile shooters.',
     ['گیمینگ', 'پابجی', 'دستکش']],
 
-  ['دستهٔ بازی موبایل با فن خنک‌کننده', 'Mobile Game Controller with Cooling Fan', 'gaming', 'tesco', 980000, 1150000, 4, 'highcopy', 3, 'gaming',
+  ['دسته‌ی بازی موبایل با فن خنک‌کننده', 'Mobile Game Controller with Cooling Fan', 'gaming', 'tesco', 980000, 1150000, 4, 'highcopy', 3, 'gaming',
     { 'اتصال': 'بلوتوث ۵.۰', 'خنک‌کننده': 'فن نیمه‌هادی', 'باتری': '۳۰۰۰ میلی‌آمپر', 'سازگاری': 'اندروید و iOS' },
     'گیم‌پد کشویی با فن خنک‌کننده؛ گوشی در بازی طولانی داغ نمی‌کند.',
     'Clip-on gamepad with a semiconductor cooling fan.',
     ['دسته بازی', 'خنک کننده']],
 
   ['هولدر موبایل ماشین دریچه‌ای', 'Car Air-Vent Phone Holder', 'car', 'baseus', 285000, 340000, 14, 'original', 3, 'car',
-    { 'نصب': 'دریچهٔ کولر', 'چرخش': '۳۶۰ درجه', 'بازو': 'فلزی با پد سیلیکونی' },
-    'نصب یک‌دستی، بدون لرزش در جادهٔ ساحلی؛ مناسب ناوبری.',
+    { 'نصب': 'دریچه‌ی کولر', 'چرخش': '۳۶۰ درجه', 'بازو': 'فلزی با پد سیلیکونی' },
+    'نصب یک‌دستی، بدون لرزش در جاده‌ی ساحلی؛ مناسب ناوبری.',
     'One-hand mount, no vibration on coastal roads.',
     ['هولدر', 'ماشین']],
 
   ['هولدر موبایل رومیزی آلومینیومی', 'Aluminium Desk Phone Stand', 'car', 'greenlion', 195000, 0, 19, 'original', 1, 'content',
     { 'جنس': 'آلومینیوم', 'زاویه': 'قابل تنظیم', 'سازگاری': 'موبایل و تبلت تا ۱۱ اینچ' },
-    'پایهٔ رومیزی محکم برای تماشای فیلم، کلاس آنلاین و آشپزخانه.',
+    'پایه‌ی رومیزی محکم برای تماشای فیلم، کلاس آنلاین و آشپزخانه.',
     'Sturdy desk stand for videos, online classes and the kitchen.',
     ['پایه رومیزی', 'آلومینیوم']],
 
@@ -386,13 +386,13 @@ const RAW = [
 
   ['چراغ‌قوه شارژی ضدآب ۱۰۰۰ لومن', 'Rechargeable Waterproof 1000lm Flashlight', 'lighting', 'tesco', 385000, 450000, 11, 'original', 6, 'light',
     { 'روشنایی': '۱۰۰۰ لومن', 'باتری': '۱۸۶۵۰ قابل تعویض', 'مقاومت': 'IPX6', 'حالت‌ها': '۵ حالت نور + SOS' },
-    'بدنهٔ آلومینیومی، زوم قابل تنظیم و بند مچی؛ همراه خوب قطعی برق و کمپ.',
+    'بدنه‌ی آلومینیومی، زوم قابل تنظیم و بند مچی؛ همراه خوب قطعی برق و کمپ.',
     'Aluminium body, adjustable zoom and wrist strap — great for outages and camping.',
     ['چراغ قوه', 'ضدآب', 'شارژی']],
 
-  ['چراغ‌قوهٔ جیبی مینی تایپ‌سی', 'Mini USB-C Pocket Flashlight', 'lighting', 'hoco', 145000, 0, 22, 'original', 3, 'light',
+  ['چراغ‌قوه‌ی جیبی مینی تایپ‌سی', 'Mini USB-C Pocket Flashlight', 'lighting', 'hoco', 145000, 0, 22, 'original', 3, 'light',
     { 'روشنایی': '۳۰۰ لومن', 'شارژ': 'تایپ‌سی', 'وزن': '۶۰ گرم' },
-    'کوچک‌تر از یک سوییچ ماشین، اما به‌اندازهٔ کافی پرنور برای جعبهٔ ابزار.',
+    'کوچک‌تر از یک سوییچ ماشین، اما به‌اندازه‌ی کافی پرنور برای جعبه‌ی ابزار.',
     'Smaller than a car key, bright enough for your toolbox.',
     ['چراغ قوه مینی', 'جیبی']],
 
@@ -422,7 +422,7 @@ const RAW = [
 
   ['رم ریدر چندکاره ۴ در ۱', '4-in-1 Multi Card Reader', 'misc', 'hoco', 165000, 0, 15, 'original', 3, 'misc',
     { 'پورت‌ها': 'SD، microSD، USB-A، تایپ‌سی', 'سرعت': 'USB 3.0' },
-    'همهٔ کارت‌های حافظه را با یک مبدل کوچک بخوان.',
+    'همه‌ی کارت‌های حافظه را با یک مبدل کوچک بخوان.',
     'Read every memory card with one tiny adapter.',
     ['رم ریدر', 'مبدل']],
 
@@ -444,38 +444,38 @@ const RAW = [
     'For fishing, boats and beach walks — keeps phone and cards dry.',
     ['ضدآب', 'ساحل']],
 
-  ['پایهٔ عکاسی هشت‌پا (Octopus)', 'Flexible Octopus Tripod', 'stands', 'no_name', 195000, 240000, 13, 'generic', 1, 'content',
+  ['پایه‌ی عکاسی هشت‌پا (Octopus)', 'Flexible Octopus Tripod', 'stands', 'no_name', 195000, 240000, 13, 'generic', 1, 'content',
     { 'ارتفاع': '۳۰ سانتی‌متر', 'انعطاف': 'پاهای قابل خم شدن', 'حمل بار': 'تا ۱ کیلوگرم' },
-    'به نرده، شاخه یا لبهٔ میز می‌پیچد؛ خلاقیت در عکاسی موبایل.',
+    'به نرده، شاخه یا لبه‌ی میز می‌پیچد؛ خلاقیت در عکاسی موبایل.',
     'Wraps around rails and branches for creative mobile photography.',
     ['هشت پا', 'عکاسی']],
 
   ['شارژر رومیزی ۴ پورت ۶۰ وات', '60W 4-Port Desktop Charger', 'adapters', 'greenlion', 890000, 1050000, 5, 'original', 12, 'adapter',
     { 'توان کل': '۶۰ وات', 'پورت': '۳ تایپ‌سی + ۱ USB-A', 'طول کابل': '۱.۵ متر' },
-    'همهٔ دستگاه‌های خانواده یا همکاران را با یک شارژر تغذیه کن.',
+    'همه‌ی دستگاه‌های خانواده یا همکاران را با یک شارژر تغذیه کن.',
     'Power every device in the family or office from one charger.',
     ['چندپورت', 'رومیزی']],
 
   ['قاب کیف‌دار چرمی سامسونگ Galaxy A34', 'Leather Flip Case Samsung Galaxy A34', 'cases', 'remax', 420000, 0, 8, 'original', 3, 'case',
-    { 'سازگاری': 'Galaxy A34', 'جنس': 'چرم مصنوعی', 'ویژگی': 'جای کارت و پایهٔ تاشو' },
-    'کیف پول و قاب در یک وسیله؛ با پایهٔ تاشو برای تماشای فیلم.',
+    { 'سازگاری': 'Galaxy A34', 'جنس': 'چرم مصنوعی', 'ویژگی': 'جای کارت و پایه‌ی تاشو' },
+    'کیف پول و قاب در یک وسیله؛ با پایه‌ی تاشو برای تماشای فیلم.',
     'Wallet and case in one, with a folding kickstand.',
     ['سامسونگ', 'کیف دار']],
 
   ['گلس نانو مایع (محافظ نامرئی)', 'Liquid Nano Screen Protector', 'glass', 'no_name', 165000, 210000, 16, 'generic', 1, 'glass',
-    { 'نوع': 'پوشش نانو مایع', 'سختی': '۹ اچ پس از خشک شدن', 'کاربرد': 'هر صفحهٔ شیشه‌ای' },
+    { 'نوع': 'پوشش نانو مایع', 'سختی': '۹ اچ پس از خشک شدن', 'کاربرد': 'هر صفحه‌ی شیشه‌ای' },
     'برای صفحه‌های منحنی که گلس معمولی نمی‌چسبد؛ نصب در فروشگاه انجام می‌شود.',
     'For curved screens where regular glass fails; applied in-store.',
     ['نانو', 'منحنی']],
 
   ['اسپیکر بلوتوثی ضدآب ساحلی', 'Waterproof Beach Bluetooth Speaker', 'speakers', 'oraimo', 690000, 0, 8, 'highcopy', 3, 'speaker',
-    { 'مقاومت': 'IPX7 شناور روی آب', 'باتری': '۱۰ ساعت', 'ویژگی': 'بند آویز و بدنهٔ ضربه‌گیر' },
+    { 'مقاومت': 'IPX7 شناور روی آب', 'باتری': '۱۰ ساعت', 'ویژگی': 'بند آویز و بدنه‌ی ضربه‌گیر' },
     'روی آب شناور می‌ماند؛ انتخاب محبوب مشتریان ساحلی ما.',
     'Floats on water — a favourite of our beach customers.',
     ['ضدآب', 'ساحل', 'شناور']],
 
   ['کابل شارژ تایپ‌سی ۲ متری بافته', '2m Braided USB-C Cable', 'cables', 'mcdodo', 195000, 0, 17, 'original', 6, 'cable',
-    { 'طول': '۲ متر', 'جریان': '۳ آمپر', 'روکش': 'بافتهٔ دوبل' },
+    { 'طول': '۲ متر', 'جریان': '۳ آمپر', 'روکش': 'بافته‌ی دوبل' },
     'وقتی پریز دور است، دو متر کابل نجاتت می‌دهد.',
     'When the socket is far away, two metres save you.',
     ['دو متری', 'بافته']],
@@ -500,7 +500,7 @@ const RAW = [
 
   ['ساعت هوشمند کودکان با سیم‌کارت', 'Kids Smart Watch with SIM', 'smartwatch', 'no_name', 1250000, 1450000, 6, 'highcopy', 6, 'wearable',
     { 'سیم‌کارت': 'پشتیبانی 4G', 'ویژگی': 'تماس دوطرفه، موقعیت‌یاب، SOS', 'مقاومت': 'ضد پاشش' },
-    'با فرزندت تماس بگیر و موقعیتش را ببین؛ دکمهٔ SOS برای مواقع اضطراری.',
+    'با فرزندت تماس بگیر و موقعیتش را ببین؛ دکمه‌ی SOS برای مواقع اضطراری.',
     'Call your child and see their location, with an SOS button.',
     ['کودک', 'سیم کارت', 'SOS']],
 ];
@@ -612,7 +612,7 @@ export function buildSeed(state) {
       addresses: [{
         id: uid('adr'), title: 'خانه', receiver: c.name, phone: c.phone,
         province: 'بوشهر', city: c.city, zone: c.city === 'بوشهر' ? 'city' : 'province',
-        street: 'خیابان نمونه، کوچهٔ شمارهٔ ۳، پلاک ۱۲', postal: '7512345678', isDefault: true, note: '',
+        street: 'خیابان نمونه، کوچه‌ی شماره‌ی ۳، پلاک ۱۲', postal: '7512345678', isDefault: true, note: '',
       }],
       wishlist: [], compare: [], prefs: { theme: 'dark', locale: 'fa' },
       consent: { termsAt: t.toISOString(), privacyAt: t.toISOString() },
@@ -630,8 +630,8 @@ export function buildSeed(state) {
     { pid: 19, uid: 'u_demo1', rating: 5, title: 'ظرفیت واقعی', body: 'پاوربانک انکر واقعاً ظرفیتش درسته؛ گوشیم دو بار کامل شارژ شد. وزنش هم سبکه.', type: 'review', status: 'approved', purchased: true },
     { pid: 30, uid: 'u_demo2', rating: 4, title: 'صدای خوب نسبت به قیمت', body: 'برای قیمتش صدای خیلی خوبی داره، بیسش قویه. فقط دفترچه‌اش فارسی نیست.', type: 'review', status: 'approved', purchased: true },
     { pid: 34, uid: 'u_demo3', rating: 5, title: 'برای پابجی عالیه', body: 'تأخیر صدا توی بازی خیلی کمه، باتریش هم یک هفته کافیه.', type: 'review', status: 'pending', purchased: true },
-    { pid: 11, uid: 'u_demo1', rating: 0, title: 'سؤال', body: 'سلام، این قاب برای آیفون ۱۳ پرو مکس نسخهٔ ۲۵۶ گیگ هم فرقی می‌کنه؟', type: 'question', status: 'approved', purchased: false,
-      reply: 'سلام، خیر؛ ابعاد گوشی در همهٔ نسخه‌های حافظه یکسان است و همین قاب مناسب است.', replyAt: t.toISOString() },
+    { pid: 11, uid: 'u_demo1', rating: 0, title: 'سؤال', body: 'سلام، این قاب برای آیفون ۱۳ پرو مکس نسخه‌ی ۲۵۶ گیگ هم فرقی می‌کنه؟', type: 'question', status: 'approved', purchased: false,
+      reply: 'سلام، خیر؛ ابعاد گوشی در همه‌ی نسخه‌های حافظه یکسان است و همین قاب مناسب است.', replyAt: t.toISOString() },
     { pid: 47, uid: 'u_demo2', rating: 0, title: 'سؤال', body: 'سلام، شارژر ساعت سامسونگ هم داخل جعبه هست؟', type: 'question', status: 'pending', purchased: false },
   ];
 
@@ -647,7 +647,7 @@ export function buildSeed(state) {
     };
   });
 
-  // محاسبهٔ میانگین امتیاز
+  // محاسبه‌ی میانگین امتیاز
   for (const p of products) {
     const rs = reviewRecs.filter((r) => r.productId === p.id && r.type === 'review' && r.status === 'approved' && r.rating > 0);
     p.ratingCount = rs.length;
@@ -701,7 +701,7 @@ export function buildSeed(state) {
     if (p0 && o.status === 'delivered') p0.sold += o.items[0].qty;
   }
 
-  // بازدیدهای ۳۰ روز اخیر (دادهٔ نمونه برای آمار عمومی)
+  // بازدیدهای ۳۰ روز اخیر (داده‌ی نمونه برای آمار عمومی)
   const visits = {};
   for (let i = 29; i >= 0; i--) {
     const d = new Date(t.getTime() - i * 86400000).toISOString().slice(0, 10);
@@ -714,27 +714,27 @@ export function buildSeed(state) {
   // کوپن تخفیف
   const coupons = [
     { id: 'cp_welcome', code: 'WELCOME10', type: 'percent', value: 10, maxDiscount: 200000, minOrder: 300000, usageLimit: 200, used: 12, perUser: 1, active: true, startAt: t.toISOString(), endAt: new Date(t.getTime() + 60 * 86400000).toISOString(), note: 'تخفیف خوش‌آمدگویی' },
-    { id: 'cp_port', code: 'BANDAR250', type: 'amount', value: 250000, maxDiscount: 250000, minOrder: 1500000, usageLimit: 50, used: 3, perUser: 1, active: true, startAt: t.toISOString(), endAt: new Date(t.getTime() + 30 * 86400000).toISOString(), note: 'جشنوارهٔ بندر' },
+    { id: 'cp_port', code: 'BANDAR250', type: 'amount', value: 250000, maxDiscount: 250000, minOrder: 1500000, usageLimit: 50, used: 3, perUser: 1, active: true, startAt: t.toISOString(), endAt: new Date(t.getTime() + 30 * 86400000).toISOString(), note: 'جشنواره‌ی بندر' },
   ];
 
   // تبلیغات
   const ads = [
     {
-      id: uid('ad'), slot: 'home_hero', title: 'جشنوارهٔ لوازم جانبی آیفون', titleEn: 'iPhone Accessories Festival',
+      id: uid('ad'), slot: 'home_hero', title: 'جشنواره‌ی لوازم جانبی آیفون', titleEn: 'iPhone Accessories Festival',
       text: 'تا ۲۰٪ تخفیف روی قاب، گلس و کابل‌های اصل اپل — فقط تا پایان هفته',
       textEn: 'Up to 20% off genuine Apple cases, glass and cables — this week only',
-      link: '#/products?cat=cases&brand=apple', cta: 'مشاهدهٔ تخفیف‌ها', ctaEn: 'See deals',
+      link: '#/products?cat=cases&brand=apple', cta: 'مشاهده‌ی تخفیف‌ها', ctaEn: 'See deals',
       image: '', active: true, startAt: t.toISOString(), endAt: new Date(t.getTime() + 30 * 86400000).toISOString(), clicks: 0, views: 0,
     },
     {
       id: uid('ad'), slot: 'sidebar', title: 'اشتراک پلاس', titleEn: 'Plus Membership',
-      text: 'ارسال رایگان + بیمهٔ خودکار مرسوله + ۳٪ تخفیف دائمی',
+      text: 'ارسال رایگان + بیمه‌ی خودکار مرسوله + ۳٪ تخفیف دائمی',
       textEn: 'Free shipping, automatic insurance and 3% off, always',
       link: '#/account/plus', cta: 'عضویت در پلاس', ctaEn: 'Join Plus', image: '', active: true,
       startAt: t.toISOString(), endAt: new Date(t.getTime() + 90 * 86400000).toISOString(), clicks: 0, views: 0,
     },
     {
-      id: uid('ad'), slot: 'product_page', title: 'بیمهٔ مرسوله را فراموش نکن', titleEn: 'Do not forget transit insurance',
+      id: uid('ad'), slot: 'product_page', title: 'بیمه‌ی مرسوله را فراموش نکن', titleEn: 'Do not forget transit insurance',
       text: 'با پرداخت مبلغی اندک، کالای گران‌قیمتت در مسیر بیمه می‌شود.',
       textEn: 'For a small fee your valuable order is insured in transit.',
       link: '#/pages/insurance', cta: 'قوانین بیمه', ctaEn: 'Insurance rules', image: '', active: true,
@@ -756,13 +756,13 @@ export function buildSeed(state) {
   ];
 
   const notifications = [
-    { id: uid('nt'), userId: null, type: 'announcement', title: 'به فروشگاه اینترنتی بندر موبایل خوش آمدید', titleEn: 'Welcome to Bander Mobile Online Store', body: 'حالا می‌توانی همهٔ اجناس مغازه را آنلاین ببینی، سفارش بدهی و حضوری یا با پیک تحویل بگیری.', bodyEn: 'Browse the whole shop online and get it delivered or pick it up in store.', link: '#/products', createdAt: t.toISOString(), level: 'info' },
+    { id: uid('nt'), userId: null, type: 'announcement', title: 'به فروشگاه اینترنتی بندر موبایل خوش آمدید', titleEn: 'Welcome to Bander Mobile Online Store', body: 'حالا می‌توانی همه‌ی اجناس مغازه را آنلاین ببینی، سفارش بدهی و حضوری یا با پیک تحویل بگیری.', bodyEn: 'Browse the whole shop online and get it delivered or pick it up in store.', link: '#/products', createdAt: t.toISOString(), level: 'info' },
   ];
 
   const feedback = [
     {
       id: uid('fb'), userId: 'u_demo1', userName: 'مریم احمدی', type: 'suggestion',
-      title: 'افزودن برچسب اصالت کالا', body: 'پیشنهاد می‌کنم روی صفحهٔ هر کالا، لینک استعلام اصالت برند هم گذاشته شود.',
+      title: 'افزودن برچسب اصالت کالا', body: 'پیشنهاد می‌کنم روی صفحه‌ی هر کالا، لینک استعلام اصالت برند هم گذاشته شود.',
       contact: 'maryam@example.com', status: 'new', page: 'products', createdAt: new Date(t.getTime() - 2 * 86400000).toISOString(),
     },
   ];

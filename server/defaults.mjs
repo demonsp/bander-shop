@@ -12,7 +12,7 @@ export const DEFAULT_SETTINGS = {
     phone2: '09120000000',
     whatsapp: '09120000000',
     email: 'info@bander-mobile.ir',
-    address: 'بوشهر، خیابان ساحلی، نبش کوچهٔ لنج‌سازان، پاساژ مروارید خلیج، طبقهٔ همکف، پلاک ۱۲',
+    address: 'بوشهر، خیابان ساحلی، نبش کوچه‌ی لنج‌سازان، پاساژ مروارید خلیج، طبقه‌ی همکف، پلاک ۱۲',
     addressEn: 'Bushehr, Saheli St., Pearls of the Gulf Passage, Ground floor, No. 12',
     city: 'بوشهر',
     cityEn: 'Bushehr',
@@ -33,7 +33,7 @@ export const DEFAULT_SETTINGS = {
     accent: '#31afd4',
     accentEn: '#31afd4',
     mode: 'dark',            // dark | light
-    portTheme: true,         // پوستهٔ بندری (موج، لنج، نخل) — قابل خاموش/روشن کردن از پنل
+    portTheme: true,         // پوسته‌ی بندری (موج، لنج، نخل) — قابل خاموش/روشن کردن از پنل
     animations: true,
     radius: 16,              // گردی گوشه‌ها
     density: 'normal',       // compact | normal | comfy
@@ -112,9 +112,9 @@ export const DEFAULT_SETTINGS = {
     prioritySupport: true,
     expressDiscountPct: 50,
     perks: [
-      { id: 'ship', fa: 'ارسال رایگان برای همهٔ سفارش‌ها', en: 'Free shipping on all orders' },
+      { id: 'ship', fa: 'ارسال رایگان برای همه‌ی سفارش‌ها', en: 'Free shipping on all orders' },
       { id: 'express', fa: '۵۰٪ تخفیف روی ارسال فوری', en: '50% off express delivery' },
-      { id: 'insurance', fa: 'بیمهٔ خودکار و رایگان مرسوله', en: 'Automatic free shipment insurance' },
+      { id: 'insurance', fa: 'بیمه‌ی خودکار و رایگان مرسوله', en: 'Automatic free shipment insurance' },
       { id: 'discount', fa: '۳٪ تخفیف روی قیمت کالاها', en: '3% off product prices' },
       { id: 'support', fa: 'پشتیبانی اولویت‌دار و پاسخ سریع‌تر تیکت', en: 'Priority support & faster ticket replies' },
       { id: 'reserve', fa: 'رزرو کالا تا ۴۸ ساعت قبل از خرید', en: 'Hold items for 48 hours' },
@@ -148,40 +148,40 @@ export const DEFAULT_SETTINGS = {
 export const DEFAULT_PAGES = {
   about: {
     hero: {
-      title: 'دربارهٔ بندر موبایل',
+      title: 'درباره‌ی بندر موبایل',
       titleEn: 'About Bander Mobile',
-      subtitle: 'یک مغازهٔ ۲۰ متری کنار خلیج فارس، با سلیقه‌ای به وسعت دریا',
+      subtitle: 'یک مغازه‌ی ۲۰ متری کنار خلیج فارس، با سلیقه‌ای به وسعت دریا',
       subtitleEn: 'A 20-square-meter shop by the Persian Gulf, with taste as wide as the sea',
     },
     sections: [
       {
         title: 'داستان ما',
         titleEn: 'Our story',
-        body: 'بندر موبایل از سال ۱۳۹۶ در قلب بندر بوشهر و چند قدمی اسکله شروع به کار کرد. جایی که بوی دریا و صدای لنج‌ها با جعبه‌های تازه‌رسیدهٔ گجت قاطی می‌شود. ما با یک قفسهٔ کوچک کابل و شارژر شروع کردیم و امروز بیش از صدها قلم کالای اصل و باکیفیت را در زمینهٔ لوازم جانبی موبایل، گجت‌های پوشیدنی و تجهیزات تولید محتوا ارائه می‌دهیم. شاید متراژ مغازهٔ ما کوچک باشد، اما تنوع کالاهایمان و وسواسمان روی اصالت کالا اصلاً کوچک نیست.',
+        body: 'بندر موبایل از سال ۱۳۹۶ در قلب بندر بوشهر و چند قدمی اسکله شروع به کار کرد. جایی که بوی دریا و صدای لنج‌ها با جعبه‌های تازه‌رسیده‌ی گجت قاطی می‌شود. ما با یک قفسه‌ی کوچک کابل و شارژر شروع کردیم و امروز بیش از صدها قلم کالای اصل و باکیفیت را در زمینه‌ی لوازم جانبی موبایل، گجت‌های پوشیدنی و تجهیزات تولید محتوا ارائه می‌دهیم. شاید متراژ مغازه‌ی ما کوچک باشد، اما تنوع کالاهایمان و وسواسمان روی اصالت کالا اصلاً کوچک نیست.',
         bodyEn: 'Bander Mobile started in 2017 in the heart of Bushehr port, a few steps from the dock. We began with a single shelf of cables and chargers; today we offer hundreds of genuine accessories, wearables and content-creation gear. Our shop may be small, but our variety and our obsession with authenticity are not.',
       },
       {
         title: 'چرا مشتریان ما را انتخاب می‌کنند؟',
         titleEn: 'Why customers choose us',
         list: [
-          { icon: 'shield', fa: 'ضمانت اصالت کالا؛ همهٔ اجناس از منابع معتبر و با فاکتور رسمی تأمین می‌شوند.', en: 'Authenticity guarantee; all items sourced from trusted suppliers with official invoices.' },
-          { icon: 'clock', fa: 'مهلت تست ۷ روزه طبق مادهٔ ۳۷ قانون تجارت الکترونیکی؛ اگر راضی نبودی، پس بده.', en: '7-day trial period per Article 37 of Iran E-Commerce Law.' },
+          { icon: 'shield', fa: 'ضمانت اصالت کالا؛ همه‌ی اجناس از منابع معتبر و با فاکتور رسمی تأمین می‌شوند.', en: 'Authenticity guarantee; all items sourced from trusted suppliers with official invoices.' },
+          { icon: 'clock', fa: 'مهلت تست ۷ روزه طبق ماده‌ی ۳۷ قانون تجارت الکترونیکی؛ اگر راضی نبودی، پس بده.', en: '7-day trial period per Article 37 of Iran E-Commerce Law.' },
           { icon: 'wallet', fa: 'قیمت بندری؛ به‌خاطر نزدیکی به منابع وارداتی، قیمت‌هایمان رقابتی‌تر از بازار پایتخت است.', en: 'Port prices — closer to import sources means more competitive prices.' },
           { icon: 'truck', fa: 'ارسال سریع به سراسر ایران + تحویل حضوری در مغازه با بسته‌بندی ضربه‌گیر.', en: 'Fast nationwide shipping plus in-store pickup with protective packaging.' },
-          { icon: 'headset', fa: 'مشاورهٔ رایگان و صادقانه؛ اگر کالایی به درد تو نخورد، خودمان می‌گوییم نخر.', en: 'Free, honest advice — if an item is not right for you, we will tell you.' },
+          { icon: 'headset', fa: 'مشاوره‌ی رایگان و صادقانه؛ اگر کالایی به درد تو نخورد، خودمان می‌گوییم نخر.', en: 'Free, honest advice — if an item is not right for you, we will tell you.' },
           { icon: 'tools', fa: 'خدمات پس از فروش: تعویض کابل و شارژر معیوب در مهلت گارانتی فروشگاه.', en: 'After-sales service: in-store warranty replacement for faulty cables and chargers.' },
         ],
       },
       {
-        title: 'چه چیزهایی در مغازهٔ ما پیدا می‌شود؟',
+        title: 'چه چیزهایی در مغازه‌ی ما پیدا می‌شود؟',
         titleEn: 'What you will find in our shop',
-        body: 'کابل و آداپتور شارژر در تمام استانداردها (Lightning، Type-C، Micro-USB)، قاب و گلس آیفون و مدل‌های پرفروش سامسونگ، انواع باتری و دانگل، کابل‌های HDMI و پاور، چراغ‌قوه، اسپیکر بلوتوثی، ساعت و عینک هوشمند، میکروفون و پایهٔ میکروفون، رینگ لایت، هدست و هندزفری، پاوربانک، فندکی و شارژر ماشین، پرینتر جیبی، پمپ بادی شارژی و کلی لوازم ریز و درشت دیگر مثل دستکش گیمینگ برای پابجی و کالاف دیوتی موبایل.',
+        body: 'کابل و آداپتور شارژر در تمام استانداردها (Lightning، Type-C، Micro-USB)، قاب و گلس آیفون و مدل‌های پرفروش سامسونگ، انواع باتری و دانگل، کابل‌های HDMI و پاور، چراغ‌قوه، اسپیکر بلوتوثی، ساعت و عینک هوشمند، میکروفون و پایه‌ی میکروفون، رینگ لایت، هدست و هندزفری، پاوربانک، فندکی و شارژر ماشین، پرینتر جیبی، پمپ بادی شارژی و کلی لوازم ریز و درشت دیگر مثل دستکش گیمینگ برای پابجی و کالاف دیوتی موبایل.',
         bodyEn: 'Charging cables and adapters in every standard, iPhone and popular Samsung cases and tempered glass, batteries, dongles, HDMI and power cables, flashlights, Bluetooth speakers, smart watches and glasses, microphones and stands, ring lights, headsets, earbuds, power banks, car chargers, pocket printers, rechargeable air pumps and many small extras such as gaming finger sleeves.',
       },
       {
         title: 'تعهد ما به تو',
         titleEn: 'Our commitment',
-        body: 'ما یک کسب‌وکار خانوادگی و محلی هستیم؛ اسم و اعتبارمان برایمان از سود یک فاکتور مهم‌تر است. هر کالایی که روی سایت می‌بینی، همان کالایی است که روی قفسهٔ مغازه هست: موجودی واقعی، قیمت واقعی و عکس واقعی. اگر کالایی ناموجود شد، خودکار از سایت حذف یا «ناموجود» می‌شود تا وقتت تلف نشود.',
+        body: 'ما یک کسب‌وکار خانوادگی و محلی هستیم؛ اسم و اعتبارمان برایمان از سود یک فاکتور مهم‌تر است. هر کالایی که روی سایت می‌بینی، همان کالایی است که روی قفسه‌ی مغازه هست: موجودی واقعی، قیمت واقعی و عکس واقعی. اگر کالایی ناموجود شد، خودکار از سایت حذف یا «ناموجود» می‌شود تا وقتت تلف نشود.',
         bodyEn: 'We are a local family business; our name matters more than the profit of a single invoice. Every item on the website is exactly what sits on our shelves: real stock, real prices, real photos. Out-of-stock items are marked automatically so your time is never wasted.',
       },
     ],
@@ -202,9 +202,9 @@ export const DEFAULT_PAGES = {
     },
     steps: [
       { title: 'جست‌وجو یا انتخاب دسته‌بندی', titleEn: 'Search or browse', body: 'از نوار جست‌وجوی بالای سایت، فیلتر برند و قیمت، یا دسته‌بندی‌ها استفاده کن. با «جست‌وجوی تصویری» هم می‌توانی عکس کالا را بفرستی تا مشابهش را پیدا کنیم.', bodyEn: 'Use the search bar, brand and price filters, or categories. You can also upload a photo and let visual search find similar items.' },
-      { title: 'بررسی صفحهٔ محصول', titleEn: 'Check the product page', body: 'مشخصات فنی، سازگاری با مدل گوشی، موجودی واقعی، عکس‌ها، نظرات کاربران و سؤالات پاسخ‌داده‌شده را ببین. اگر سؤالی داشتی، همان‌جا بپرس تا ادمین پاسخ دهد.', bodyEn: 'Review specs, phone compatibility, real stock, photos, user reviews and answered questions. Ask your question right there.' },
-      { title: 'افزودن به سبد یا ذخیره در لیست من', titleEn: 'Add to cart or wishlist', body: 'اگر هنوز مطمئن نیستی، کالا را به «لیست من» اضافه کن تا بعداً تصمیم بگیری. مقایسهٔ کالاها هم برای انتخاب بهتر در دسترس است.', bodyEn: 'Not sure yet? Save it to My List for later, or use product comparison.' },
-      { title: 'انتخاب روش تحویل', titleEn: 'Choose delivery', body: 'دو حالت داری: تحویل حضوری از مغازه (رایگان و فوری) یا ارسال با پیک و پست. برای ارسال، گزینهٔ بیمهٔ مرسوله هم وجود دارد.', bodyEn: 'Two options: free in-store pickup or courier/postal shipping, with optional shipment insurance.' },
+      { title: 'بررسی صفحه‌ی محصول', titleEn: 'Check the product page', body: 'مشخصات فنی، سازگاری با مدل گوشی، موجودی واقعی، عکس‌ها، نظرات کاربران و سؤالات پاسخ‌داده‌شده را ببین. اگر سؤالی داشتی، همان‌جا بپرس تا ادمین پاسخ دهد.', bodyEn: 'Review specs, phone compatibility, real stock, photos, user reviews and answered questions. Ask your question right there.' },
+      { title: 'افزودن به سبد یا ذخیره در لیست من', titleEn: 'Add to cart or wishlist', body: 'اگر هنوز مطمئن نیستی، کالا را به «لیست من» اضافه کن تا بعداً تصمیم بگیری. مقایسه‌ی کالاها هم برای انتخاب بهتر در دسترس است.', bodyEn: 'Not sure yet? Save it to My List for later, or use product comparison.' },
+      { title: 'انتخاب روش تحویل', titleEn: 'Choose delivery', body: 'دو حالت داری: تحویل حضوری از مغازه (رایگان و فوری) یا ارسال با پیک و پست. برای ارسال، گزینه‌ی بیمه‌ی مرسوله هم وجود دارد.', bodyEn: 'Two options: free in-store pickup or courier/postal shipping, with optional shipment insurance.' },
       { title: 'پرداخت', titleEn: 'Payment', body: 'پرداخت از کیف پول، درگاه بانکی یا پرداخت در محل (برای سفارش‌های واجد شرایط) امکان‌پذیر است. کد تخفیف را هم در همین مرحله وارد کن.', bodyEn: 'Pay from your wallet, online gateway, or cash on delivery for eligible orders. Apply coupon codes here.' },
       { title: 'پیگیری سفارش', titleEn: 'Track your order', body: 'از بخش «سفارش‌های من» وضعیت لحظه‌ای را ببین. هر تغییر وضعیت با اعلان به تو اطلاع داده می‌شود.', bodyEn: 'Follow live status in My Orders; every change triggers a notification.' },
     ],
@@ -225,54 +225,54 @@ export const DEFAULT_PAGES = {
       subtitleEn: 'Everything we do for your peace of mind',
     },
     items: [
-      { icon: 'shield', title: 'ضمانت اصالت و سلامت فیزیکی', titleEn: 'Authenticity & physical integrity guarantee', body: 'همهٔ کالاها قبل از ارسال بازبینی و تست می‌شوند. اگر کالای دریافتی با توضیحات سایت مطابقت نداشت یا آسیب فیزیکی داشت، بدون بحث تعویض یا بازگشت وجه انجام می‌شود.', bodyEn: 'All items are inspected and tested before dispatch. Mismatch or damage means replacement or refund, no argument.' },
-      { icon: 'refresh', title: '۷ روز مهلت انصراف', titleEn: '7-day withdrawal', body: 'طبق مادهٔ ۳۷ قانون تجارت الکترونیکی، تا ۷ روز کاری پس از تحویل می‌توانی بدون ذکر دلیل منصرف شوی. تنها هزینهٔ بازگشت کالا بر عهدهٔ خریدار است و کالا باید در وضعیت نو و با بسته‌بندی سالم باشد.', bodyEn: 'Per Article 37 of the E-Commerce Law you have 7 working days to withdraw without giving a reason; return shipping is on the buyer and the item must be unused.' },
+      { icon: 'shield', title: 'ضمانت اصالت و سلامت فیزیکی', titleEn: 'Authenticity & physical integrity guarantee', body: 'همه‌ی کالاها قبل از ارسال بازبینی و تست می‌شوند. اگر کالای دریافتی با توضیحات سایت مطابقت نداشت یا آسیب فیزیکی داشت، بدون بحث تعویض یا بازگشت وجه انجام می‌شود.', bodyEn: 'All items are inspected and tested before dispatch. Mismatch or damage means replacement or refund, no argument.' },
+      { icon: 'refresh', title: '۷ روز مهلت انصراف', titleEn: '7-day withdrawal', body: 'طبق ماده‌ی ۳۷ قانون تجارت الکترونیکی، تا ۷ روز کاری پس از تحویل می‌توانی بدون ذکر دلیل منصرف شوی. تنها هزینه‌ی بازگشت کالا بر عهده‌ی خریدار است و کالا باید در وضعیت نو و با بسته‌بندی سالم باشد.', bodyEn: 'Per Article 37 of the E-Commerce Law you have 7 working days to withdraw without giving a reason; return shipping is on the buyer and the item must be unused.' },
       { icon: 'tools', title: 'گارانتی فروشگاه', titleEn: 'Store warranty', body: 'کابل، آداپتور و پاوربانک‌ها مشمول گارانتی تعویض فروشگاه (بین ۱ تا ۶ ماه بسته به برند) هستند. گارانتی شامل آسیب فیزیکی، آب‌خوردگی و نوسان برق نمی‌شود.', bodyEn: 'Cables, adapters and power banks carry a 1–6 month store replacement warranty, excluding physical damage, liquids and power surges.' },
       { icon: 'headset', title: 'پشتیبانی آنلاین و تیکت', titleEn: 'Live support & tickets', body: 'چت آنلاین در ساعات کاری، تیکت ۲۴ ساعته و پشتیبانی تلفنی. تیکت‌های دارای اولویت «بحرانی» در کمتر از ۲ ساعت بررسی می‌شوند.', bodyEn: 'Live chat during working hours, 24/7 tickets and phone support. Critical tickets are handled within 2 hours.' },
-      { icon: 'truck', title: 'ارسال و بیمهٔ مرسوله', titleEn: 'Shipping & insurance', body: 'ارسال با پیک شهری، تیپاکس و پست پیشتاز. امکان بیمهٔ مرسوله برای پوشش خسارت و مفقودی در مسیر وجود دارد.', bodyEn: 'City courier, Tipax and postal shipping, with optional transit insurance covering damage and loss.' },
-      { icon: 'gift', title: 'باشگاه مشتریان و اشتراک پلاس', titleEn: 'Loyalty club & Plus membership', body: 'با هر خرید امتیاز بگیر، کیف پولت را شارژ کن و با اشتراک پلاس از ارسال رایگان، بیمهٔ خودکار و تخفیف دائمی بهره‌مند شو.', bodyEn: 'Earn points on every purchase, top up your wallet and enjoy free shipping, auto insurance and permanent discounts with Plus.' },
-      { icon: 'scan', title: 'خدمات حضوری فروشگاه', titleEn: 'In-store services', body: 'نصب رایگان گلس در مغازه، تست کابل و شارژر، چاپ برچسب و بارکد اختصاصی برای همکاران، و مشاورهٔ خرید حضوری.', bodyEn: 'Free screen-guard installation, cable/charger testing, custom barcode label printing for partners, and in-person advice.' },
-      { icon: 'chat', title: 'مشاورهٔ تخصصی', titleEn: 'Expert consultation', body: 'برای انتخاب میکروفون، رینگ لایت، هدست گیمینگ یا ساعت هوشمند مناسب بودجه‌ات، رایگان مشاوره بگیر.', bodyEn: 'Get free advice on microphones, ring lights, gaming headsets or smartwatches matching your budget.' },
+      { icon: 'truck', title: 'ارسال و بیمه‌ی مرسوله', titleEn: 'Shipping & insurance', body: 'ارسال با پیک شهری، تیپاکس و پست پیشتاز. امکان بیمه‌ی مرسوله برای پوشش خسارت و مفقودی در مسیر وجود دارد.', bodyEn: 'City courier, Tipax and postal shipping, with optional transit insurance covering damage and loss.' },
+      { icon: 'gift', title: 'باشگاه مشتریان و اشتراک پلاس', titleEn: 'Loyalty club & Plus membership', body: 'با هر خرید امتیاز بگیر، کیف پولت را شارژ کن و با اشتراک پلاس از ارسال رایگان، بیمه‌ی خودکار و تخفیف دائمی بهره‌مند شو.', bodyEn: 'Earn points on every purchase, top up your wallet and enjoy free shipping, auto insurance and permanent discounts with Plus.' },
+      { icon: 'scan', title: 'خدمات حضوری فروشگاه', titleEn: 'In-store services', body: 'نصب رایگان گلس در مغازه، تست کابل و شارژر، چاپ برچسب و بارکد اختصاصی برای همکاران، و مشاوره‌ی خرید حضوری.', bodyEn: 'Free screen-guard installation, cable/charger testing, custom barcode label printing for partners, and in-person advice.' },
+      { icon: 'chat', title: 'مشاوره‌ی تخصصی', titleEn: 'Expert consultation', body: 'برای انتخاب میکروفون، رینگ لایت، هدست گیمینگ یا ساعت هوشمند مناسب بودجه‌ات، رایگان مشاوره بگیر.', bodyEn: 'Get free advice on microphones, ring lights, gaming headsets or smartwatches matching your budget.' },
     ],
   },
 
   faq: [
     { cat: 'orders', q: 'چطور سفارشم را پیگیری کنم؟', qEn: 'How do I track my order?', a: 'وارد حساب کاربری شو و به بخش «سفارش‌های من» برو. وضعیت هر سفارش (در انتظار پرداخت، تأیید شده، در حال آماده‌سازی، ارسال شده، تحویل شده) همراه با زمان دقیق و کد رهگیری نمایش داده می‌شود. هر تغییر وضعیت هم با اعلان در سایت به تو اطلاع داده می‌شود.', aEn: 'Sign in and open My Orders. Each order shows its exact status, timestamps and tracking code, and every change sends you a notification.' },
     { cat: 'orders', q: 'امکان پرداخت در محل وجود دارد؟', qEn: 'Is cash on delivery available?', a: 'بله، برای سفارش‌های داخل استان بوشهر تا سقف مبلغ تعیین‌شده امکان پرداخت در محل وجود دارد. برای مبالغ بالاتر، پرداخت آنلاین یا کیف پول پیشنهاد می‌شود.', aEn: 'Yes, within Bushehr province up to a set limit. For higher amounts we suggest online payment or wallet.' },
-    { cat: 'shipping', q: 'هزینه و زمان ارسال چقدر است؟', qEn: 'Shipping cost and time?', a: 'داخل شهر بوشهر با پیک: ۲ تا ۶ ساعت. داخل استان: ۱ تا ۲ روز. سایر نقاط ایران با پست پیشتاز یا تیپاکس: ۲ تا ۴ روز کاری. هزینهٔ ارسال بر اساس منطقه در صفحهٔ پرداخت محاسبه و شفاف نمایش داده می‌شود و بالای مبلغ تعیین‌شده رایگان است.', aEn: 'City courier 2–6 hours, province 1–2 days, nationwide 2–4 working days. Fees are calculated transparently at checkout and free above a threshold.' },
-    { cat: 'shipping', q: 'تحویل حضوری چطور است؟', qEn: 'How does in-store pickup work?', a: 'در صفحهٔ پرداخت گزینهٔ «تحویل حضوری» را انتخاب کن. پس از تأیید سفارش، اعلان آماده‌سازی برایت ارسال می‌شود و می‌توانی در ساعات کاری با در دست داشتن کد سفارش به مغازه بیایی. تحویل حضوری رایگان است.', aEn: 'Pick "In-store pickup" at checkout. Once the order is confirmed you get a notification and can collect it during working hours with your order code. Free of charge.' },
-    { cat: 'returns', q: 'اگر کالا را دوست نداشتم می‌توانم برگردانم؟', qEn: 'Can I return an item I do not like?', a: 'بله. تا ۷ روز کاری پس از تحویل، بدون نیاز به ذکر دلیل و بدون جریمه می‌توانی انصراف بدهی (مادهٔ ۳۷ قانون تجارت الکترونیکی). کالا باید نو، با بسته‌بندی اصلی و لوازم همراه باشد. هزینهٔ بازگرداندن کالا بر عهدهٔ خریدار است و مبلغ پس از رسیدن کالا و بررسی، حداکثر تا ۴۸ ساعت کاری به کیف پول یا حساب بانکی‌ات برمی‌گردد.', aEn: 'Yes — within 7 working days, without reason or penalty, as long as the item is unused with original packaging. Return shipping is on the buyer; refunds are processed within 48 working hours after inspection.' },
-    { cat: 'returns', q: 'کدام کالاها قابل بازگشت نیستند؟', qEn: 'Which items are not returnable?', a: 'کالاهایی که پلمپ آن‌ها باز شده و ماهیت بهداشتی دارند (مثل هندزفری درون‌گوشی باز شده)، کالاهای ساخته‌شده بر اساس سفارش شخصی، گلس‌های نصب‌شده، و کالاهای دیجیتال. این موارد طبق بند «د» مادهٔ ۳۸ و آیین‌نامهٔ اجرایی آن از حق انصراف مستثنا هستند.', aEn: 'Opened hygiene-sensitive items (e.g. in-ear earbuds), custom-made goods, installed screen guards and digital goods are exempt per Article 38(d).' },
+    { cat: 'shipping', q: 'هزینه و زمان ارسال چقدر است؟', qEn: 'Shipping cost and time?', a: 'داخل شهر بوشهر با پیک: ۲ تا ۶ ساعت. داخل استان: ۱ تا ۲ روز. سایر نقاط ایران با پست پیشتاز یا تیپاکس: ۲ تا ۴ روز کاری. هزینه‌ی ارسال بر اساس منطقه در صفحه‌ی پرداخت محاسبه و شفاف نمایش داده می‌شود و بالای مبلغ تعیین‌شده رایگان است.', aEn: 'City courier 2–6 hours, province 1–2 days, nationwide 2–4 working days. Fees are calculated transparently at checkout and free above a threshold.' },
+    { cat: 'shipping', q: 'تحویل حضوری چطور است؟', qEn: 'How does in-store pickup work?', a: 'در صفحه‌ی پرداخت گزینه‌ی «تحویل حضوری» را انتخاب کن. پس از تأیید سفارش، اعلان آماده‌سازی برایت ارسال می‌شود و می‌توانی در ساعات کاری با در دست داشتن کد سفارش به مغازه بیایی. تحویل حضوری رایگان است.', aEn: 'Pick "In-store pickup" at checkout. Once the order is confirmed you get a notification and can collect it during working hours with your order code. Free of charge.' },
+    { cat: 'returns', q: 'اگر کالا را دوست نداشتم می‌توانم برگردانم؟', qEn: 'Can I return an item I do not like?', a: 'بله. تا ۷ روز کاری پس از تحویل، بدون نیاز به ذکر دلیل و بدون جریمه می‌توانی انصراف بدهی (ماده‌ی ۳۷ قانون تجارت الکترونیکی). کالا باید نو، با بسته‌بندی اصلی و لوازم همراه باشد. هزینه‌ی بازگرداندن کالا بر عهده‌ی خریدار است و مبلغ پس از رسیدن کالا و بررسی، حداکثر تا ۴۸ ساعت کاری به کیف پول یا حساب بانکی‌ات برمی‌گردد.', aEn: 'Yes — within 7 working days, without reason or penalty, as long as the item is unused with original packaging. Return shipping is on the buyer; refunds are processed within 48 working hours after inspection.' },
+    { cat: 'returns', q: 'کدام کالاها قابل بازگشت نیستند؟', qEn: 'Which items are not returnable?', a: 'کالاهایی که پلمپ آن‌ها باز شده و ماهیت بهداشتی دارند (مثل هندزفری درون‌گوشی باز شده)، کالاهای ساخته‌شده بر اساس سفارش شخصی، گلس‌های نصب‌شده، و کالاهای دیجیتال. این موارد طبق بند «د» ماده‌ی ۳۸ و آیین‌نامه‌ی اجرایی آن از حق انصراف مستثنا هستند.', aEn: 'Opened hygiene-sensitive items (e.g. in-ear earbuds), custom-made goods, installed screen guards and digital goods are exempt per Article 38(d).' },
     { cat: 'product', q: 'از کجا بدانم قاب یا گلس به گوشی من می‌خورد؟', qEn: 'How do I know a case or guard fits my phone?', a: 'در مشخصات هر محصول، بخش «سازگاری» مدل‌های پشتیبانی‌شده را نوشته‌ایم. اگر مدل گوشی‌ات در لیست نبود، در بخش سؤالات همان محصول بپرس یا با پشتیبانی تماس بگیر؛ رایگان راهنمایی‌ات می‌کنیم.', aEn: 'Each product page lists compatible models. If yours is missing, ask in the Q&A section or contact support.' },
-    { cat: 'product', q: 'کالاها اصل هستند یا کپی؟', qEn: 'Are the products original?', a: 'در صفحهٔ هر کالا وضعیت «اصل (اورجینال)»، «های‌کپی درجه یک» یا «متفرقه» شفاف نوشته شده است. ما کالای بی‌کیفیت را به‌عنوان اصل نمی‌فروشیم و اگر جایی اشتباه شد، هزینهٔ کامل برگشت داده می‌شود.', aEn: 'Each product page clearly states Original, High-copy or Generic. We never pass off low-quality goods as original; mistakes are fully refunded.' },
-    { cat: 'account', q: 'کیف پول چیست و چطور شارژش کنم؟', qEn: 'What is the wallet and how do I top it up?', a: 'کیف پول یک موجودی ریالی داخل حساب توست. می‌توانی آن را شارژ کنی و هنگام خرید از آن پرداخت کنی. مبلغ بازگشتی سفارش‌های لغوشده یا مرجوعی هم به کیف پول برمی‌گردد و در خریدهای بعدی قابل استفاده است. همهٔ تراکنش‌ها در بخش «تراکنش‌های کیف پول» ثبت می‌شود.', aEn: 'Your wallet holds an in-site balance. Top it up, pay with it, and refunds land there automatically. All transactions are logged.' },
-    { cat: 'account', q: 'اشتراک پلاس چه فایده‌ای دارد؟', qEn: 'What are the benefits of Plus?', a: 'با پرداخت ماهانهٔ اشتراک پلاس، ارسال همهٔ سفارش‌هایت رایگان می‌شود، مرسوله‌ها به‌صورت خودکار بیمه می‌شوند، ۳٪ تخفیف روی کالاها می‌گیری، ارسال فوری نیم‌بها می‌شود و تیکت‌هایت در اولویت پاسخ‌گویی قرار می‌گیرند.', aEn: 'Plus gives free shipping on all orders, automatic insurance, 3% off products, half-price express delivery and priority support.' },
-    { cat: 'account', q: 'ورود دو مرحله‌ای چیست و چطور فعالش کنم؟', qEn: 'What is 2FA and how do I enable it?', a: 'ورود دو مرحلهٔ ای امنیت حساب را چند برابر می‌کند: علاوه بر رمز عبور، یک کد ۶ رقمی هم لازم است. سه روش داری: اپ احراز هویت (TOTP مثل Google Authenticator)، کد پیامکی و کد ایمیل. از مسیر «حساب کاربری ← امنیت ← ورود دومرحله‌ای» فعالش کن و کدهای پشتیبان را حتماً در جای امن نگه دار.', aEn: '2FA adds a 6-digit code on top of your password. Choose authenticator app (TOTP), SMS or email codes from Account → Security → Two-factor.' },
-    { cat: 'account', q: 'رمز عبورم را فراموش کرده‌ام.', qEn: 'I forgot my password.', a: 'در صفحهٔ ورود روی «بازیابی رمز عبور» بزن، شمارهٔ موبایل یا ایمیل ثبت‌شده را وارد کن تا کد بازیابی برایت ارسال شود. اگر به هیچ‌کدام دسترسی نداری، از طریق تیکت با احراز هویت دستی کمکت می‌کنیم.', aEn: 'Use "Forgot password" on the login page with your registered phone or email. If you have no access, open a ticket for manual verification.' },
+    { cat: 'product', q: 'کالاها اصل هستند یا کپی؟', qEn: 'Are the products original?', a: 'در صفحه‌ی هر کالا وضعیت «اصل (اورجینال)»، «های‌کپی درجه یک» یا «متفرقه» شفاف نوشته شده است. ما کالای بی‌کیفیت را به‌عنوان اصل نمی‌فروشیم و اگر جایی اشتباه شد، هزینه‌ی کامل برگشت داده می‌شود.', aEn: 'Each product page clearly states Original, High-copy or Generic. We never pass off low-quality goods as original; mistakes are fully refunded.' },
+    { cat: 'account', q: 'کیف پول چیست و چطور شارژش کنم؟', qEn: 'What is the wallet and how do I top it up?', a: 'کیف پول یک موجودی ریالی داخل حساب توست. می‌توانی آن را شارژ کنی و هنگام خرید از آن پرداخت کنی. مبلغ بازگشتی سفارش‌های لغوشده یا مرجوعی هم به کیف پول برمی‌گردد و در خریدهای بعدی قابل استفاده است. همه‌ی تراکنش‌ها در بخش «تراکنش‌های کیف پول» ثبت می‌شود.', aEn: 'Your wallet holds an in-site balance. Top it up, pay with it, and refunds land there automatically. All transactions are logged.' },
+    { cat: 'account', q: 'اشتراک پلاس چه فایده‌ای دارد؟', qEn: 'What are the benefits of Plus?', a: 'با پرداخت ماهانه‌ی اشتراک پلاس، ارسال همه‌ی سفارش‌هایت رایگان می‌شود، مرسوله‌ها به‌صورت خودکار بیمه می‌شوند، ۳٪ تخفیف روی کالاها می‌گیری، ارسال فوری نیم‌بها می‌شود و تیکت‌هایت در اولویت پاسخ‌گویی قرار می‌گیرند.', aEn: 'Plus gives free shipping on all orders, automatic insurance, 3% off products, half-price express delivery and priority support.' },
+    { cat: 'account', q: 'ورود دو مرحله‌ای چیست و چطور فعالش کنم؟', qEn: 'What is 2FA and how do I enable it?', a: 'ورود دو مرحله‌ی ای امنیت حساب را چند برابر می‌کند: علاوه بر رمز عبور، یک کد ۶ رقمی هم لازم است. سه روش داری: اپ احراز هویت (TOTP مثل Google Authenticator)، کد پیامکی و کد ایمیل. از مسیر «حساب کاربری ← امنیت ← ورود دومرحله‌ای» فعالش کن و کدهای پشتیبان را حتماً در جای امن نگه دار.', aEn: '2FA adds a 6-digit code on top of your password. Choose authenticator app (TOTP), SMS or email codes from Account → Security → Two-factor.' },
+    { cat: 'account', q: 'رمز عبورم را فراموش کرده‌ام.', qEn: 'I forgot my password.', a: 'در صفحه‌ی ورود روی «بازیابی رمز عبور» بزن، شماره‌ی موبایل یا ایمیل ثبت‌شده را وارد کن تا کد بازیابی برایت ارسال شود. اگر به هیچ‌کدام دسترسی نداری، از طریق تیکت با احراز هویت دستی کمکت می‌کنیم.', aEn: 'Use "Forgot password" on the login page with your registered phone or email. If you have no access, open a ticket for manual verification.' },
     { cat: 'store', q: 'ساعت کاری و آدرس مغازه کجاست؟', qEn: 'Working hours and address?', a: 'بوشهر، خیابان ساحلی، پاساژ مروارید خلیج، همکف، پلاک ۱۲. شنبه تا چهارشنبه ۹ تا ۲۱، پنجشنبه ۹ تا ۲۲ و جمعه ۱۶ تا ۲۱. در بخش «تماس با ما» کروکی گرافیکی محل و لینک نقشه‌های مختلف (نشان، بلد، گوگل مپ و اوپن‌استریت‌مپ) قرار دارد.', aEn: 'Bushehr, Saheli St., Pearls of the Gulf Passage. Sat–Wed 9–21, Thu 9–22, Fri 16–21. The contact page has a hand-drawn map and links to several map providers.' },
     { cat: 'store', q: 'برای خرید عمده یا همکاری چه کنم؟', qEn: 'What about wholesale or partnership?', a: 'یک تیکت با موضوع «همکاری و تبلیغات» ثبت کن و حجم تقریبی و نوع کالا را بنویس. قیمت همکاری و شرایط پرداخت جداگانه اعلام می‌شود. اگر بنر یا تبلیغی برای کسب‌وکار خودت می‌خواهی روی سایت ما نمایش داده شود، از همین بخش درخواست بده.', aEn: 'Open a ticket with the Partnership subject describing volume and product type. Ad placements can be requested through the same channel.' },
-    { cat: 'security', q: 'اطلاعاتم پیش شما امن است؟', qEn: 'Is my data safe with you?', a: 'بله. رمز عبور به‌صورت هش‌شده با الگوریتم scrypt ذخیره می‌شود و هیچ‌کس (حتی ما) متن رمز را نمی‌بیند. اطلاعات بانکی اصلاً روی سرور ما ذخیره نمی‌شود و پرداخت از طریق درگاه معتبر انجام می‌گیرد. دسترسی کارکنان به بخش‌های مختلف با ماتریس دسترسی محدود شده و همهٔ تغییرات در گزارش رویدادها ثبت می‌شود. جزئیات کامل در صفحهٔ «حریم خصوصی» آمده است.', aEn: 'Yes. Passwords are scrypt-hashed, card data never touches our servers, staff access is limited by a permission matrix and every change is audit-logged. Details are in the Privacy page.' },
+    { cat: 'security', q: 'اطلاعاتم پیش شما امن است؟', qEn: 'Is my data safe with you?', a: 'بله. رمز عبور به‌صورت هش‌شده با الگوریتم scrypt ذخیره می‌شود و هیچ‌کس (حتی ما) متن رمز را نمی‌بیند. اطلاعات بانکی اصلاً روی سرور ما ذخیره نمی‌شود و پرداخت از طریق درگاه معتبر انجام می‌گیرد. دسترسی کارکنان به بخش‌های مختلف با ماتریس دسترسی محدود شده و همه‌ی تغییرات در گزارش رویدادها ثبت می‌شود. جزئیات کامل در صفحه‌ی «حریم خصوصی» آمده است.', aEn: 'Yes. Passwords are scrypt-hashed, card data never touches our servers, staff access is limited by a permission matrix and every change is audit-logged. Details are in the Privacy page.' },
   ],
 
   terms: {
     hero: { title: 'قوانین و مقررات', titleEn: 'Terms & Conditions', subtitle: 'آخرین به‌روزرسانی: مرداد ۱۴۰۴', subtitleEn: 'Last updated: August 2025' },
-    intro: 'کاربر گرامی، ورود به وب‌سایت «بندر موبایل» و ثبت سفارش به منزلهٔ پذیرش کامل قوانین و مقررات زیر است. خواهشمندیم پیش از خرید این متن را با دقت بخوانید. این قوانین بر اساس قانون تجارت الکترونیکی (مصوب ۱۳۸۲)، قانون حمایت از حقوق مصرف‌کنندگان (مصوب ۱۳۸۸)، آیین‌نامهٔ اجرایی آن‌ها و سایر مقررات جاری جمهوری اسلامی ایران تنظیم شده است.',
+    intro: 'کاربر گرامی، ورود به وب‌سایت «بندر موبایل» و ثبت سفارش به منزله‌ی پذیرش کامل قوانین و مقررات زیر است. خواهشمندیم پیش از خرید این متن را با دقت بخوانید. این قوانین بر اساس قانون تجارت الکترونیکی (مصوب ۱۳۸۲)، قانون حمایت از حقوق مصرف‌کنندگان (مصوب ۱۳۸۸)، آیین‌نامه‌ی اجرایی آن‌ها و سایر مقررات جاری جمهوری اسلامی ایران تنظیم شده است.',
     introEn: 'By using Bander Mobile and placing an order you fully accept the terms below, drafted in line with Iran\'s E-Commerce Law (2004) and Consumer Protection Law (2009) and their executive bylaws.',
     sections: [
       {
         title: '۱. تعاریف', titleEn: '1. Definitions',
-        body: '«فروشگاه» یعنی کسب‌وکار بندر موبایل به نشانی و شمارهٔ تماس درج‌شده در سایت. «کاربر» یعنی هر شخصی که از سایت بازدید می‌کند. «مشتری» یعنی کاربری که در سایت ثبت‌نام کرده و سفارش ثبت می‌کند. «سفارش» یعنی درخواست خرید یک یا چند کالا که در سامانه ثبت و به مشتری کد رهگیری داده می‌شود.',
+        body: '«فروشگاه» یعنی کسب‌وکار بندر موبایل به نشانی و شماره‌ی تماس درج‌شده در سایت. «کاربر» یعنی هر شخصی که از سایت بازدید می‌کند. «مشتری» یعنی کاربری که در سایت ثبت‌نام کرده و سفارش ثبت می‌کند. «سفارش» یعنی درخواست خرید یک یا چند کالا که در سامانه ثبت و به مشتری کد رهگیری داده می‌شود.',
         bodyEn: '"Store" means Bander Mobile. "User" means any visitor. "Customer" means a registered user who places an order. "Order" means a purchase request registered in the system with a tracking code.',
       },
       {
         title: '۲. شرایط استفاده از سایت', titleEn: '2. Conditions of use',
         list: [
-          'کاربر متعهد است اطلاعات صحیح و متعلق به خود را در هنگام ثبت‌نام وارد کند و مسئولیت هرگونه اطلاعات نادرست بر عهدهٔ اوست.',
-          'حفظ محرمانگی نام کاربری، رمز عبور و کدهای ورود دومرحله‌ای بر عهدهٔ کاربر است؛ هر عملیاتی که با حساب او انجام شود به منزلهٔ اقدام خود اوست.',
-          'هرگونه استفادهٔ تجاری، رباتیک، خزیدن (Scraping)، ارسال درخواست انبوه، بارگذاری بدافزار یا تلاش برای نفوذ به سامانه ممنوع است و طبق قانون جرایم رایانه‌ای (مصوب ۱۳۸۸) پیگیری قانونی خواهد شد.',
-          'کاربر حق ندارد محتوای سایت (عکس، متن، لوگو) را بدون اجازهٔ کتبی فروشگاه بازتولید یا بازنشر کند.',
+          'کاربر متعهد است اطلاعات صحیح و متعلق به خود را در هنگام ثبت‌نام وارد کند و مسئولیت هرگونه اطلاعات نادرست بر عهده‌ی اوست.',
+          'حفظ محرمانگی نام کاربری، رمز عبور و کدهای ورود دومرحله‌ای بر عهده‌ی کاربر است؛ هر عملیاتی که با حساب او انجام شود به منزله‌ی اقدام خود اوست.',
+          'هرگونه استفاده‌ی تجاری، رباتیک، خزیدن (Scraping)، ارسال درخواست انبوه، بارگذاری بدافزار یا تلاش برای نفوذ به سامانه ممنوع است و طبق قانون جرایم رایانه‌ای (مصوب ۱۳۸۸) پیگیری قانونی خواهد شد.',
+          'کاربر حق ندارد محتوای سایت (عکس، متن، لوگو) را بدون اجازه‌ی کتبی فروشگاه بازتولید یا بازنشر کند.',
           'ثبت نظر، سؤال یا امتیاز باید مطابق ادب و قانون باشد؛ نشر افترا، توهین، محتوای مجرمانه یا تبلیغاتی منجر به حذف مطلب و در صورت تکرار، مسدودسازی حساب می‌شود.',
-          'سن حداقل برای ثبت‌نام و خرید ۱۸ سال تمام یا داشتن اجازهٔ ولیّ قانونی است.',
+          'سن حداقل برای ثبت‌نام و خرید ۱۸ سال تمام یا داشتن اجازه‌ی ولیّ قانونی است.',
         ],
         listEn: [
           'Users must provide accurate personal information and are responsible for incorrect data.',
@@ -288,9 +288,9 @@ export const DEFAULT_PAGES = {
         list: [
           'سفارش پس از ثبت، در وضعیت «در انتظار پرداخت» یا «در انتظار تأیید» قرار می‌گیرد و تنها پس از پرداخت موفق یا تأیید فروشگاه نهایی می‌شود.',
           'ثبت سفارش در سامانه به تنهایی به معنای قطعی شدن معامله نیست؛ تأیید نهایی با پیامک/اعلان «سفارش تأیید شد» انجام می‌شود.',
-          'مشتری می‌تواند تا پیش از مرحلهٔ «ارسال شده»، سفارش را از بخش «سفارش‌های من» لغو کند. در سفارش‌های پرداخت‌شده، مبلغ طبق بند ۶ همین صفحه مسترد می‌شود.',
+          'مشتری می‌تواند تا پیش از مرحله‌ی «ارسال شده»، سفارش را از بخش «سفارش‌های من» لغو کند. در سفارش‌های پرداخت‌شده، مبلغ طبق بند ۶ همین صفحه مسترد می‌شود.',
           'در صورت عدم پرداخت طی ۷۲ ساعت، سفارش به‌صورت خودکار لغو و کالاهای رزروشده آزاد می‌شوند.',
-          'فروشگاه در مواردی مانند ثبت اشتباه قیمت، اتمام موجودی، بروز خطای سامانه، یا سفارش‌های با نشانه‌های تقلب حق دارد سفارش را لغو و وجه را عیناً مسترد کند. این موضوع مطابق مادهٔ ۳۹ قانون تجارت الکترونیکی است که تأمین‌کننده را در صورت ناتوانی از اجرای تعهد به استرداد فوری مبلغ ملزم می‌کند.',
+          'فروشگاه در مواردی مانند ثبت اشتباه قیمت، اتمام موجودی، بروز خطای سامانه، یا سفارش‌های با نشانه‌های تقلب حق دارد سفارش را لغو و وجه را عیناً مسترد کند. این موضوع مطابق ماده‌ی ۳۹ قانون تجارت الکترونیکی است که تأمین‌کننده را در صورت ناتوانی از اجرای تعهد به استرداد فوری مبلغ ملزم می‌کند.',
         ],
         listEn: [
           'Orders start as pending payment/confirmation and become final only after successful payment or store approval.',
@@ -302,12 +302,12 @@ export const DEFAULT_PAGES = {
       },
       {
         title: '۴. قیمت‌گذاری و مالیات', titleEn: '4. Pricing and taxes',
-        body: 'همهٔ قیمت‌ها به تومان و شامل مالیات بر ارزش افزوده (در موارد مشمول) است. فروشگاه تلاش می‌کند قیمت‌ها به‌روز باشند، اما به‌دلیل نوسان نرخ ارز و تغییر قیمت تأمین‌کننده، امکان خطای قیمت وجود دارد. چنانچه پس از ثبت سفارش مشخص شود قیمت درج‌شده اشتباه بوده، فروشگاه قبل از ارسال موضوع را اطلاع می‌دهد و مشتری می‌تواند سفارش را با قیمت اصلاح‌شده تأیید یا آن را بدون هیچ هزینه‌ای لغو کند.',
+        body: 'همه‌ی قیمت‌ها به تومان و شامل مالیات بر ارزش افزوده (در موارد مشمول) است. فروشگاه تلاش می‌کند قیمت‌ها به‌روز باشند، اما به‌دلیل نوسان نرخ ارز و تغییر قیمت تأمین‌کننده، امکان خطای قیمت وجود دارد. چنانچه پس از ثبت سفارش مشخص شود قیمت درج‌شده اشتباه بوده، فروشگاه قبل از ارسال موضوع را اطلاع می‌دهد و مشتری می‌تواند سفارش را با قیمت اصلاح‌شده تأیید یا آن را بدون هیچ هزینه‌ای لغو کند.',
         bodyEn: 'All prices are in Toman and include applicable VAT. Due to currency fluctuations, pricing errors are possible; if detected after ordering, the customer is notified before dispatch and may accept the corrected price or cancel free of charge.',
       },
       {
         title: '۵. موجودی کالا و ثبت سفارش هم‌زمان', titleEn: '5. Stock and simultaneous orders',
-        body: 'موجودی هر کالا به‌صورت لحظه‌ای در سامانه کنترل می‌شود و در فرآیند ثبت سفارش، موجودی داخل یک تراکنش قفل‌شده بررسی و کسر می‌گردد تا فروش بیش از موجودی رخ ندهد. با این حال در شرایط استثنایی (قطعی شبکه، اختلال سرویس، فروش هم‌زمان حضوری و اینترنتی از یک قفسهٔ فیزیکی، یا خطای انسانی در شمارش موجودی) ممکن است کالایی پس از ثبت سفارش ناموجود شود. در این حالت فروشگاه بلافاصله و حداکثر تا ۲۴ ساعت کاری موضوع را اطلاع می‌دهد و مشتری یکی از این گزینه‌ها را انتخاب می‌کند: (الف) جایگزینی کالای مشابه با توافق طرفین، (ب) انتظار تا تأمین مجدد، (پ) لغو سفارش و استرداد کامل وجه. بدیهی است در چنین موارد نادری، فروشگاه بابت تأخیر یا لغو ناخواسته پوزش می‌خواهد و هیچ خسارت اضافه‌ای از مشتری دریافت نمی‌شود.',
+        body: 'موجودی هر کالا به‌صورت لحظه‌ای در سامانه کنترل می‌شود و در فرآیند ثبت سفارش، موجودی داخل یک تراکنش قفل‌شده بررسی و کسر می‌گردد تا فروش بیش از موجودی رخ ندهد. با این حال در شرایط استثنایی (قطعی شبکه، اختلال سرویس، فروش هم‌زمان حضوری و اینترنتی از یک قفسه‌ی فیزیکی، یا خطای انسانی در شمارش موجودی) ممکن است کالایی پس از ثبت سفارش ناموجود شود. در این حالت فروشگاه بلافاصله و حداکثر تا ۲۴ ساعت کاری موضوع را اطلاع می‌دهد و مشتری یکی از این گزینه‌ها را انتخاب می‌کند: (الف) جایگزینی کالای مشابه با توافق طرفین، (ب) انتظار تا تأمین مجدد، (پ) لغو سفارش و استرداد کامل وجه. بدیهی است در چنین موارد نادری، فروشگاه بابت تأخیر یا لغو ناخواسته پوزش می‌خواهد و هیچ خسارت اضافه‌ای از مشتری دریافت نمی‌شود.',
         bodyEn: 'Stock is decremented inside a locked transaction to prevent overselling. In exceptional cases (network failure, simultaneous in-store and online sale from one physical shelf, or human counting error) an item may become unavailable after ordering. The store notifies the customer within 24 working hours, who may accept a substitute, wait for restock, or cancel with a full refund. We apologize for such rare cases and never charge extra fees.',
       },
       {
@@ -316,7 +316,7 @@ export const DEFAULT_PAGES = {
           'روش‌های پرداخت: درگاه بانکی معتبر، کیف پول داخلی سایت، و پرداخت در محل (محدود به مناطق و سقف مبلغ تعیین‌شده).',
           'اطلاعات کارت بانکی هرگز در سرور فروشگاه ذخیره نمی‌شود و فرآیند پرداخت تماماً روی درگاه بانک انجام می‌گیرد.',
           'بازگشت وجه سفارش‌های لغو یا مرجوع‌شده حداکثر ظرف ۴۸ ساعت کاری از زمان تأیید فروشگاه، به همان روش پرداخت (کیف پول یا حساب بانکی) انجام می‌شود. بازگشت به کیف پول آنی است.',
-          'در پرداخت در محل، چنانچه مشتری بدون دلیل موجه از تحویل کالا خودداری کند، هزینهٔ ارسال رفت و برگشت از مبلغ دریافتی کسر یا مطالبه می‌شود.',
+          'در پرداخت در محل، چنانچه مشتری بدون دلیل موجه از تحویل کالا خودداری کند، هزینه‌ی ارسال رفت و برگشت از مبلغ دریافتی کسر یا مطالبه می‌شود.',
           'امتیاز و تخفیف‌های مصرف‌شده در سفارش مرجوعی، طبق قوانین باشگاه مشتریان بازگردانده می‌شود.',
         ],
         listEn: [
@@ -329,28 +329,28 @@ export const DEFAULT_PAGES = {
       },
       {
         title: '۷. حق انصراف (۷ روز کاری)', titleEn: '7. Right of withdrawal (7 working days)',
-        body: 'مطابق مادهٔ ۳۷ قانون تجارت الکترونیکی، مشتری حداقل هفت روز کاری فرصت دارد بدون تحمل جریمه و بدون ارائهٔ دلیل از خرید منصرف شود. مبدأ محاسبهٔ این مهلت، تاریخ تسلیم کالا به مشتری است (مادهٔ ۳۸). برای اعمال حق انصراف، کالا باید بدون استفاده، سالم و همراه بسته‌بندی اصلی، برچسب، لوازم جانبی و فاکتور باشد. هزینهٔ بازگرداندن کالا در استفاده از حق انصراف بر عهدهٔ مشتری است. به محض اعلام انصراف و وصول کالا، فروشگاه بدون مطالبهٔ هیچ وجهی، عین مبلغ دریافتی را در اسرع وقت مسترد می‌کند.',
+        body: 'مطابق ماده‌ی ۳۷ قانون تجارت الکترونیکی، مشتری حداقل هفت روز کاری فرصت دارد بدون تحمل جریمه و بدون ارائه‌ی دلیل از خرید منصرف شود. مبدأ محاسبه‌ی این مهلت، تاریخ تسلیم کالا به مشتری است (ماده‌ی ۳۸). برای اعمال حق انصراف، کالا باید بدون استفاده، سالم و همراه بسته‌بندی اصلی، برچسب، لوازم جانبی و فاکتور باشد. هزینه‌ی بازگرداندن کالا در استفاده از حق انصراف بر عهده‌ی مشتری است. به محض اعلام انصراف و وصول کالا، فروشگاه بدون مطالبه‌ی هیچ وجهی، عین مبلغ دریافتی را در اسرع وقت مسترد می‌کند.',
         bodyEn: 'Under Article 37 of the E-Commerce Law the customer has at least seven working days to withdraw without penalty or reason, counted from delivery (Article 38). The item must be unused, complete with original packaging, labels, accessories and invoice. Return shipping is on the customer. Upon receipt, the exact amount is refunded promptly.',
       },
       {
         title: '۸. استثنائات حق انصراف', titleEn: '8. Exceptions to withdrawal',
-        body: 'طبق بند «د» مادهٔ ۳۸ قانون تجارت الکترونیکی و آیین‌نامهٔ اجرایی مصوب ۱۳۸۳/۱۰/۰۹ هیأت وزیران، در موارد زیر حق انصراف وجود ندارد: کالاهایی که به‌دلیل ماهیت بهداشتی پس از باز شدن پلمپ قابل بازگشت نیستند (هندزفری و هدفون درون‌گوشی باز شده، دستکش گیمینگ استفاده‌شده)؛ گلس و برچسب محافظ نصب‌شده؛ کالاهای ساخته‌شده بر اساس سفارش شخصی مشتری (چاپ یا حکاکی اختصاصی)؛ کالاهای سریع‌الفساد یا مصرف روزانه؛ محتوای دیجیتال و نرم‌افزار پس از فعال‌سازی؛ و کالاهایی که پلمپ کارخانه‌ای آن‌ها شکسته شده و امکان فروش مجدد به‌عنوان کالای نو را ندارند.',
+        body: 'طبق بند «د» ماده‌ی ۳۸ قانون تجارت الکترونیکی و آیین‌نامه‌ی اجرایی مصوب ۱۳۸۳/۱۰/۰۹ هیأت وزیران، در موارد زیر حق انصراف وجود ندارد: کالاهایی که به‌دلیل ماهیت بهداشتی پس از باز شدن پلمپ قابل بازگشت نیستند (هندزفری و هدفون درون‌گوشی باز شده، دستکش گیمینگ استفاده‌شده)؛ گلس و برچسب محافظ نصب‌شده؛ کالاهای ساخته‌شده بر اساس سفارش شخصی مشتری (چاپ یا حکاکی اختصاصی)؛ کالاهای سریع‌الفساد یا مصرف روزانه؛ محتوای دیجیتال و نرم‌افزار پس از فعال‌سازی؛ و کالاهایی که پلمپ کارخانه‌ای آن‌ها شکسته شده و امکان فروش مجدد به‌عنوان کالای نو را ندارند.',
         bodyEn: 'Per Article 38(d) and its 2004 executive bylaw, withdrawal does not apply to: hygiene-sensitive opened items (in-ear earbuds, used gaming sleeves), installed screen guards, custom-made goods, perishables, activated digital content, and factory-sealed items whose seal is broken and cannot be resold as new.',
       },
       {
         title: '۹. گارانتی و خدمات پس از فروش', titleEn: '9. Warranty and after-sales',
-        body: 'مطابق مادهٔ ۳ قانون حمایت از حقوق مصرف‌کنندگان، فاکتور فروش شامل قیمت، تاریخ و مشخصات کالا به مشتری ارائه می‌شود و مدت و نوع ضمانت در صفحهٔ محصول و فاکتور درج می‌گردد. گارانتی فروشگاه صرفاً شامل ایرادهای ناشی از ساخت است و مواردی مانند ضربه، شکستگی، آب‌خوردگی، نوسان برق، استفادهٔ نادرست، باز شدن غیرمجاز دستگاه و فرسودگی طبیعی را پوشش نمی‌دهد. در کالاهای دارای گارانتی شرکتی، مشتری به نمایندگی رسمی معرفی می‌شود.',
+        body: 'مطابق ماده‌ی ۳ قانون حمایت از حقوق مصرف‌کنندگان، فاکتور فروش شامل قیمت، تاریخ و مشخصات کالا به مشتری ارائه می‌شود و مدت و نوع ضمانت در صفحه‌ی محصول و فاکتور درج می‌گردد. گارانتی فروشگاه صرفاً شامل ایرادهای ناشی از ساخت است و مواردی مانند ضربه، شکستگی، آب‌خوردگی، نوسان برق، استفاده‌ی نادرست، باز شدن غیرمجاز دستگاه و فرسودگی طبیعی را پوشش نمی‌دهد. در کالاهای دارای گارانتی شرکتی، مشتری به نمایندگی رسمی معرفی می‌شود.',
         bodyEn: 'Per Article 3 of the Consumer Protection Law an invoice with price, date and specs is issued and warranty terms appear on the product page. Store warranty covers manufacturing defects only — not impact, liquid, power surge, misuse, unauthorized opening or normal wear. Corporate-warranty items are referred to official service centers.',
       },
       {
-        title: '۱۰. ارسال، تحویل و بیمهٔ مرسوله', titleEn: '10. Shipping, delivery and transit insurance',
+        title: '۱۰. ارسال، تحویل و بیمه‌ی مرسوله', titleEn: '10. Shipping, delivery and transit insurance',
         list: [
-          'مسئولیت سلامت کالا تا لحظهٔ تحویل به مشتری یا نمایندهٔ او بر عهدهٔ فروشگاه است.',
+          'مسئولیت سلامت کالا تا لحظه‌ی تحویل به مشتری یا نماینده‌ی او بر عهده‌ی فروشگاه است.',
           'مشتری موظف است هنگام تحویل، بسته را از نظر سلامت ظاهری بررسی کند؛ در صورت آسیب فیزیکی، از تحویل گرفتن خودداری کرده و مراتب را همان لحظه به پیک و پشتیبانی اطلاع دهد.',
-          'بیمهٔ مرسوله اختیاری است و با پرداخت هزینهٔ جداگانه (حداقل مبلغ تعیین‌شده یا درصدی از ارزش کالا) فعال می‌شود. در صورت مفقودی، سرقت یا آسیب مرسوله در مسیر، فروشگاه پیگیری لازم را با شرکت حمل‌ونقل/بیمه انجام می‌دهد و معادل ارزش بیمه‌شده به مشتری بازگردانده می‌شود.',
+          'بیمه‌ی مرسوله اختیاری است و با پرداخت هزینه‌ی جداگانه (حداقل مبلغ تعیین‌شده یا درصدی از ارزش کالا) فعال می‌شود. در صورت مفقودی، سرقت یا آسیب مرسوله در مسیر، فروشگاه پیگیری لازم را با شرکت حمل‌ونقل/بیمه انجام می‌دهد و معادل ارزش بیمه‌شده به مشتری بازگردانده می‌شود.',
           'در سفارش‌های بیمه‌نشده، فروشگاه صرفاً تا سقف مسئولیت قانونی شرکت حمل‌ونقل پیگیری می‌کند و جبران کامل ارزش کالا تضمین نمی‌شود؛ بنابراین برای کالاهای گران‌قیمت، بیمه اکیداً توصیه می‌شود.',
-          'در اعضای اشتراک پلاس، بیمهٔ مرسوله به‌صورت خودکار و رایگان اعمال می‌شود.',
-          'تأخیر ناشی از شرایط فورس ماژور (سیل، زلزله، تعطیلی سراسری، اختلال گستردهٔ شبکه) خارج از تعهد فروشگاه است و مبلغ سفارش در صورت درخواست مشتری مسترد می‌شود.',
+          'در اعضای اشتراک پلاس، بیمه‌ی مرسوله به‌صورت خودکار و رایگان اعمال می‌شود.',
+          'تأخیر ناشی از شرایط فورس ماژور (سیل، زلزله، تعطیلی سراسری، اختلال گسترده‌ی شبکه) خارج از تعهد فروشگاه است و مبلغ سفارش در صورت درخواست مشتری مسترد می‌شود.',
         ],
         listEn: [
           'The store is responsible for item integrity until delivery to the customer or their representative.',
@@ -363,31 +363,31 @@ export const DEFAULT_PAGES = {
       },
       {
         title: '۱۱. کیف پول، امتیاز و اشتراک پلاس', titleEn: '11. Wallet, points and Plus membership',
-        body: 'موجودی کیف پول فاقد سود و کارمزد است و فقط برای خرید از همین فروشگاه کاربرد دارد؛ امکان تبدیل آن به پول نقد وجود ندارد، مگر در موارد بازگشت وجه سفارش. اشتراک پلاس یک خدمت زمان‌دار است که مزایای آن در صفحهٔ «پلاس» اعلام می‌شود و پس از انقضا به‌صورت خودکار تمدید نمی‌شود مگر با پرداخت مجدد. در صورت تغییر یا حذف مزایا، موضوع از طریق اعلان به کاربران فعال اطلاع داده می‌شود و کاربر می‌تواند تا پایان دورهٔ باقی‌مانده از مزایای خریداری‌شده استفاده کند.',
+        body: 'موجودی کیف پول فاقد سود و کارمزد است و فقط برای خرید از همین فروشگاه کاربرد دارد؛ امکان تبدیل آن به پول نقد وجود ندارد، مگر در موارد بازگشت وجه سفارش. اشتراک پلاس یک خدمت زمان‌دار است که مزایای آن در صفحه‌ی «پلاس» اعلام می‌شود و پس از انقضا به‌صورت خودکار تمدید نمی‌شود مگر با پرداخت مجدد. در صورت تغییر یا حذف مزایا، موضوع از طریق اعلان به کاربران فعال اطلاع داده می‌شود و کاربر می‌تواند تا پایان دوره‌ی باقی‌مانده از مزایای خریداری‌شده استفاده کند.',
         bodyEn: 'Wallet balance bears no interest and cannot be cashed out except for order refunds. Plus is a time-bound service whose benefits are listed on its page; it does not auto-renew. Benefit changes are announced to active members, who keep purchased benefits until expiry.',
       },
       {
         title: '۱۲. مسئولیت فروشگاه و محدودیت خسارت', titleEn: '12. Store liability and limitation',
-        body: 'فروشگاه تلاش می‌کند اطلاعات، قیمت‌ها و موجودی دقیق باشد، اما در قبال خسارات غیرمستقیم، از دست رفتن سود یا دادهٔ کاربر مسئولیتی ندارد. حداکثر مسئولیت فروشگاه در هر سفارش معادل مبلغ پرداخت‌شدهٔ همان سفارش است. در صورت بروز اختلال فنی در سایت، سفارش‌های ثبت‌شده محفوظ می‌مانند و پس از رفع اختلال پردازش می‌شوند.',
+        body: 'فروشگاه تلاش می‌کند اطلاعات، قیمت‌ها و موجودی دقیق باشد، اما در قبال خسارات غیرمستقیم، از دست رفتن سود یا داده‌ی کاربر مسئولیتی ندارد. حداکثر مسئولیت فروشگاه در هر سفارش معادل مبلغ پرداخت‌شده‌ی همان سفارش است. در صورت بروز اختلال فنی در سایت، سفارش‌های ثبت‌شده محفوظ می‌مانند و پس از رفع اختلال پردازش می‌شوند.',
         bodyEn: 'We strive for accurate information but are not liable for indirect losses or lost profits. Maximum liability per order equals the amount paid for that order. Orders placed during technical outages are preserved and processed after recovery.',
       },
       {
         title: '۱۳. حریم خصوصی و داده‌های شخصی', titleEn: '13. Privacy and personal data',
-        body: 'فروشگاه متعهد به حفاظت از اطلاعات شخصی کاربران است و جز در موارد قانونی یا با رضایت کاربر، آن‌ها را در اختیار اشخاص ثالث قرار نمی‌دهد. جزئیات کامل در صفحهٔ «حریم خصوصی» آمده که بخشی جدایی‌ناپذیر از این قوانین است.',
+        body: 'فروشگاه متعهد به حفاظت از اطلاعات شخصی کاربران است و جز در موارد قانونی یا با رضایت کاربر، آن‌ها را در اختیار اشخاص ثالث قرار نمی‌دهد. جزئیات کامل در صفحه‌ی «حریم خصوصی» آمده که بخشی جدایی‌ناپذیر از این قوانین است.',
         bodyEn: 'The store protects personal data and shares it only with legal authority or user consent. Full details are in the Privacy page, an integral part of these terms.',
       },
       {
         title: '۱۴. حل اختلاف و مرجع رسیدگی', titleEn: '14. Dispute resolution',
-        body: 'در صورت بروز هرگونه اختلاف، اولویت با حل مسالمت‌آمیز از طریق پشتیبانی، تیکت و مذاکره است. در صورت عدم حصول نتیجه، مراجع ذی‌صلاح شامل اتحادیهٔ صنفی مربوط، سازمان صنعت، معدن و تجارت استان، مرکز توسعهٔ تجارت الکترونیکی و در نهایت دادسرای جرایم رایانه‌ای و محاکم قضایی شهرستان بوشهر صالح به رسیدگی هستند. قوانین حاکم بر این توافق‌نامه، قوانین جاری جمهوری اسلامی ایران است.',
+        body: 'در صورت بروز هرگونه اختلاف، اولویت با حل مسالمت‌آمیز از طریق پشتیبانی، تیکت و مذاکره است. در صورت عدم حصول نتیجه، مراجع ذی‌صلاح شامل اتحادیه‌ی صنفی مربوط، سازمان صنعت، معدن و تجارت استان، مرکز توسعه‌ی تجارت الکترونیکی و در نهایت دادسرای جرایم رایانه‌ای و محاکم قضایی شهرستان بوشهر صالح به رسیدگی هستند. قوانین حاکم بر این توافق‌نامه، قوانین جاری جمهوری اسلامی ایران است.',
         bodyEn: 'Disputes are first handled amicably through support and tickets. Failing that, the relevant trade union, the provincial Industry & Trade Organization, the E-Commerce Development Center, the Computer Crimes Prosecution Office and the courts of Bushehr have jurisdiction. Iranian law governs.',
       },
       {
         title: '۱۵. تغییرات قوانین', titleEn: '15. Amendments',
-        body: 'فروشگاه ممکن است این قوانین را به‌روزرسانی کند. نسخهٔ معتبر، همواره همان متنی است که در این صفحه منتشر شده و تاریخ به‌روزرسانی آن درج شده است. ادامهٔ استفاده از سایت پس از انتشار تغییرات، به منزلهٔ پذیرش آن‌هاست.',
+        body: 'فروشگاه ممکن است این قوانین را به‌روزرسانی کند. نسخه‌ی معتبر، همواره همان متنی است که در این صفحه منتشر شده و تاریخ به‌روزرسانی آن درج شده است. ادامه‌ی استفاده از سایت پس از انتشار تغییرات، به منزله‌ی پذیرش آن‌هاست.',
         bodyEn: 'These terms may be updated; the current version on this page with its update date is authoritative. Continued use constitutes acceptance.',
       },
     ],
-    notice: 'این متن بر اساس قوانین عمومی تجارت الکترونیکی و حمایت از مصرف‌کنندهٔ ایران تنظیم شده و جنبهٔ اطلاع‌رسانی دارد. در صورت نیاز به تطبیق دقیق‌تر با مجوزهای صنفی، توصیه می‌شود توسط مشاور حقوقی بازبینی شود.',
+    notice: 'این متن بر اساس قوانین عمومی تجارت الکترونیکی و حمایت از مصرف‌کننده‌ی ایران تنظیم شده و جنبه‌ی اطلاع‌رسانی دارد. در صورت نیاز به تطبیق دقیق‌تر با مجوزهای صنفی، توصیه می‌شود توسط مشاور حقوقی بازبینی شود.',
     noticeEn: 'This text is based on Iranian e-commerce and consumer-protection law for informational purposes; a legal advisor review is recommended for exact compliance.',
   },
 
@@ -399,8 +399,8 @@ export const DEFAULT_PAGES = {
       {
         title: 'چه اطلاعاتی جمع‌آوری می‌کنیم؟', titleEn: 'What we collect',
         list: [
-          'اطلاعات هویتی: نام و نام خانوادگی، نام کاربری، شمارهٔ موبایل و ایمیل.',
-          'اطلاعات ارسال: آدرس پستی، کد پستی و شمارهٔ تماس گیرنده.',
+          'اطلاعات هویتی: نام و نام خانوادگی، نام کاربری، شماره‌ی موبایل و ایمیل.',
+          'اطلاعات ارسال: آدرس پستی، کد پستی و شماره‌ی تماس گیرنده.',
           'اطلاعات سفارش: اقلام خریداری‌شده، مبلغ، روش پرداخت و وضعیت تحویل.',
           'اطلاعات فنی: نشانی IP، نوع مرورگر و دستگاه، زمان بازدید و صفحات مشاهده‌شده (برای آمار و امنیت).',
           'محتوای ارسالی تو: نظرات، سؤالات، تیکت‌ها، گزارش خطا و فایل‌هایی که بارگذاری می‌کنی.',
@@ -420,7 +420,7 @@ export const DEFAULT_PAGES = {
           'احراز هویت، ورود امن و ورود دومرحله‌ای.',
           'پاسخ به سؤالات، تیکت‌ها و پشتیبانی پس از فروش.',
           'اعلام موجود شدن کالای ناموجود و تغییر وضعیت سفارش.',
-          'بهبود تجربهٔ کاربری، شخصی‌سازی پیشنهادها و جلوگیری از تقلب.',
+          'بهبود تجربه‌ی کاربری، شخصی‌سازی پیشنهادها و جلوگیری از تقلب.',
         ],
         listEn: [
           'Order processing, shipping and invoicing.',
@@ -435,9 +435,9 @@ export const DEFAULT_PAGES = {
         list: [
           'رمز عبور با الگوریتم scrypt به‌همراه نمک اختصاصی هش می‌شود و به‌صورت متن ساده ذخیره نمی‌گردد.',
           'نشست‌ها با توکن تصادفی ۲۵۶ بیتی و کوکی HttpOnly با سیاست SameSite مدیریت می‌شوند.',
-          'همهٔ درخواست‌های تغییردهنده با توکن CSRF و محدودسازی نرخ (Rate Limit) محافظت می‌شوند.',
+          'همه‌ی درخواست‌های تغییردهنده با توکن CSRF و محدودسازی نرخ (Rate Limit) محافظت می‌شوند.',
           'اطلاعات کارت بانکی هرگز در سرور ما ذخیره یا ثبت نمی‌شود.',
-          'دسترسی کارکنان به داده‌ها بر اساس ماتریس دسترسی (Permission) محدود و همهٔ اقدامات در گزارش رویدادها ثبت می‌شود.',
+          'دسترسی کارکنان به داده‌ها بر اساس ماتریس دسترسی (Permission) محدود و همه‌ی اقدامات در گزارش رویدادها ثبت می‌شود.',
           'فایل‌های بارگذاری‌شده از نظر نوع و اندازه اعتبارسنجی و با نام تصادفی ذخیره می‌شوند.',
         ],
         listEn: [
@@ -451,19 +451,19 @@ export const DEFAULT_PAGES = {
       },
       {
         title: 'اشتراک‌گذاری با اشخاص ثالث', titleEn: 'Third-party sharing',
-        body: 'اطلاعات تو تنها در حد ضرورت و برای اجرای تعهدات در اختیار اشخاص زیر قرار می‌گیرد: شرکت‌های حمل‌ونقل و پیک (نام، آدرس، شمارهٔ تماس)، درگاه‌های پرداخت بانکی (شمارهٔ سفارش و مبلغ)، و مراجع قانونی در صورت وجود حکم معتبر قضایی. ما اطلاعات کاربران را برای مقاصد تبلیغاتی به اشخاص ثالث نمی‌فروشیم.',
+        body: 'اطلاعات تو تنها در حد ضرورت و برای اجرای تعهدات در اختیار اشخاص زیر قرار می‌گیرد: شرکت‌های حمل‌ونقل و پیک (نام، آدرس، شماره‌ی تماس)، درگاه‌های پرداخت بانکی (شماره‌ی سفارش و مبلغ)، و مراجع قانونی در صورت وجود حکم معتبر قضایی. ما اطلاعات کاربران را برای مقاصد تبلیغاتی به اشخاص ثالث نمی‌فروشیم.',
         bodyEn: 'Data is shared only as necessary: carriers (name, address, phone), payment gateways (order number and amount), and legal authorities upon valid order. We never sell user data for advertising.',
       },
       {
         title: 'کوکی‌ها و ذخیره‌سازی محلی', titleEn: 'Cookies and local storage',
-        body: 'از کوکی برای نگهداری نشست ورود و توکن امنیتی CSRF استفاده می‌شود. ترجیحات ظاهری (حالت روشن/تاریک، زبان، چیدمان) در حافظهٔ محلی مرورگر تو ذخیره می‌شود و به سرور ارسال نمی‌گردد. می‌توانی هر زمان کوکی‌ها را از تنظیمات مرورگر پاک کنی؛ در این صورت نیاز به ورود مجدد خواهی داشت.',
+        body: 'از کوکی برای نگهداری نشست ورود و توکن امنیتی CSRF استفاده می‌شود. ترجیحات ظاهری (حالت روشن/تاریک، زبان، چیدمان) در حافظه‌ی محلی مرورگر تو ذخیره می‌شود و به سرور ارسال نمی‌گردد. می‌توانی هر زمان کوکی‌ها را از تنظیمات مرورگر پاک کنی؛ در این صورت نیاز به ورود مجدد خواهی داشت.',
         bodyEn: 'Cookies hold your session and CSRF token. UI preferences (theme, language, layout) live in your browser local storage only. Clearing cookies signs you out.',
       },
       {
         title: 'حقوق تو', titleEn: 'Your rights',
         list: [
-          'دسترسی: می‌توانی همهٔ داده‌های ثبت‌شدهٔ خود را در پروفایل ببینی و خروجی بگیری.',
-          'اصلاح: ویرایش مشخصات، آدرس‌ها و شمارهٔ تماس در هر زمان ممکن است.',
+          'دسترسی: می‌توانی همه‌ی داده‌های ثبت‌شده‌ی خود را در پروفایل ببینی و خروجی بگیری.',
+          'اصلاح: ویرایش مشخصات، آدرس‌ها و شماره‌ی تماس در هر زمان ممکن است.',
           'حذف: می‌توانی درخواست حذف حساب و داده‌های شخصی بدهی؛ داده‌های لازم برای نگهداریٔ اسناد مالی طبق قانون تا مدت مقرر نگه داشته می‌شوند.',
           'لغو اشتراک: دریافت اعلان‌های تبلیغاتی اختیاری است و با یک کلیک غیرفعال می‌شود.',
           'اعتراض: در صورت بروز هرگونه سوءاستفاده از داده‌ها، از بخش «گزارش خطا» یا تیکت اعلام کن تا بررسی و نتیجه اطلاع داده شود.',
@@ -483,11 +483,11 @@ export const DEFAULT_PAGES = {
       },
       {
         title: 'حفاظت از کودکان', titleEn: 'Children',
-        body: 'خدمات ما برای افراد زیر ۱۸ سال بدون نظارت ولیّ قانونی در نظر گرفته نشده و ما آگاهانه دادهٔ کودکان را جمع‌آوری نمی‌کنیم.',
+        body: 'خدمات ما برای افراد زیر ۱۸ سال بدون نظارت ولیّ قانونی در نظر گرفته نشده و ما آگاهانه داده‌ی کودکان را جمع‌آوری نمی‌کنیم.',
         bodyEn: 'Our services are not intended for minors without guardian supervision; we do not knowingly collect children\'s data.',
       },
       {
-        title: 'تماس دربارهٔ حریم خصوصی', titleEn: 'Privacy contact',
+        title: 'تماس درباره‌ی حریم خصوصی', titleEn: 'Privacy contact',
         body: 'برای هر سؤال یا درخواست مرتبط با حریم خصوصی، از بخش «تماس با ما»، تیکت یا ایمیل پشتیبانی با ما در ارتباط باش. درخواست‌ها حداکثر ظرف ۷ روز کاری بررسی و پاسخ داده می‌شوند.',
         bodyEn: 'For privacy questions or requests, contact us via the contact page, tickets or support email. Requests are answered within 7 working days.',
       },
@@ -495,18 +495,18 @@ export const DEFAULT_PAGES = {
   },
 
   insurance: {
-    hero: { title: 'بیمهٔ مرسوله', titleEn: 'Shipment insurance', subtitle: 'خیالت از مسیر راحت باشد', subtitleEn: 'Peace of mind in transit' },
-    body: 'حمل کالای الکترونیکی همیشه با اندکی ریسک همراه است. به همین دلیل امکان «بیمهٔ مرسوله» را در مرحلهٔ پرداخت اضافه کرده‌ایم تا در صورت آسیب دیدن، مفقود شدن یا سرقت بسته در مسیر، ارزش کالای تو جبران شود.',
+    hero: { title: 'بیمه‌ی مرسوله', titleEn: 'Shipment insurance', subtitle: 'خیالت از مسیر راحت باشد', subtitleEn: 'Peace of mind in transit' },
+    body: 'حمل کالای الکترونیکی همیشه با اندکی ریسک همراه است. به همین دلیل امکان «بیمه‌ی مرسوله» را در مرحله‌ی پرداخت اضافه کرده‌ایم تا در صورت آسیب دیدن، مفقود شدن یا سرقت بسته در مسیر، ارزش کالای تو جبران شود.',
     bodyEn: 'Shipping electronics always carries some risk, so we offer shipment insurance at checkout to cover damage, loss or theft in transit.',
     rules: [
-      'هزینهٔ بیمه بر اساس ارزش کالای سفارش محاسبه می‌شود: درصدی از مبلغ کالا با حداقل مبلغ ثابت. نرخ دقیق در صفحهٔ پرداخت شفاف نمایش داده می‌شود.',
+      'هزینه‌ی بیمه بر اساس ارزش کالای سفارش محاسبه می‌شود: درصدی از مبلغ کالا با حداقل مبلغ ثابت. نرخ دقیق در صفحه‌ی پرداخت شفاف نمایش داده می‌شود.',
       'بیمه فقط برای سفارش‌های ارسال با پیک/پست فعال است و برای تحویل حضوری کاربرد ندارد.',
-      'پوشش بیمه از لحظهٔ تحویل بسته به شرکت حمل‌ونقل تا لحظهٔ تحویل به مشتری (یا نمایندهٔ او) اعتبار دارد.',
-      'سقف جبران خسارت، معادل ارزش بیمه‌شدهٔ کالا (تا سقف ارزش واقعی سفارش) است و شامل هزینهٔ ارسال نمی‌شود مگر آنکه بیمهٔ کامل انتخاب شده باشد.',
-      'آسیب‌های ناشی از بسته‌بندی نامناسب توسط مشتری در مرجوعی، استفادهٔ نادرست پس از تحویل، و موارد فورس ماژور مانند جنگ و بلایای طبیعی گسترده تحت پوشش نیست.',
-      'مشتری موظف است بسته را در حضور پیک بررسی کند و در صورت مشاهدهٔ آسیب، صورت‌جلسهٔ تحویل را امضا نکند و بلافاصله به پشتیبانی اطلاع دهد. اعلام خسارت بیش از ۴۸ ساعت پس از تحویل قابل پذیرش نیست.',
-      'پس از تأیید خسارت، معادل مبلغ بیمه‌شده حداکثر ظرف ۵ روز کاری به کیف پول یا حساب مشتری بازگردانده می‌شود و پیگیری با شرکت حمل‌ونقل بر عهدهٔ فروشگاه است.',
-      'برای اعضای اشتراک پلاس، بیمهٔ مرسوله به‌صورت خودکار و رایگان روی همهٔ سفارش‌ها اعمال می‌شود.',
+      'پوشش بیمه از لحظه‌ی تحویل بسته به شرکت حمل‌ونقل تا لحظه‌ی تحویل به مشتری (یا نماینده‌ی او) اعتبار دارد.',
+      'سقف جبران خسارت، معادل ارزش بیمه‌شده‌ی کالا (تا سقف ارزش واقعی سفارش) است و شامل هزینه‌ی ارسال نمی‌شود مگر آنکه بیمه‌ی کامل انتخاب شده باشد.',
+      'آسیب‌های ناشی از بسته‌بندی نامناسب توسط مشتری در مرجوعی، استفاده‌ی نادرست پس از تحویل، و موارد فورس ماژور مانند جنگ و بلایای طبیعی گسترده تحت پوشش نیست.',
+      'مشتری موظف است بسته را در حضور پیک بررسی کند و در صورت مشاهده‌ی آسیب، صورت‌جلسه‌ی تحویل را امضا نکند و بلافاصله به پشتیبانی اطلاع دهد. اعلام خسارت بیش از ۴۸ ساعت پس از تحویل قابل پذیرش نیست.',
+      'پس از تأیید خسارت، معادل مبلغ بیمه‌شده حداکثر ظرف ۵ روز کاری به کیف پول یا حساب مشتری بازگردانده می‌شود و پیگیری با شرکت حمل‌ونقل بر عهده‌ی فروشگاه است.',
+      'برای اعضای اشتراک پلاس، بیمه‌ی مرسوله به‌صورت خودکار و رایگان روی همه‌ی سفارش‌ها اعمال می‌شود.',
     ],
     rulesEn: [
       'The fee is a percentage of the goods value with a minimum flat fee, shown transparently at checkout.',
@@ -524,7 +524,7 @@ export const DEFAULT_PAGES = {
     hero: { title: 'قوانین تیکت و پشتیبانی', titleEn: 'Ticket rules', subtitle: 'برای پاسخ سریع‌تر، این نکات را رعایت کن', subtitleEn: 'For faster answers, follow these points' },
     rules: [
       'هر تیکت باید یک موضوع مشخص داشته باشد؛ چند درخواست متفاوت را در تیکت‌های جداگانه ثبت کن.',
-      'شمارهٔ سفارش، نام کالا و زمان وقوع مشکل را دقیق بنویس تا بررسی سریع‌تر انجام شود.',
+      'شماره‌ی سفارش، نام کالا و زمان وقوع مشکل را دقیق بنویس تا بررسی سریع‌تر انجام شود.',
       'از ارسال متن توهین‌آمیز، تهمت یا محتوای غیرقانونی خودداری کن؛ چنین تیکت‌هایی بسته می‌شوند.',
       'ارسال فایل مخرب، لینک‌های مشکوک یا درخواست دسترسی به حساب دیگران ممنوع است.',
       'تیکت‌ها بر اساس اولویت (بحرانی، زیاد، معمولی، کم) در صف قرار می‌گیرند. زمان پاسخ‌گویی: بحرانی تا ۲ ساعت، زیاد تا ۶ ساعت، معمولی تا ۲۴ ساعت و کم تا ۴۸ ساعت (در ساعات کاری).',
@@ -576,7 +576,7 @@ export const ORDER_STATUSES = [
   { id: 'pending_review', fa: 'در انتظار بررسی', en: 'Pending review', color: '#5b8def' },
   { id: 'confirmed', fa: 'تأیید شده', en: 'Confirmed', color: '#31afd4' },
   { id: 'preparing', fa: 'در حال آماده‌سازی', en: 'Preparing', color: '#8b5cf6' },
-  { id: 'ready_pickup', fa: 'آمادهٔ تحویل حضوری', en: 'Ready for pickup', color: '#14b8a6' },
+  { id: 'ready_pickup', fa: 'آماده‌ی تحویل حضوری', en: 'Ready for pickup', color: '#14b8a6' },
   { id: 'shipped', fa: 'ارسال شده', en: 'Shipped', color: '#f97316' },
   { id: 'delivered', fa: 'تحویل شده', en: 'Delivered', color: '#22c55e' },
   { id: 'cancelled', fa: 'لغو شده', en: 'Cancelled', color: '#ef4444' },
@@ -587,7 +587,7 @@ export const ORDER_STATUSES = [
 export const TICKET_CATEGORIES = [
   { id: 'order', fa: 'پیگیری سفارش', en: 'Order tracking' },
   { id: 'return', fa: 'مرجوعی و بازگشت وجه', en: 'Return & refund' },
-  { id: 'product', fa: 'سؤال دربارهٔ کالا', en: 'Product question' },
+  { id: 'product', fa: 'سؤال درباره‌ی کالا', en: 'Product question' },
   { id: 'technical', fa: 'مشکل فنی سایت', en: 'Technical issue' },
   { id: 'complaint', fa: 'شکایت', en: 'Complaint' },
   { id: 'partnership', fa: 'همکاری و تبلیغات', en: 'Partnership & advertising' },

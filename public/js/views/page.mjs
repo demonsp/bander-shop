@@ -190,10 +190,10 @@ function contactHtml(page) {
   const st = store();
   const socials = st.socials || {};
   const socialList = [
-    { key: 'instagram', icon: 'globe', url: socials.instagram },
+    { key: 'instagram', icon: 'camera', url: socials.instagram },
     { key: 'telegram', icon: 'send', url: socials.telegram },
     { key: 'eitaa', icon: 'message', url: socials.eitaa },
-    { key: 'whatsapp', icon: 'phone', url: st.whatsapp ? `https://wa.me/${String(st.whatsapp).replace(/\D/g, '')}` : '' },
+    { key: 'whatsapp', icon: 'chat', url: st.whatsapp ? `https://wa.me/${String(st.whatsapp).replace(/\D/g, '')}` : '' },
   ].filter((x) => x.url);
 
   return h`
@@ -214,7 +214,7 @@ function contactHtml(page) {
             ${st.whatsapp ? h`<div class="row"><span class="muted small">${t('contact.whatsapp')}</span><span class="mono">${fmtNum(st.whatsapp)}</span></div>` : ''}
             ${st.email ? h`<div class="row"><span class="muted small">${t('common.email')}</span><span class="mono small">${esc(st.email)}</span></div>` : ''}
           </div>
-          ${socialList.length ? h`<div class="row row-wrap mt-s f-social">${socialList.map((s) => h`<a class="btn btn-ghost btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener">${icon(s.icon)} ${esc(s.key)}</a>`)}</div>` : ''}
+          ${socialList.length ? h`<div class="row row-wrap mt-s">${socialList.map((s) => h`<a class="btn btn-ghost btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener">${icon(s.icon)} ${t('social.' + s.key)}</a>`)}</div>` : ''}
         </div>
 
         <div class="card mt">
