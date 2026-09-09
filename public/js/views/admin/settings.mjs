@@ -138,6 +138,7 @@ const TABS = {
     { id: 'auth', icon: 'key', label: () => t('adm.sAuth') },
     { id: 'seo', icon: 'search', label: () => t('adm.sSeo') },
     { id: 'currency', icon: 'wallet', label: () => L('واحد پول', 'Currency') },
+    { id: 'partners', icon: 'star', label: () => t('adm.sPartners') },
     { id: 'contact', icon: 'headset', label: () => t('common.support') },
   ],
   theme: [
@@ -168,7 +169,9 @@ export async function render(ctx) {
       ${TABS[sec].filter((x) => (sec === 'theme' ? can('theme.edit') : true)).map((x) => h`
         <a class="tab ${x.id === tab.id ? 'active' : ''}" href="#/admin/${sec}/${x.id}">${icon(x.icon)} ${x.label()}</a>`)}
     </div>
-    ${tab.id === 'features' ? featuresForm(CFG.settings?.features || {}) : schemaForm(tab.id, values)}
+    ${tab.id === 'features' ? featuresForm(CFG.settings?.features || {})
+      : tab.id === 'partners' ? partnersForm(CFG.settings?.partners?.items || [])
+      : schemaForm(tab.id, values)}
     <p class="hint mt">${L('تغییرها بلافاصله روی سایت اعمال می‌شود؛ برای دیدن نتیجه صفحه را تازه کن.', 'Changes apply to the site immediately; refresh the page to see them.')}</p>`;
 }
 
@@ -288,11 +291,43 @@ function featuresForm(features) {
     </form>`;
 }
 
+function partnersForm(items) {
+  const row = (it) => h`
+    <div class="row pt-row" data-ptrow>
+      <input class="input" name="fa" placeholder="${t('adm.ptFa')}" value="${it?.fa || ''}" maxlength="60">
+      <input class="input" name="en" placeholder="${t('adm.ptEn')}" value="${it?.en || ''}" maxlength="60">
+      <button type="button" class="btn btn-ghost btn-sm" data-act="adm-pt-del" aria-label="${t('misc.delete')}">${icon('trash')}</button>
+    </div>`;
+  return h`
+    <form class="card" data-act="adm-set-save" data-section="partners">
+      <p class="notice notice-info mb">${icon('info')}<span>${t('adm.ptHint')}</span></p>
+      <div class="col" data-ptlist>${items.map((it) => row(it)).join('') || row(null)}</div>
+      <div class="row row-wrap mt">
+        <button type="button" class="btn btn-ghost" data-act="adm-pt-add">${icon('plus')} ${t('adm.ptAdd')}</button>
+        <button class="btn btn-primary" type="submit">${icon('save')} ${t('common.save')}</button>
+      </div>
+    </form>`;
+}
+act('adm-pt-add', (e) => {
+  const list = e.target.closest('form').querySelector('[data-ptlist]');
+  list.insertAdjacentHTML('beforeend', `<div class="row pt-row" data-ptrow><input class="input" name="fa" placeholder="${t('adm.ptFa')}" value="" maxlength="60"><input class="input" name="en" placeholder="${t('adm.ptEn')}" value="" maxlength="60"><button type="button" class="btn btn-ghost btn-sm" data-act="adm-pt-del" aria-label="${t('misc.delete')}">${icon('trash')}</button></div>`);
+});
+act('adm-pt-del', (e) => {
+  const form = e.target.closest('form');
+  const rows = form.querySelectorAll('[data-ptrow]');
+  if (rows.length > 1) e.target.closest('[data-ptrow]').remove();
+  else form.querySelectorAll('[data-ptrow] input').forEach((i) => (i.value = ''));
+});
+
 // ── جمع‌آوری مقادیر ────────────────────────────────────────
 function collect(form, section) {
   const out = {};
   if (section === 'features') {
     form.querySelectorAll('input[type=checkbox][name^="features."]').forEach((i) => { out[i.name.slice(9)] = i.checked; });
+    return out;
+  }
+  if (section === 'partners') {
+    out.items = [...form.querySelectorAll('[data-ptrow]')].map((r) => ({ fa: r.querySelector('[name=fa]').value.trim(), en: r.querySelector('[name=en]').value.trim() })).filter((x) => x.fa || x.en);
     return out;
   }
   for (const f of FIELDS[section] || []) {

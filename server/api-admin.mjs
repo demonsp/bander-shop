@@ -915,7 +915,7 @@ export function registerAdmin(router) {
   });
 
   A('PATCH', '/api/admin/settings/:section', 'settings.edit', async (ctx) => {
-    const section = V.oneOf(ctx.params.section, ['store', 'theme', 'ui', 'features', 'shipping', 'plus', 'orders', 'seo', 'currency', 'auth', 'contact'], 'section');
+    const section = V.oneOf(ctx.params.section, ['store', 'theme', 'ui', 'features', 'shipping', 'plus', 'orders', 'seo', 'currency', 'auth', 'contact', 'partners'], 'section');
     if (['theme', 'ui'].includes(section)) ctx.requirePerm('theme.edit');
     const patch = ctx.body?.value && typeof ctx.body.value === 'object' ? ctx.body.value : ctx.body;
     const out = await db.tx((st) => {
@@ -1237,6 +1237,11 @@ function sanitizeSection(section, patch, current) {
         if (/^[a-zA-Z]{2,30}$/.test(k)) out[k] = V.bool(v, false);
       }
       break;
+    case 'partners': {
+      const arr = Array.isArray(patch?.items) ? patch.items : (Array.isArray(patch) ? patch : []);
+      out.items = arr.slice(0, 40).map((x) => ({ fa: String(x?.fa || '').slice(0, 60), en: String(x?.en || '').slice(0, 60) })).filter((x) => x.fa || x.en);
+      break;
+    }
     case 'shipping':
       i('courierBase', 0, 10000000); i('freeOver', 0, 100000000);
       n('insuranceRatePct', 0, 20); i('insuranceMin', 0, 10000000);

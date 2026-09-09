@@ -1158,3 +1158,23 @@ body.boot-slow .splash-slow{display:block}
 ::-webkit-scrollbar-thumb:hover{background:var(--accent);border:3px solid transparent;background-clip:padding-box}
 ::-webkit-scrollbar-corner{background:transparent}
 .nav-inner::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+
+/* ── نوار برندها ── */
+.marquee{overflow:hidden;padding:4px 0}
+.marquee-track{display:flex;gap:10px;width:max-content;animation:marq 34s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+@keyframes marq{to{transform:translateX(-50%)}}
+.partner-chip{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);font-size:12.5px;white-space:nowrap}
+.partner-chip .ic{width:15px;height:15px;color:var(--accent)}
+.pt-row{gap:8px;margin-bottom:8px}
+/* ── صفحه آمار ── */
+.page-head{margin:6px 0 14px}
+.page-h1{font-size:20px;font-weight:800;display:flex;align-items:center;gap:9px}
+.chart-card{padding:16px}
+.chart{display:flex;align-items:flex-end;gap:6px;height:150px}
+.ch-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;min-width:0}
+.ch-col i{width:100%;max-width:26px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--accent),var(--accent-2));display:block}
+.ch-col span{font-size:9px;color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:8px}
+.list-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
+.list-row .rank{width:26px;height:26px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}

@@ -190,7 +190,7 @@ export function registerCatalog(router) {
       settings: {
         store: s.store, theme: s.theme, ui: s.ui, features: s.features,
         shipping: publicShipping(s.shipping), plus: publicPlus(s.plus, s.features),
-        currency: s.currency, seo: s.seo, orders: { minOrder: s.orders?.minOrder || 0, codEnabled: !!s.orders?.codEnabled, walletEnabled: !!s.orders?.walletEnabled, gatewayEnabled: !!s.orders?.gatewayEnabled, gatewayMode: s.orders?.gatewayMode || 'demo' },
+        currency: s.currency, seo: s.seo, partners: s.partners, orders: { minOrder: s.orders?.minOrder || 0, codEnabled: !!s.orders?.codEnabled, walletEnabled: !!s.orders?.walletEnabled, gatewayEnabled: !!s.orders?.gatewayEnabled, gatewayMode: s.orders?.gatewayMode || 'demo' },
         otpMode: s.auth?.otpMode || 'demo',
       },
       categories: state.categories.filter((c) => c.active !== false).map(publicCategory),

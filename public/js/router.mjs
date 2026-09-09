@@ -31,6 +31,7 @@ export const routes = [
   { pattern: '/account/orders/:id', load: () => import('./views/order-detail.mjs'), title: () => t('acc.trackOrder'), guard: 'auth' },
   { pattern: '/account/tickets/:id', load: () => import('./views/ticket-detail.mjs'), title: () => t('common.ticket'), guard: 'auth' },
 
+  { pattern: '/stats', load: () => import('./views/stats.mjs'), title: () => t('nav.stats'), guard: 'feature:publicStats' },
   { pattern: '/pages/:key', load: () => import('./views/page.mjs'), title: (c) => c.params.key },
 
   { pattern: '/admin', load: () => import('./views/admin/index.mjs'), title: () => t('adm.title'), guard: 'admin' },

@@ -82,6 +82,7 @@ export const DEFAULT_SETTINGS = {
     offlineMode: true,
     captcha: true,
     consent: true,
+    partners: true,
   },
 
   shipping: {
@@ -140,6 +141,24 @@ export const DEFAULT_SETTINGS = {
 
   currency: { code: 'IRT', label: 'تومان', labelEn: 'Toman' },
   contact: { supportNote: 'پاسخ‌گویی تلفنی هر روز از ساعت ۹ تا ۲۱' },
+  partners: {
+    items: [
+      { fa: 'اپل', en: 'Apple' },
+      { fa: 'سامسونگ', en: 'Samsung' },
+      { fa: 'شیائومی', en: 'Xiaomi' },
+      { fa: 'انکر', en: 'Anker' },
+      { fa: 'بیسوس', en: 'Baseus' },
+      { fa: 'هوکو', en: 'Hoco' },
+      { fa: 'ریمکس', en: 'Remax' },
+      { fa: 'جی‌بی‌ال', en: 'JBL' },
+      { fa: 'سونی', en: 'Sony' },
+      { fa: 'هواوی', en: 'Huawei' },
+      { fa: 'ریلمی', en: 'Realme' },
+      { fa: 'سن‌دیسک', en: 'SanDisk' },
+      { fa: 'فیلیپس', en: 'Philips' },
+      { fa: 'لنوو', en: 'Lenovo' },
+    ],
+  },
 };
 
 // ─────────────────────────────────────────────────────────────

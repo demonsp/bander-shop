@@ -102,7 +102,7 @@ function renderNav() {
   const extra = [
     { key: '/deals', href: '#/products?discount=1', icon: 'percent', label: t('nav.deals'), show: feat('coupons') },
     { key: '/new', href: '#/products?sort=newest', icon: 'sparkles', label: t('nav.new'), show: true },
-    { key: '/pages/stats', href: '#/pages/stats', icon: 'chart', label: t('nav.stats'), show: feat('publicStats') },
+    { key: '/pages/stats', href: '#/stats', icon: 'chart', label: t('nav.stats'), show: feat('publicStats') },
     { key: '/price-check', href: '#/price-check', icon: 'barcode', label: t('priceCheck.title'), show: feat('priceCheckDevice') },
     { key: '/pages/about', href: '#/pages/about', icon: 'store', label: t('nav.about'), show: true },
     { key: '/pages/contact', href: '#/pages/contact', icon: 'map', label: t('nav.contact'), show: true },
@@ -427,7 +427,7 @@ function wirePalette() {
       ...(S.me?.isAdmin ? [{ icon: 'settings', label: t('adm.title'), href: '#/admin' }] : []),
       { icon: 'moon', label: t('theme.toggle'), run: () => qs('#btnTheme').click() },
       { icon: 'globe', label: 'English / فارسی', run: () => qs('#btnLang').click() },
-      { icon: 'chart', label: t('nav.stats'), href: '#/pages/stats' },
+      { icon: 'chart', label: t('nav.stats'), href: '#/stats' },
       { icon: 'map', label: t('nav.contact'), href: '#/pages/contact' },
     ];
 

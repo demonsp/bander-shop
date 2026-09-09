@@ -99,6 +99,16 @@ export async function render() {
       </div>
     </section>` : ''}
 
+    ${feat('partners') && (S.settings.partners?.items?.length) ? h`
+    <section class="section partners-sec">
+      ${sectionHead({ titleIcon: 'store', title: t('home.partnersTitle') })}
+      <div class="marquee" aria-label="${t('home.partnersTitle')}">
+        <div class="marquee-track">
+          ${[...S.settings.partners.items, ...S.settings.partners.items].map((p) => h`<span class="partner-chip">${icon('check')} <b>${isFa() ? p.fa : (p.en || p.fa)}</b></span>`).join('')}
+        </div>
+      </div>
+    </section>` : ''}
+
     <section class="section">
       ${sectionHead({ titleIcon: 'shield', title: t('home.whyUs'), sub: t('home.whyUsSub') })}
       <div class="pwa-grid">
@@ -111,7 +121,7 @@ export async function render() {
 
     ${feat('publicStats') && stats ? h`
     <section class="section">
-      ${sectionHead({ titleIcon: 'chart', title: t('home.statsTitle'), link: '#/pages/stats', linkLabel: t('common.showAll') })}
+      ${sectionHead({ titleIcon: 'chart', title: t('home.statsTitle'), link: '#/stats', linkLabel: t('common.showAll') })}
       <div class="stats-grid">
         ${statCard({ icon: 'box', label: t('stats.products'), value: fmtNum(stats.products) })}
         ${statCard({ icon: 'package-check', label: t('stats.ordersTotal'), value: fmtNum(stats.ordersTotal) })}
