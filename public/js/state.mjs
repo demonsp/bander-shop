@@ -213,8 +213,8 @@ export async function boot() {
 
   let data = null;
   const t0 = Date.now();
-  for (let attempt = 0; attempt < 6 && !data; attempt++) {
-    if (attempt) await new Promise((r) => setTimeout(r, 4000));
+  for (let attempt = 0; attempt < 10 && !data; attempt++) {
+    if (attempt) await new Promise((r) => setTimeout(r, 5000));
     try { data = await api.get('/api/bootstrap'); } catch (e) { console.warn('[state] bootstrap failed', e); }
     if (!data && Date.now() - t0 > 6000) emit('boot-slow');
   }
@@ -233,6 +233,7 @@ export async function boot() {
     S.ticketCategories = data.ticketCategories || [];
     S.ticketPriorities = data.ticketPriorities || [];
   }
+  if (!data) emit('boot-failed');
   loadPrefs();
   applyPrefs();
 

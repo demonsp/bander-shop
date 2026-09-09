@@ -690,6 +690,15 @@ function registerSW() {
 
 // ── شروع ────────────────────────────────────────────────────
 on('boot-slow', () => document.body.classList.add('boot-slow'));
+on('boot-failed', () => {
+  const sp = qs('#bootSplash');
+  if (!sp) return;
+  sp.innerHTML = h`<div class="empty">
+    <h4>${t('boot.failed')}</h4>
+    <p class="muted small mt-s">${t('boot.failedHint')}</p>
+    <button class="btn btn-primary mt" data-act="reload">${icon('refresh')} ${t('common.retry')}</button>
+  </div>`;
+});
 init().catch((e) => {
   console.error('[boot]', e);
   const splash = qs('#bootSplash');
