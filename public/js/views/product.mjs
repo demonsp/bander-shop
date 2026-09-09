@@ -1,0 +1,301 @@
+// ─────────────────────────────────────────────────────────────
+//  صفحهٔ محصول (PDP) با نظرات، سؤالات و کالاهای مشابه
+// ─────────────────────────────────────────────────────────────
+import { html as h, raw, icon, esc, fmtNum, fmtMoney, stars, fmtDate, timeAgo, linkify, applyDyn } from '../lib/dom.mjs';
+import { t, lang, isFa } from '../i18n.mjs';
+import { api } from '../lib/api.mjs';
+import { S, feat, ship, catById, catName, prodName, brandName, inWishlist, inCompare, hasAlert, pushRecent, adInSlot } from '../state.mjs';
+import { productGrid, breadcrumbs, starsInput, qtyWidget, emptyState, bannerSlot } from '../components.mjs';
+import { toast, toastSuccess, toastApiError, wireTabs, withBusy } from '../ui.mjs';
+import { act } from '../actions.mjs';
+import { navigate } from '../router.mjs';
+
+export async function render(ctx) {
+  const id = ctx.params.id;
+  let data = null;
+  try { data = await api.get(`/api/products/${encodeURIComponent(id)}`); }
+  catch { return emptyState({ icon: 'alert', title: t('err.notFound'), text: t('err.notFoundText'), action: { href: '#/products', label: t('err.goHome') } }); }
+  const p = data.product;
+  const allRev = data.reviews || [];
+  const reviews = allRev.filter((r) => r.type !== 'question');
+  const questions = allRev.filter((r) => r.type === 'question');
+  const rstats = data.reviewStats || { count: 0, avg: 0, dist: [0, 0, 0, 0, 0], questions: 0 };
+  const related = data.related || [];
+
+  // زنجیرهٔ دسته
+  const chain = [];
+  let c = catById(p.categoryId);
+  while (c) { chain.unshift(c); c = c.parentId ? catById(c.parentId) : null; }
+
+  const images = (p.images && p.images.length ? p.images : []).slice(0, 6);
+  const stock = p.stock ?? 0;
+  const zones = ship().zones || [];
+
+  return h`
+    ${breadcrumbs([...chain.map((x) => ({ label: catName(x), href: `#/category/${x.id}` })), { label: prodName(p) }])}
+    <div class="pdp">
+      <div class="gallery">
+        <div class="gal-main" data-act="lightbox" data-imgs='${esc(JSON.stringify(images))}' data-i="0" role="button" tabindex="0" aria-label="${t('pdp.share')}">
+          ${images[0] ? h`<img src="${images[0]}" alt="${prodName(p)}" data-glyph="${p.glyph}">` : raw(`<svg class="ic"><use href="#i-${p.glyph || 'box'}"/></svg>`)}
+        </div>
+        ${images.length > 1 ? h`<div class="gal-thumbs">${images.map((im, i) => h`
+          <button type="button" class="gal-thumb ${i === 0 ? 'active' : ''}" data-thumb="${i}" aria-label="${i + 1}"><img src="${im}" alt="" loading="lazy"></button>`)}</div>` : ''}
+        <div class="row row-wrap">
+          ${feat('wishlist') ? h`<button type="button" class="btn btn-ghost btn-sm ${inWishlist(p.id) ? 'btn-danger' : ''}" data-act="wish-toggle" data-id="${p.id}">${icon('heart')} ${inWishlist(p.id) ? t('card.wishlistRemove') : t('card.wishlistAdd')}</button>` : ''}
+          ${feat('compare') ? h`<button type="button" class="btn btn-ghost btn-sm ${inCompare(p.id) ? 'active' : ''}" data-act="compare-toggle" data-id="${p.id}">${icon('scale')} ${t('compare.add')}</button>` : ''}
+          <button type="button" class="btn btn-ghost btn-sm" data-act="share" data-title="${prodName(p)}">${icon('share')} ${t('pdp.share')}</button>
+        </div>
+      </div>
+
+      <div class="buy-box">
+        ${p.brandName ? h`<div class="pc-brand">${isFa() ? p.brandName : (p.brandNameEn || p.brandName)}</div>` : ''}
+        <h1 class="buy-title">${prodName(p)}</h1>
+        ${!isFa() && p.name ? h`<div class="buy-title-en">${p.name}</div>` : ''}
+        <div class="row row-wrap mt-s">
+          <span class="badge-pill bp-accent">${icon(catIconSafe(p.glyph))} ${catName(chain[chain.length - 1])}</span>
+          <span class="badge-pill ${p.authenticity === 'original' ? 'bp-success' : p.authenticity === 'highcopy' ? 'bp-warn' : 'bp-muted'}">${t(`auth.${p.authenticity || 'generic'}`)}</span>
+          ${p.featured ? h`<span class="badge-pill bp-violet">${icon('star')} ${t('home.featured')}</span>` : ''}
+        </div>
+        <div class="pc-rate mt-s">${stars(p.ratingAvg)} <span class="muted small">${fmtNum(rstats.avg || p.ratingAvg)} · ${fmtNum(rstats.count || p.ratingCount)} ${t('common.reviews')}</span></div>
+
+        <div class="buy-price">
+          ${p.oldPrice > p.price ? h`<span class="pc-old">${fmtMoney(p.oldPrice)}</span>` : ''}
+          <span class="buy-now">${fmtMoney(p.price)}</span>
+          ${p.discountPct > 0 ? h`<span class="pc-off">${fmtNum(p.discountPct)}٪</span>` : ''}
+        </div>
+        ${p.oldPrice > p.price ? h`<p class="hint">${t('pdp.save')}: ${fmtMoney(p.oldPrice - p.price)}</p>` : ''}
+
+        <div class="pc-stock ${stock <= 0 ? 'out' : stock <= 3 ? 'low' : ''} mt-s">
+          <span class="dot"></span>
+          ${stock <= 0 ? t('card.outOfStock') : t('pdp.stockCount', { n: fmtNum(stock) })}
+          ${stock > 0 && stock <= 3 ? h` <span class="badge-pill bp-warn">${t('common.lowStock')}</span>` : ''}
+        </div>
+
+        <div class="row mt">
+          ${qtyWidget({ value: 1, max: Math.max(1, stock), name: 'qty' })}
+          <button type="button" class="btn btn-primary btn-lg grow" data-act="pdp-add" data-id="${p.id}" ${stock <= 0 ? 'disabled' : ''}>${icon('cart')} ${t('pdp.addToCart')}</button>
+        </div>
+        <button type="button" class="btn btn-outline btn-block mt-s" data-act="pdp-buy" data-id="${p.id}" ${stock <= 0 ? 'disabled' : ''}>${icon('zap')} ${t('pdp.buyNow')}</button>
+
+        ${stock <= 0 && feat('priceAlerts') ? h`
+          <button type="button" class="btn btn-ghost btn-block mt-s ${hasAlert(p.id) ? 'active' : ''}" data-act="notify-me" data-id="${p.id}">
+            ${icon('bell')} ${hasAlert(p.id) ? t('common.notified') : t('common.notifyMe')}
+          </button>` : ''}
+
+        <div class="divider"></div>
+        <ul class="col">
+          <li class="row"><span class="stat-ic" data-h="30px" data-w="30px">${icon('store')}</span><span class="small">${t('pdp.pickup')}</span></li>
+          <li class="row"><span class="stat-ic" data-h="30px" data-w="30px">${icon('truck')}</span><span class="small">${t('checkout.courier')}: ${zones.map((z) => `${isFa() ? z.name : z.nameEn} ${fmtNum(z.fee)}`).join(' · ')}</span></li>
+          ${feat('insurance') ? h`<li class="row"><span class="stat-ic" data-h="30px" data-w="30px">${icon('scale')}</span><span class="small">${t('checkout.insuranceDesc')}</span></li>` : ''}
+          <li class="row"><span class="stat-ic" data-h="30px" data-w="30px">${icon('shield')}</span><span class="small">${p.warrantyMonths > 0 ? t('pdp.warrantyMonths', { n: fmtNum(p.warrantyMonths) }) : t('pdp.noWarranty')}</span></li>
+        </ul>
+
+        <div class="divider"></div>
+        <div class="row row-between small muted">
+          <span>${t('pdp.sku')}: <button type="button" class="link-btn mono" data-act="copy" data-text="${p.sku}">${p.sku}</button></span>
+          ${p.barcode ? h`<span>${t('pdp.barcode')}: <button type="button" class="link-btn mono" data-act="copy" data-text="${p.barcode}">${p.barcode}</button></span>` : ''}
+        </div>
+        <div class="row row-between small muted mt-s">
+          <span>${icon('eye')} ${fmtNum(p.views)} ${t('pdp.viewed')}</span>
+          <span>${icon('package-check')} ${fmtNum(p.sold)} ${t('pdp.sold')}</span>
+        </div>
+      </div>
+    </div>
+
+    ${bannerSlot('product_page', adInSlot('product_page'))}
+
+    <section class="section card">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tab active" data-tab="specs" role="tab">${t('pdp.specs')}</button>
+        <button type="button" class="tab" data-tab="desc" role="tab">${t('pdp.description')}</button>
+        ${feat('reviews') ? h`<button type="button" class="tab" data-tab="reviews" role="tab">${t('pdp.reviews')} (${fmtNum(rstats.count)})</button>` : ''}
+        ${feat('questions') ? h`<button type="button" class="tab" data-tab="questions" role="tab">${t('pdp.questions')} (${fmtNum(rstats.questions || questions.length)})</button>` : ''}
+      </div>
+
+      <div class="tab-panel" data-panel="specs">
+        ${Object.keys(p.specs || {}).length ? h`
+          <table class="spec-table">
+            <tbody>${Object.entries(p.specs).map(([k, v]) => h`<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`)}</tbody>
+          </table>` : h`<p class="muted">${t('common.noData')}</p>`}
+        ${p.weight ? h`<table class="spec-table mt-s"><tbody><tr><th>${t('pdp.weight')}</th><td>${fmtNum(p.weight)} ${t('pdp.gram')}</td></tr></tbody></table>` : ''}
+        ${(p.tags || []).length ? h`<div class="row row-wrap mt">${p.tags.map((tg) => h`<a class="tag" href="#/products?q=${encodeURIComponent(tg)}">#${tg}</a>`)}</div>` : ''}
+      </div>
+
+      <div class="tab-panel" data-panel="desc" hidden>
+        <div class="rev-body">${linkify(isFa() ? (p.description || '') : (p.descriptionEn || p.description || ''))}</div>
+        ${!isFa() && p.descriptionEn ? '' : (p.descriptionEn ? h`<div class="rev-body muted mt-s" dir="ltr">${esc(p.descriptionEn)}</div>` : '')}
+      </div>
+
+      ${feat('reviews') ? h`
+      <div class="tab-panel" data-panel="reviews" hidden>
+        <div class="rev-summary mb">
+          <div class="rev-score">
+            <div class="n">${fmtNum(rstats.avg || 0)}</div>
+            ${stars(rstats.avg || 0)}
+            <div class="muted small mt-s">${fmtNum(rstats.count)} ${t('common.reviews')}</div>
+          </div>
+          <div class="rev-bars">
+            ${[5, 4, 3, 2, 1].map((s) => h`
+              <div class="rev-bar"><span>${fmtNum(s)}★</span><span class="track"><span class="fill" data-w="${rstats.count ? Math.round(((rstats.dist?.[s - 1] || 0) / rstats.count) * 100) : 0}%"></span></span><span>${fmtNum(rstats.dist?.[s - 1] || 0)}</span></div>`)}
+          </div>
+        </div>
+        <div data-reviews>
+          ${reviews.length ? reviews.map(reviewHtml).join('') : h`<p class="muted">${t('pdp.noReviews')}</p>`}
+        </div>
+        <div class="divider"></div>
+        ${S.me ? h`
+          <form data-act="review-submit" data-pid="${p.id}">
+            <strong>${t('pdp.writeReview')}</strong>
+            <div class="mt-s">${starsInput({ name: 'rating', value: 5 })}</div>
+            <label class="field mt-s"><span class="label">${t('common.title')}</span><input class="input" name="title" maxlength="80" required></label>
+            <label class="field"><span class="label">${t('common.body')}</span><textarea class="textarea" name="body" maxlength="1500" required></textarea></label>
+            <button class="btn btn-primary" type="submit">${t('common.submit')}</button>
+          </form>` : h`<p class="notice notice-info">${icon('user')}<span>${t('pdp.loginToReview')} <a class="section-link" href="#/auth?next=product/${p.id}">${t('nav.login')}</a></span></p>`}
+      </div>` : ''}
+
+      ${feat('questions') ? h`
+      <div class="tab-panel" data-panel="questions" hidden>
+        <div data-questions>
+          ${questions.length ? questions.map(reviewHtml).join('') : h`<p class="muted">${t('pdp.noQuestions')}</p>`}
+        </div>
+        <div class="divider"></div>
+        ${S.me ? h`
+          <form data-act="question-submit" data-pid="${p.id}">
+            <strong>${t('pdp.askQuestion')}</strong>
+            <label class="field mt-s"><span class="label">${t('common.title')}</span><input class="input" name="title" maxlength="80" required></label>
+            <label class="field"><span class="label">${t('common.body')}</span><textarea class="textarea" name="body" maxlength="1500" required></textarea></label>
+            <button class="btn btn-primary" type="submit">${t('common.submit')}</button>
+          </form>` : h`<p class="notice notice-info">${icon('user')}<span>${t('pdp.loginToReview')} <a class="section-link" href="#/auth?next=product/${p.id}">${t('nav.login')}</a></span></p>`}
+      </div>` : ''}
+    </section>
+
+    ${related.length ? h`
+    <section class="section">
+      <div class="section-head"><div><h2 class="section-title">${icon('layers')} ${t('pdp.related')}</h2></div></div>
+      ${productGrid(related.slice(0, 5))}
+    </section>` : ''}
+
+    ${S.recent.filter((x) => x !== p.id).length ? h`
+    <section class="section">
+      <div class="section-head"><div><h2 class="section-title">${icon('history')} ${t('misc.recentlyViewed')}</h2></div></div>
+      <div data-recent></div>
+    </section>` : ''}
+
+    <div class="pdp-bar no-print">
+      <div class="pdp-bar-p">
+        <div class="b">${fmtMoney(p.price)}</div>
+        ${(p.oldPrice || 0) > p.price ? h`<div class="tiny muted del">${fmtMoney(p.oldPrice)}</div>` : ''}
+      </div>
+      ${(p.stock || 0) > 0
+        ? h`<button class="btn btn-primary" data-act="pdp-add" data-id="${p.id}">${icon('cart')} ${t('pdp.addToCart')}</button>`
+        : h`<button class="btn btn-ghost" data-act="notify-me" data-id="${p.id}">${icon('bell')} ${t('common.notifyMe')}</button>`}
+    </div>
+  `;
+}
+
+function catIconSafe(g) {
+  const map = { cable: 'cable', adapter: 'plug', case: 'shield', glass: 'layers', powerbank: 'battery', battery: 'battery', dongle: 'plug', speaker: 'speaker', audio: 'headset', wearable: 'watch', content: 'camera', gaming: 'zap', car: 'truck', light: 'light', mics: 'mic', misc: 'box' };
+  return map[g] || 'box';
+}
+
+function reviewHtml(r) {
+  return h`
+    <div class="review" data-rid="${r.id}">
+      <div class="rev-head">
+        <span class="rev-who">${esc(r.userName)}</span>
+        <span class="badge-pill ${r.userBadge === 'buyer' ? 'bp-success' : 'bp-muted'}">${r.userBadge === 'buyer' ? t('pdp.buyerBadge') : t('pdp.visitorBadge')}</span>
+        ${r.rating ? stars(r.rating) : ''}
+        <span class="rev-date">${fmtDate(r.createdAt, { time: false })}</span>
+      </div>
+      <div class="rev-title">${esc(r.title)}</div>
+      <div class="rev-body">${esc(r.body)}</div>
+      ${r.reply ? h`<div class="rev-reply"><strong>${t('pdp.storeReply')}:</strong> ${esc(r.reply)}</div>` : ''}
+      <div class="rev-actions">
+        <button type="button" class="link-btn" data-act="review-like" data-id="${r.id}">${icon('heart')} ${t('pdp.helpful')} (${fmtNum(r.likes || 0)})</button>
+      </div>
+    </div>`;
+}
+
+export function mount(root, ctx) {
+  applyDyn(root);
+  pushRecent(ctx.params.id);
+  wireTabs(root);
+
+  // بندانگشتی‌ها
+  root.querySelectorAll('[data-thumb]').forEach((b) => b.addEventListener('click', () => {
+    const i = Number(b.dataset.thumb);
+    const imgs = JSON.parse(root.querySelector('[data-imgs]').dataset.imgs || '[]');
+    const main = root.querySelector('.gal-main img');
+    if (main && imgs[i]) main.src = imgs[i];
+    root.querySelectorAll('[data-thumb]').forEach((x) => x.classList.toggle('active', x === b));
+    root.querySelector('[data-imgs]').dataset.i = String(i);
+  }));
+
+  // افزودن به سبد با تعداد انتخابی
+  act('pdp-add', async (e, el) => {
+    const qty = Number(root.querySelector('.qty input')?.value || 1);
+    await withBusy(el, async () => {
+      try {
+        const { addToCart } = await import('../state.mjs');
+        await addToCart(el.dataset.id, qty);
+        toastSuccess(t('card.added'), { timeout: 2400 });
+      } catch (err) { toastApiError(err); }
+    });
+  });
+  act('pdp-buy', async (e, el) => {
+    const qty = Number(root.querySelector('.qty input')?.value || 1);
+    try {
+      const { addToCart } = await import('../state.mjs');
+      await addToCart(el.dataset.id, qty);
+      navigate('#/checkout');
+    } catch (err) { toastApiError(err); }
+  });
+
+  act('review-like', async (e, el) => {
+    if (!S.me) { navigate('#/auth'); return; }
+    try {
+      const r = await api.post(`/api/reviews/${el.dataset.id}/like`);
+      el.innerHTML = h`${icon('heart')} ${t('pdp.helpful')} (${fmtNum(r.likes)})`;
+    } catch (err) { toastApiError(err); }
+  });
+
+  act('review-submit', async (e, form) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    await withBusy(form.querySelector('button[type=submit]'), async () => {
+      try {
+        const r = await api.post('/api/reviews', {
+          productId: form.dataset.pid, type: 'review',
+          rating: Number(fd.get('rating') || 0), title: fd.get('title'), body: fd.get('body'),
+        });
+        toastSuccess(r.message || t('pdp.reviewSubmitted'), { timeout: 5000 });
+        form.reset();
+      } catch (err) { toastApiError(err); }
+    });
+  });
+  act('question-submit', async (e, form) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    await withBusy(form.querySelector('button[type=submit]'), async () => {
+      try {
+        const r = await api.post('/api/reviews', { productId: form.dataset.pid, type: 'question', title: fd.get('title'), body: fd.get('body') });
+        toastSuccess(r.message || t('pdp.questionSubmitted'), { timeout: 5000 });
+        form.reset();
+      } catch (err) { toastApiError(err); }
+    });
+  });
+
+  // کالاهای اخیر
+  const recentBox = root.querySelector('[data-recent]');
+  if (recentBox && S.recent.length) {
+    api.get('/api/products?limit=60').then((r) => {
+      const ids = S.recent.filter((x) => x !== ctx.params.id).slice(0, 5);
+      const items = ids.map((id) => r.items.find((p) => p.id === id)).filter(Boolean);
+      recentBox.innerHTML = productGrid(items);
+      applyDyn(recentBox);
+    }).catch(() => {});
+  }
+  return () => {};
+}
+
+export const title = (ctx) => ctx.params.id;

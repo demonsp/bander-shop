@@ -1,0 +1,14 @@
+{
+  "name": "bander-mobile-shop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "فروشگاه لوازم جانبی موبایل بندر موبایل — سرور Node بدون وابستگی + SPA",
+  "type": "module",
+  "scripts": {
+    "start": "node server/main.mjs",
+    "test": "node tests/api.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

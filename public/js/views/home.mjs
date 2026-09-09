@@ -1,0 +1,181 @@
+// ─────────────────────────────────────────────────────────────
+//  صفحهٔ اصلی
+// ─────────────────────────────────────────────────────────────
+import { html as h, icon, fmtNum, esc, raw } from '../lib/dom.mjs';
+import { t, lang, isFa } from '../i18n.mjs';
+import { api } from '../lib/api.mjs';
+import { S, feat, store, plusCfg, adInSlot, isPlus, catName, prodName, brandName } from '../state.mjs';
+import { productGrid, catCard, bannerSlot, sectionHead, statCard, minimapSvg } from '../components.mjs';
+
+
+export async function render() {
+  const st = store();
+  let recentItems = [];
+  if (feat('recentlyViewed') && (S.recent || []).length) {
+    try { recentItems = (await api.get(`/api/products?ids=${S.recent.slice(0, 8).join(',')}&limit=8`)).items || []; } catch { recentItems = []; }
+  }
+  let items = [];
+  let cats = S.categories;
+  let brands = S.brands;
+  let stats = S.stats;
+  try {
+    const [pr, cr, br] = await Promise.all([
+      api.get('/api/products?limit=48&sort=popular'),
+      S.categories.length ? Promise.resolve(null) : api.get('/api/categories'),
+      S.brands.length ? Promise.resolve(null) : api.get('/api/brands'),
+    ]);
+    items = pr.items || [];
+    if (cr) cats = cr.items || [];
+    if (br) brands = br.items || [];
+    if (feat('publicStats')) {
+      try { const sr = await api.get('/api/stats/public'); stats = sr.stats || stats; } catch { /* noop */ }
+    }
+  } catch { /* نمایش با دادهٔ موجود */ }
+
+  const featured = items.filter((p) => p.featured).slice(0, 8);
+  const best = [...items].sort((a, b) => (b.sold || 0) - (a.sold || 0)).slice(0, 8);
+  const fresh = [...items].sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || ''))).slice(0, 8);
+  const deals = items.filter((p) => p.discountPct > 0).sort((a, b) => b.discountPct - a.discountPct).slice(0, 8);
+  const topCats = cats.filter((c) => !c.parentId).slice(0, 12);
+  const list = featured.length ? featured : best.slice(0, 8);
+
+  return h`
+    ${bannerSlot('home_hero', adInSlot('home_hero'))}
+    <section class="hero">
+      <div class="hero-bg"><img src="/assets/img/hero-port.svg" alt="" decoding="async"></div>
+      <div class="hero-inner">
+        <span class="hero-kicker">${icon('anchor')} ${t('home.heroKicker')}</span>
+        <h1 class="hero-title">${t('home.heroTitle')}</h1>
+        <p class="hero-text">${t('home.heroText')}</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="#/products">${icon('cart')} ${t('home.ctaShop')}</a>
+          <a class="btn btn-ghost btn-lg" href="#/products?discount=1">${icon('percent')} ${t('home.ctaDeals')}</a>
+        </div>
+        <div class="hero-points">
+          <span class="hero-point">${icon('shield')} ${t('home.point1')}</span>
+          <span class="hero-point">${icon('package-check')} ${t('home.point2')}</span>
+          <span class="hero-point">${icon('truck')} ${t('home.point3')}</span>
+          <span class="hero-point">${icon('store')} ${t('home.point4')}</span>
+        </div>
+      </div>
+    </section>
+
+    ${bannerSlot('home_strip', adInSlot('home_strip'))}
+
+    <section class="section">
+      ${sectionHead({ titleIcon: 'layers', title: t('home.categories'), sub: t('home.categoriesSub'), link: '#/products', linkLabel: t('common.showAll') })}
+      <div class="cat-grid">${topCats.map((c) => catCard(c, c.count ?? null))}</div>
+    </section>
+
+    ${list.length ? h`
+    <section class="section">
+      ${sectionHead({ titleIcon: 'star', title: t('home.featured'), sub: t('home.featuredSub'), link: '#/products?sort=popular' })}
+      ${productGrid(list)}
+    </section>` : ''}
+
+    ${deals.length ? h`
+    <section class="section">
+      ${sectionHead({ titleIcon: 'percent', title: t('home.deals'), sub: t('home.dealsSub'), link: '#/products?discount=1' })}
+      ${productGrid(deals)}
+    </section>` : ''}
+
+    ${best.length ? h`
+    <section class="section">
+      ${sectionHead({ titleIcon: 'chart', title: t('home.bestSellers'), sub: t('home.bestSellersSub'), link: '#/products?sort=popular' })}
+      ${productGrid(best)}
+    </section>` : ''}
+
+    ${fresh.length ? h`
+    <section class="section">
+      ${sectionHead({ titleIcon: 'sparkles', title: t('home.newArrivals'), sub: t('home.newArrivalsSub'), link: '#/products?sort=newest' })}
+      ${productGrid(fresh)}
+    </section>` : ''}
+
+    ${brands.length ? h`
+    <section class="section">
+      ${sectionHead({ titleIcon: 'tag', title: t('home.brands') })}
+      <div class="row row-wrap">
+        ${brands.slice(0, 18).map((b) => h`<a class="chip" href="#/products?brand=${b.id}">${brandName(b)}</a>`)}
+      </div>
+    </section>` : ''}
+
+    <section class="section">
+      ${sectionHead({ titleIcon: 'shield', title: t('home.whyUs'), sub: t('home.whyUsSub') })}
+      <div class="pwa-grid">
+        <div class="pwa-card"><span class="pwa-ic">${icon('shield')}</span><div><div class="b">${t('home.point1')}</div><div class="muted small">${isFa() ? 'همهٔ کالاها پیش از فروش تست می‌شوند و با فاکتور رسمی و گارانتی فروشگاه تحویل می‌گیرید.' : 'Every item is tested before sale and delivered with an official invoice and store warranty.'}</div></div></div>
+        <div class="pwa-card"><span class="pwa-ic">${icon('package-check')}</span><div><div class="b">${t('home.point2')}</div><div class="muted small">${isFa() ? 'طبق قانون، ۷ روز کاری فرصت داری بدون دلیل کالا را برگردانی؛ فقط هزینهٔ برگشت با توست.' : 'By law you have 7 working days to return an item without reason; only return shipping is on you.'}</div></div></div>
+        <div class="pwa-card"><span class="pwa-ic">${icon('truck')}</span><div><div class="b">${t('home.point3')}</div><div class="muted small">${isFa() ? 'سفارش‌ها هر روز کاری از بوشهر راهی می‌شوند؛ داخل شهر با پیک و بقیهٔ ایران با پست.' : 'Orders leave Bushehr every working day — by courier in the city and by post nationwide.'}</div></div></div>
+        <div class="pwa-card"><span class="pwa-ic">${icon('headset')}</span><div><div class="b">${t('footer.support')}</div><div class="muted small">${isFa() ? 'چت آنلاین، تیکت و تلفن؛ نصب گلس و مشاورهٔ خرید هم در مغازه رایگان است.' : 'Live chat, tickets and phone; screen-guard installation and buying advice are free in store.'}</div></div></div>
+      </div>
+    </section>
+
+    ${feat('publicStats') && stats ? h`
+    <section class="section">
+      ${sectionHead({ titleIcon: 'chart', title: t('home.statsTitle'), link: '#/pages/stats', linkLabel: t('common.showAll') })}
+      <div class="stats-grid">
+        ${statCard({ icon: 'box', label: t('stats.products'), value: fmtNum(stats.products) })}
+        ${statCard({ icon: 'package-check', label: t('stats.ordersTotal'), value: fmtNum(stats.ordersTotal) })}
+        ${statCard({ icon: 'cart', label: t('stats.ordersToday'), value: fmtNum(stats.ordersToday) })}
+        ${statCard({ icon: 'eye', label: t('stats.visitsToday'), value: fmtNum(stats.visitsToday) })}
+        ${statCard({ icon: 'users', label: t('stats.customers'), value: fmtNum(stats.customers) })}
+        ${statCard({ icon: 'truck', label: t('stats.delivered'), value: fmtNum(stats.deliveredOrders) })}
+      </div>
+    </section>` : ''}
+
+    ${feat('plus') && !isPlus() ? h`
+    <section class="section">
+      <div class="banner">
+        <div class="banner-body">
+          <div class="banner-title">${icon('sparkles')} ${t('home.plusTitle')}</div>
+          <div class="banner-text">${t('home.plusText')}</div>
+          <div class="row row-wrap mt-s">
+            ${(plusCfg().perks || []).slice(0, 4).map((p) => h`<span class="chip">${icon('check')} ${isFa() ? p.fa : p.en}</span>`)}
+          </div>
+        </div>
+        <a class="btn btn-primary banner-cta" href="#/account/plus">${t('home.plusCta')} ${icon('chevron-left')}</a>
+      </div>
+    </section>` : ''}
+
+    <section class="section">
+      <div class="catalog" >
+        <div class="card">
+          ${sectionHead({ titleIcon: 'store', title: t('home.visitStore'), sub: t('home.visitStoreText') })}
+          <p class="muted small mb">${esc(isFa() ? (st.address || '') : (st.addressEn || st.address || ''))}</p>
+          <div class="row row-wrap">
+            <a class="btn btn-primary" href="#/pages/contact">${icon('map')} ${t('home.openMap')}</a>
+            <a class="btn btn-ghost" href="tel:${st.phone}">${icon('phone')} ${fmtNum(st.phone || '')}</a>
+          </div>
+        </div>
+        <div class="card">
+          ${sectionHead({ titleIcon: 'download', title: t('home.appTitle'), sub: t('home.appText') })}
+          <div class="row row-wrap">
+            <button type="button" class="btn btn-primary" data-act="install-app">${icon('download')} ${t('home.installCta')}</button>
+          </div>
+          <p class="hint mt-s">${t('misc.installHint')}</p>
+        </div>
+      </div>
+    </section>
+
+    ${recentItems.length ? h`
+    <section class="section">
+      ${sectionHead({ titleIcon: 'history', title: t('home.recent'), sub: t('home.recentSub') })}
+      ${productGrid(recentItems)}
+    </section>` : ''}
+
+    <section class="section">
+      <div class="card">
+        <div class="minimap" data-act="open-map"" role="button" tabindex="0" aria-label="${t('contact.mapTitle')}">
+          ${raw(minimapSvg())}
+          <span class="minimap-hint">${icon('pin')} ${t('contact.mapHint')}</span>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+export function mount() {
+  // نگه‌داشتن کروکی در ارتفاع مناسب
+  return null;
+}
+
+export const title = () => t('nav.home');
