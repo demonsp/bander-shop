@@ -81,6 +81,7 @@ export const DEFAULT_SETTINGS = {
     voiceSearch: true,
     offlineMode: true,
     captcha: true,
+    consent: true,
   },
 
   shipping: {

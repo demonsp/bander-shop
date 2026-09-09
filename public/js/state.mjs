@@ -418,9 +418,17 @@ export function addSearch(q) {
 export function clearSearches() { S.searches = []; writeLS(LS.search, []); }
 
 // ── توافق‌نامه ──────────────────────────────────────────────
-export const hasConsent = () => !!(S.consent?.at || S.me?.consent?.termsAt);
+export const CONSENT_VERSION = 2;
+export const CONSENT_TTL_DAYS = 180;
+export const hasConsent = () => {
+  const c = S.consent;
+  if (!c?.at) return false;
+  if ((c.v || 1) !== CONSENT_VERSION) return false;
+  const age = Date.now() - Date.parse(c.at);
+  return Number.isFinite(age) && age >= 0 && age < CONSENT_TTL_DAYS * 86400000;
+};
 export function setConsent(data) {
-  S.consent = { ...data, at: new Date().toISOString() };
+  S.consent = { ...data, v: CONSENT_VERSION, at: new Date().toISOString() };
   writeLS(LS.consent, S.consent);
   if (S.me) api.patch('/api/me', { consent: true }).catch(() => {});
   emit('consent', S.consent);

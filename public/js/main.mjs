@@ -558,8 +558,8 @@ function wireScroll() {
 }
 
 // ── توافق‌نامهٔ اولین بازدید ────────────────────────────────
-function maybeConsent() {
-  if (hasConsent()) return;
+function openConsent() {
+  if (!feat('consent')) return;
   modal({
     title: t('consent.title'),
     dismissible: false,
@@ -567,12 +567,13 @@ function maybeConsent() {
     size: 'md',
     body: h`
       <p class="confirm-text mb">${t('consent.text')}</p>
+      <p class="hint mt-s">${icon('info')} ${t('consent.ttlNote')}</p>
       <form data-act="consent-form" class="col">
         <label class="check"><input type="checkbox" name="terms" checked><span class="box">${icon('check')}</span><span>${t('consent.terms')} <a class="section-link" href="#/pages/terms">${t('consent.readTerms')}</a></span></label>
         <label class="check"><input type="checkbox" name="privacy" checked><span class="box">${icon('check')}</span><span>${t('consent.privacy')} <a class="section-link" href="#/pages/privacy">${t('consent.readPrivacy')}</a></span></label>
         <label class="check"><input type="checkbox" name="marketing"><span class="box">${icon('check')}</span><span>${t('consent.marketing')}</span></label>
       </form>`,
-    footer: h`<button type="button" class="btn btn-primary" data-consent-go>${t('consent.accept')}</button>`,
+    footer: h`<button type="button" class="btn btn-ghost" data-consent-min>${t('consent.rejectOptional')}</button><button type="button" class="btn btn-primary" data-consent-go>${t('consent.accept')}</button>`,
     onMount: (panel, handle) => {
       const form = panel.querySelector('[data-act="consent-form"]');
       const go = () => {
@@ -586,11 +587,19 @@ function maybeConsent() {
         handle.close();
       };
       panel.closest('.modal').querySelector('[data-consent-go]').addEventListener('click', go);
+      panel.closest('.modal').querySelector('[data-consent-min]').addEventListener('click', () => {
+        setConsent({ terms: true, privacy: true, marketing: false });
+        if (S.me) api.patch('/api/me', { notificationsPrefs: { marketing: false } }).catch(() => {});
+        toastSuccess(t('consent.thanks'));
+        handle.close();
+      });
       form.addEventListener('submit', (e) => { e.preventDefault(); go(); });
     },
   });
 }
 act('consent-form', () => {}); // فرم توسط onMount مدیریت می‌شود
+act('consent-manage', () => openConsent());
+function maybeConsent() { if (hasConsent()) return; openConsent(); }
 act('reload', () => location.reload());
 
 // ── اجبار به تغییر رمز پیش‌فرض ──────────────────────────────
