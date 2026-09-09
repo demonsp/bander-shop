@@ -177,6 +177,9 @@ function editor(p) {
           </div>
         </div>
         <div class="img-list mt-s" data-img-list>${imagesHtml()}</div>
+        <div class="mt">
+          ${textareaField({ label: t('adm.pVideos'), name: 'videos', value: (p?.videos || []).join('\n'), rows: 2, hint: t('adm.pVideosHint') })}
+        </div>
       </div>
 
       <div class="card mt">
@@ -297,7 +300,7 @@ act('adm-p-save', async (e, form) => {
     weight: Number(fd.get('weight') || 0), warrantyMonths: Number(fd.get('warrantyMonths') || 0),
     authenticity: fd.get('authenticity') || 'generic',
     description: fd.get('description') || '', descriptionEn: fd.get('descriptionEn') || '',
-    images: E.images.slice(0, 8), specs, tags: E.tags.slice(0, 20),
+    images: E.images.slice(0, 8), videos: String(form.videos?.value || '').split(/\n+/).map((x) => x.trim()).filter(Boolean).slice(0, 4), specs, tags: E.tags.slice(0, 20),
     featured: fd.get('featured') === 'on', active: fd.get('active') === 'on',
   };
   await withBusy(form.querySelector('button[type=submit]'), async () => {

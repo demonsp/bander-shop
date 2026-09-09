@@ -51,7 +51,7 @@ export async function render(ctx) {
               ${checkField({ label: t('auth.remember'), name: 'remember', checked: true })}
               <button type="button" class="link-btn" data-goto="forgot">${t('auth.forgot')}</button>
             </div>
-            ${captchaField({ hidden: true })}
+            ${captchaField()}
             <button class="btn btn-primary btn-block" type="submit">${icon('logout')} ${t('common.login')}</button>
           </form>
 
@@ -142,6 +142,8 @@ export async function render(ctx) {
 
 export function mount(root, ctx) {
   applyDyn(root);
+  // پیش‌بارگذاری کپچا تا به محض باز شدن فرم، ویجت آماده باشد
+  root.querySelectorAll('[data-captcha]').forEach((b) => loadCaptcha(b));
   const next = ctx.query.get('next') || '';
   const panels = { login: root.querySelector('[data-ap="login"]'), register: root.querySelector('[data-ap="register"]'), forgot: root.querySelector('[data-ap="forgot"]') };
 

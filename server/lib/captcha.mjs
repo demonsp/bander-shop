@@ -30,18 +30,28 @@ const esc = (ch) => ch.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g
 
 function svgMath(a, b, mul) {
   const expr = `${faDigits(a)} ${mul ? '×' : '+'} ${faDigits(b)} = ؟`;
+  // نویز فقط در حاشیهٔ بالا/پایین تا روی عبارت ریاضی سایه نیندازد
   let noise = '';
-  for (let i = 0; i < 5; i++) {
-    noise += `<line x1="${rnd(150).toFixed(1)}" y1="${(3 + rnd(54)).toFixed(1)}" x2="${rnd(150).toFixed(1)}" y2="${(3 + rnd(54)).toFixed(1)}" stroke="hsl(${Math.floor(rnd(360))} 65% 62% / .45)" stroke-width="1.1"/>`;
+  for (let i = 0; i < 3; i++) {
+    const top = rnd(2) < 1;
+    const y1 = top ? 2 + rnd(6) : 52 + rnd(6);
+    const y2 = top ? 2 + rnd(6) : 52 + rnd(6);
+    noise += `<line x1="${rnd(150).toFixed(1)}" y1="${y1.toFixed(1)}" x2="${rnd(150).toFixed(1)}" y2="${y2.toFixed(1)}" stroke="hsl(${Math.floor(rnd(360))} 65% 62% / .35)" stroke-width="1"/>`;
   }
-  for (let i = 0; i < 9; i++) {
-    noise += `<circle cx="${rnd(150).toFixed(1)}" cy="${rnd(60).toFixed(1)}" r="${(0.4 + rnd(1.5)).toFixed(1)}" fill="hsl(${Math.floor(rnd(360))} 70% 60% / .4)"/>`;
+  for (let i = 0; i < 6; i++) {
+    const top = rnd(2) < 1;
+    noise += `<circle cx="${rnd(150).toFixed(1)}" cy="${(top ? 2 + rnd(7) : 51 + rnd(7)).toFixed(1)}" r="${(0.4 + rnd(1.2)).toFixed(1)}" fill="hsl(${Math.floor(rnd(360))} 70% 60% / .35)"/>`;
   }
+  const isOp = (ch) => ch === '+' || ch === '×' || ch === '=';
   const chars = [...expr].map((ch, i) => {
+    const op = isOp(ch);
     const x = 13 + i * 15;
-    const y = 38 + Math.round(rnd(9) - 4);
-    const rot = (rnd(26) - 13).toFixed(1);
-    return `<text x="${x}" y="${y}" transform="rotate(${rot} ${x} ${y})" font-size="20" font-weight="800" fill="currentColor" opacity="${(0.82 + rnd(0.18)).toFixed(2)}">${ch === ' ' ? '&#160;' : esc(ch)}</text>`;
+    // عملگرها کاملاً صاف، بزرگ‌تر و با رنگ متمایز؛ اعداد چرخش خیلی کم
+    const y = op ? 40 : 38 + Math.round(rnd(5) - 2);
+    const rot = op ? 0 : (rnd(12) - 6).toFixed(1);
+    const size = op ? 26 : 21;
+    const fill = op ? '#31afd4' : 'currentColor';
+    return `<text x="${x}" y="${y}" transform="rotate(${rot} ${x} ${y})" font-size="${size}" font-weight="800" fill="${fill}" opacity="${op ? 1 : (0.88 + rnd(0.12)).toFixed(2)}">${ch === ' ' ? '&#160;' : esc(ch)}</text>`;
   }).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 60" width="150" height="60" role="img" aria-label="challenges math">${'<rect width="150" height="60" rx="10" fill="none"/>'}${noise}${chars}</svg>`;
 }

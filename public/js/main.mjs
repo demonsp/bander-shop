@@ -8,7 +8,7 @@ import {
 } from './state.mjs';
 import { t, lang, isFa, applyI18n, setLang } from './i18n.mjs';
 import { api } from './lib/api.mjs';
-import { html as h, raw, esc, icon, el, qs, debounce, fmtNum, faDigits, catIcon, applyDyn } from './lib/dom.mjs';
+import { html as h, raw, esc, icon, el, qs, debounce, fmtNum, fmtTel, faDigits, catIcon, applyDyn } from './lib/dom.mjs';
 import { toast, toastSuccess, toastError, toastApiError, modal, drawer, confirmDialog, installHintModal, updateSleepScreen } from './ui.mjs';
 import { installDelegation, act } from './actions.mjs';
 import { initRouter, navigate, refresh, parseHash } from './router.mjs';
@@ -49,20 +49,24 @@ function renderChrome() {
   const st = store();
   const u = ui();
 
-  // نوار بالا
+  // نوار بالا — همیشه visible؛ اگر مدیر آیتمی نگذاشته، پیش‌فرض‌های فروشگاه
   const topbar = qs('#topbar');
-  const tickerItems = (u.showTicker !== false ? (S.ticker || []) : []);
-  if (tickerItems.length) {
-    topbar.hidden = false;
-    const one = tickerItems.map((x) => h`<span class="ticker-item">${icon('sparkles')} ${x}</span>`).join('');
-    qs('#ticker').innerHTML = `<div class="ticker-track">${one}${one}</div>`;
-  } else topbar.hidden = true;
+  const fb = [];
+  if (st.freeShipOver) fb.push(isFa() ? `ارسال رایگان سفارش‌های بالای ${fmtNum(st.freeShipOver)} تومان` : `Free shipping over ${fmtNum(st.freeShipOver)}`);
+  fb.push(isFa() ? 'ضمانت اصالت کالا؛ مرجوع تا ۷ روز' : 'Authenticity guarantee; 7-day returns');
+  if (st.phone) fb.push(isFa() ? `پشتیبانی هر روز ۹ تا ۲۱ — ${fmtTel(st.phone)}` : `Support 9–21 daily — ${fmtTel(st.phone)}`);
+  if (st.socials?.instagram) fb.push(isFa() ? 'تازه‌های گجت هر هفته در اینستاگرام گرین اپل' : 'New gadgets weekly on Instagram');
+  const tickerItems = S.ticker?.length ? S.ticker : fb;
+  topbar.hidden = false;
+  topbar.classList.toggle('no-ticker', u.showTicker === false);
+  const one = tickerItems.map((x) => h`<span class="ticker-item">${icon('sparkles')} ${x}</span>`).join('');
+  qs('#ticker').innerHTML = `<div class="ticker-track">${one}${one}</div>`;
   const tbPhone = qs('#tb-phone');
   tbPhone.href = `tel:${st.phone || ''}`;
-  tbPhone.innerHTML = h`${icon('phone')} ${fmtNum(st.phone || '')}`;
+  tbPhone.innerHTML = h`${icon('phone')} ${fmtTel(st.phone || '')}`;
 
   // برند
-  qs('#brandName').textContent = isFa() ? (st.name || t('app.name')) : (st.nameEn || st.name || 'Bander Mobile');
+  qs('#brandName').textContent = isFa() ? (st.name || t('app.name')) : (st.nameEn || st.name || 'Green Apple');
   qs('#brandTag').textContent = isFa() ? (st.tagline || '') : (st.taglineEn || '');
   qs('#brandLink').setAttribute('aria-label', `${st.name || ''} — ${t('nav.home')}`);
 
@@ -154,8 +158,8 @@ function renderFooter() {
 
   // تماس
   qs('#fContact').innerHTML = h`
-    <li>${icon('phone')}<span>${t('contact.phone')}: <a href="tel:${st.phone}">${fmtNum(st.phone || '')}</a></span></li>
-    <li>${icon('chat')}<span>${t('contact.mobile')}: <a href="tel:${st.phone2 || st.phone}">${fmtNum(st.phone2 || '')}</a></span></li>
+    <li>${icon('phone')}<span>${t('contact.phone')}: <a href="tel:${st.phone}">${fmtTel(st.phone || '')}</a></span></li>
+    <li>${icon('chat')}<span>${t('contact.mobile')}: <a href="tel:${st.phone2 || st.phone}">${fmtTel(st.phone2 || '')}</a></span></li>
     <li>${icon('mail')}<span><a href="mailto:${st.email}">${st.email}</a></span></li>
     <li>${icon('pin')}<span>${isFa() ? (st.address || '') : (st.addressEn || st.address || '')}</span></li>
     <li>${icon('clock')}<span>${t('footer.workingHours')}: ${(st.workingHours || []).map((w) => `${isFa() ? w.fa : w.en} ${isFa() ? w.time : w.timeEn}`).join(' · ')}</span></li>`;
@@ -199,6 +203,7 @@ function renderUserArea() {
       <a href="#/account/notifications">${icon('bell')} ${t('acc.notifications')} ${S.unread ? h`<span class="um-count">${fmtNum(S.unread)}</span>` : ''}</a>
       ${me.isAdmin ? h`<div class="sep"></div><a href="#/admin">${icon('settings')} ${t('nav.admin')}</a>` : ''}
       <div class="sep"></div>
+      <button type="button" data-act="sound-toggle" aria-pressed="${S.prefs?.uiSound ? 'true' : 'false'}">${icon(S.prefs?.uiSound ? 'volume' : 'volume-off')} ${t('misc.uiSound')} <span class="um-sw ${S.prefs?.uiSound ? 'on' : ''}" aria-hidden="true"></span></button>
       <button type="button" data-act="logout">${icon('logout')} ${t('common.logout')}</button>
     </div>`;
   const btn = menu.querySelector('[data-um]');
@@ -382,20 +387,44 @@ function goSearch(q) {
   navigate(`/products?q=${encodeURIComponent(s)}`);
 }
 
-function startVoice(input, go) {
+async function startVoice(input, go) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { toastError(t('search.noVoice')); return; }
+  // اول اجازهٔ میکروفن را صریح بگیریم تا خطای مبهم «پشتیبانی نمی‌شود» نبینیم
+  try {
+    if (navigator.mediaDevices?.getUserMedia) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((tr) => tr.stop());
+    }
+  } catch {
+    toastError(t('search.micDenied'));
+    return;
+  }
   const rec = new SR();
   rec.lang = lang() === 'fa' ? 'fa-IR' : 'en-US';
   rec.interimResults = false;
+  rec.maxAlternatives = 1;
   const btn = qs('#btnVoiceSearch');
   btn.classList.add('active');
   toast(t('search.listening'), { timeout: 2600 });
   rec.onresult = (e) => {
     const text = e.results?.[0]?.[0]?.transcript || '';
     if (text) { input.value = text; go(text); }
+    else toast(t('search.noSpeech'));
   };
-  rec.onerror = () => toastError(t('search.noVoice'));
+  rec.onerror = (e) => {
+    const map = {
+      'not-allowed': 'search.micDenied',
+      'service-not-allowed': 'search.micDenied',
+      network: 'search.voiceNetwork',
+      'no-speech': 'search.noSpeech',
+      aborted: null,
+      'audio-capture': 'search.noMic',
+    };
+    const key = map[e.error];
+    if (key) toastError(t(key));
+    else if (e.error !== 'aborted') toastError(t('search.noSpeech'));
+  };
   rec.onend = () => btn.classList.remove('active');
   try { rec.start(); } catch { btn.classList.remove('active'); }
 }

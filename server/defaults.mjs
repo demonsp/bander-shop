@@ -4,8 +4,8 @@
 
 export const DEFAULT_SETTINGS = {
   store: {
-    name: 'بندر موبایل',
-    nameEn: 'Bander Mobile',
+    name: 'گرین اپل',
+    nameEn: 'Green Apple',
     tagline: 'لوازم جانبی موبایل و گجت، از دلِ بندر تا دستِ تو',
     taglineEn: 'Mobile accessories & gadgets — straight from the port to your hand',
     phone: '07733334455',
@@ -21,7 +21,7 @@ export const DEFAULT_SETTINGS = {
       { day: 'پنجشنبه', fa: 'پنجشنبه', en: 'Thursday', time: '۹:۰۰ تا ۲۲:۰۰', timeEn: '09:00 – 22:00' },
       { day: 'جمعه', fa: 'جمعه', en: 'Friday', time: '۱۶:۰۰ تا ۲۱:۰۰', timeEn: '16:00 – 21:00' },
     ],
-    socials: { instagram: '', telegram: '', eitaa: '', whatsapp: '' },
+    socials: { instagram: 'https://instagram.com/jam.greenapple', telegram: '', eitaa: '', whatsapp: '' },
     mapCoords: { lat: 28.9684, lng: 50.8385 },
     enamad: '',
     established: 1396,
@@ -49,6 +49,12 @@ export const DEFAULT_SETTINGS = {
     stickyHeader: true,
     showTicker: true,
     tickerSpeed: 30,
+    tickerItems: [
+      'ارسال رایگان سفارش‌های بالای ۲ میلیون تومان به سراسر ایران',
+      'ضمانت اصالت کالا؛ مرجوع تا ۷ روز بدون پرسش',
+      'پرداخت در محل برای سفارش‌های داخل بوشهر',
+      'گرین اپل جم؛ تازه‌های گجت هر هفته در پیج اینستاگرام',
+    ],
     quickView: true,
     floatingChat: true,
     showBreadcrumbs: true,
@@ -134,7 +140,7 @@ export const DEFAULT_SETTINGS = {
   },
 
   seo: {
-    title: 'بندر موبایل | فروشگاه لوازم جانبی موبایل و گجت در بوشهر',
+    title: 'گرین اپل | فروشگاه لوازم جانبی موبایل و گجت در بوشهر',
     description: 'خرید کابل، شارژر، قاب و گلس آیفون و سامسونگ، پاوربانک، هندزفری، اسپیکر، ساعت و عینک هوشمند با ضمانت اصالت و ارسال از بندر بوشهر به سراسر ایران.',
     keywords: 'لوازم جانبی موبایل, بوشهر, قاب آیفون, گلس, شارژر, پاوربانک, هندزفری, اسپیکر, ساعت هوشمند',
   },
@@ -167,8 +173,8 @@ export const DEFAULT_SETTINGS = {
 export const DEFAULT_PAGES = {
   about: {
     hero: {
-      title: 'درباره‌ی بندر موبایل',
-      titleEn: 'About Bander Mobile',
+      title: 'درباره‌ی گرین اپل',
+      titleEn: 'About Green Apple',
       subtitle: 'یک مغازه‌ی ۲۰ متری کنار خلیج فارس، با سلیقه‌ای به وسعت دریا',
       subtitleEn: 'A 20-square-meter shop by the Persian Gulf, with taste as wide as the sea',
     },
@@ -176,8 +182,8 @@ export const DEFAULT_PAGES = {
       {
         title: 'داستان ما',
         titleEn: 'Our story',
-        body: 'بندر موبایل از سال ۱۳۹۶ در قلب بندر بوشهر و چند قدمی اسکله شروع به کار کرد. جایی که بوی دریا و صدای لنج‌ها با جعبه‌های تازه‌رسیده‌ی گجت قاطی می‌شود. ما با یک قفسه‌ی کوچک کابل و شارژر شروع کردیم و امروز بیش از صدها قلم کالای اصل و باکیفیت را در زمینه‌ی لوازم جانبی موبایل، گجت‌های پوشیدنی و تجهیزات تولید محتوا ارائه می‌دهیم. شاید متراژ مغازه‌ی ما کوچک باشد، اما تنوع کالاهایمان و وسواسمان روی اصالت کالا اصلاً کوچک نیست.',
-        bodyEn: 'Bander Mobile started in 2017 in the heart of Bushehr port, a few steps from the dock. We began with a single shelf of cables and chargers; today we offer hundreds of genuine accessories, wearables and content-creation gear. Our shop may be small, but our variety and our obsession with authenticity are not.',
+        body: 'گرین اپل از سال ۱۳۹۶ در قلب بندر بوشهر و چند قدمی اسکله شروع به کار کرد. جایی که بوی دریا و صدای لنج‌ها با جعبه‌های تازه‌رسیده‌ی گجت قاطی می‌شود. ما با یک قفسه‌ی کوچک کابل و شارژر شروع کردیم و امروز بیش از صدها قلم کالای اصل و باکیفیت را در زمینه‌ی لوازم جانبی موبایل، گجت‌های پوشیدنی و تجهیزات تولید محتوا ارائه می‌دهیم. شاید متراژ مغازه‌ی ما کوچک باشد، اما تنوع کالاهایمان و وسواسمان روی اصالت کالا اصلاً کوچک نیست.',
+        bodyEn: 'Green Apple started in 2017 in the heart of Bushehr port, a few steps from the dock. We began with a single shelf of cables and chargers; today we offer hundreds of genuine accessories, wearables and content-creation gear. Our shop may be small, but our variety and our obsession with authenticity are not.',
       },
       {
         title: 'چرا مشتریان ما را انتخاب می‌کنند؟',
@@ -275,13 +281,13 @@ export const DEFAULT_PAGES = {
 
   terms: {
     hero: { title: 'قوانین و مقررات', titleEn: 'Terms & Conditions', subtitle: 'آخرین به‌روزرسانی: مرداد ۱۴۰۴', subtitleEn: 'Last updated: August 2025' },
-    intro: 'کاربر گرامی، ورود به وب‌سایت «بندر موبایل» و ثبت سفارش به منزله‌ی پذیرش کامل قوانین و مقررات زیر است. خواهشمندیم پیش از خرید این متن را با دقت بخوانید. این قوانین بر اساس قانون تجارت الکترونیکی (مصوب ۱۳۸۲)، قانون حمایت از حقوق مصرف‌کنندگان (مصوب ۱۳۸۸)، آیین‌نامه‌ی اجرایی آن‌ها و سایر مقررات جاری جمهوری اسلامی ایران تنظیم شده است.',
-    introEn: 'By using Bander Mobile and placing an order you fully accept the terms below, drafted in line with Iran\'s E-Commerce Law (2004) and Consumer Protection Law (2009) and their executive bylaws.',
+    intro: 'کاربر گرامی، ورود به وب‌سایت «گرین اپل» و ثبت سفارش به منزله‌ی پذیرش کامل قوانین و مقررات زیر است. خواهشمندیم پیش از خرید این متن را با دقت بخوانید. این قوانین بر اساس قانون تجارت الکترونیکی (مصوب ۱۳۸۲)، قانون حمایت از حقوق مصرف‌کنندگان (مصوب ۱۳۸۸)، آیین‌نامه‌ی اجرایی آن‌ها و سایر مقررات جاری جمهوری اسلامی ایران تنظیم شده است.',
+    introEn: 'By using Green Apple and placing an order you fully accept the terms below, drafted in line with Iran\'s E-Commerce Law (2004) and Consumer Protection Law (2009) and their executive bylaws.',
     sections: [
       {
         title: '۱. تعاریف', titleEn: '1. Definitions',
-        body: '«فروشگاه» یعنی کسب‌وکار بندر موبایل به نشانی و شماره‌ی تماس درج‌شده در سایت. «کاربر» یعنی هر شخصی که از سایت بازدید می‌کند. «مشتری» یعنی کاربری که در سایت ثبت‌نام کرده و سفارش ثبت می‌کند. «سفارش» یعنی درخواست خرید یک یا چند کالا که در سامانه ثبت و به مشتری کد رهگیری داده می‌شود.',
-        bodyEn: '"Store" means Bander Mobile. "User" means any visitor. "Customer" means a registered user who places an order. "Order" means a purchase request registered in the system with a tracking code.',
+        body: '«فروشگاه» یعنی کسب‌وکار گرین اپل به نشانی و شماره‌ی تماس درج‌شده در سایت. «کاربر» یعنی هر شخصی که از سایت بازدید می‌کند. «مشتری» یعنی کاربری که در سایت ثبت‌نام کرده و سفارش ثبت می‌کند. «سفارش» یعنی درخواست خرید یک یا چند کالا که در سامانه ثبت و به مشتری کد رهگیری داده می‌شود.',
+        bodyEn: '"Store" means Green Apple. "User" means any visitor. "Customer" means a registered user who places an order. "Order" means a purchase request registered in the system with a tracking code.',
       },
       {
         title: '۲. شرایط استفاده از سایت', titleEn: '2. Conditions of use',
@@ -412,8 +418,8 @@ export const DEFAULT_PAGES = {
 
   privacy: {
     hero: { title: 'حریم خصوصی', titleEn: 'Privacy Policy', subtitle: 'داده‌های تو امانت ماست', subtitleEn: 'Your data is our trust' },
-    intro: 'ما در بندر موبایل باور داریم اعتماد مشتری از هر دارایی‌ای ارزشمندتر است. این صفحه توضیح می‌دهد چه اطلاعاتی جمع‌آوری می‌شود، چرا، چگونه نگهداری می‌شود و تو چه حقوقی داری.',
-    introEn: 'At Bander Mobile we believe customer trust is our most valuable asset. This page explains what we collect, why, how it is protected and what rights you have.',
+    intro: 'ما در گرین اپل باور داریم اعتماد مشتری از هر دارایی‌ای ارزشمندتر است. این صفحه توضیح می‌دهد چه اطلاعاتی جمع‌آوری می‌شود، چرا، چگونه نگهداری می‌شود و تو چه حقوقی داری.',
+    introEn: 'At Green Apple we believe customer trust is our most valuable asset. This page explains what we collect, why, how it is protected and what rights you have.',
     sections: [
       {
         title: 'چه اطلاعاتی جمع‌آوری می‌کنیم؟', titleEn: 'What we collect',

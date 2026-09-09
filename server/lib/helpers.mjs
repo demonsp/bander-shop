@@ -85,7 +85,7 @@ export function publicProduct(p, { full = false, categories = [], brands = [] } 
     discountPct: p.oldPrice && p.oldPrice > p.price ? Math.round((1 - p.price / p.oldPrice) * 100) : 0,
     stock: Math.max(0, (p.stock || 0) - (p.reserved || 0)),
     inStock: Math.max(0, (p.stock || 0) - (p.reserved || 0)) > 0,
-    images: p.images || [], glyph: p.glyph || 'misc',
+    images: p.images || [], videos: p.videos || [], glyph: p.glyph || 'misc',
     authenticity: p.authenticity || 'generic',
     warrantyMonths: p.warrantyMonths || 0,
     ratingAvg: p.ratingAvg || 0, ratingCount: p.ratingCount || 0,

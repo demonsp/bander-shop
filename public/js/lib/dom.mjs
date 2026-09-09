@@ -107,6 +107,13 @@ export function fmtNum(n) {
   const s = new Intl.NumberFormat(LOCALE === 'fa' ? 'fa-IR' : 'en-US').format(v);
   return s;
 }
+/** شمارهٔ تلفن: بدون گروه‌بندی هزارگان و با حفظ صفر اول */
+export function fmtTel(v) {
+  const s = String(v ?? '').trim();
+  if (!s) return '';
+  if (LOCALE === 'fa') return s.replace(/\d/g, (x) => '۰۱۳۴۵۶۷۸۹'[+x]);
+  return s;
+}
 export function fmtMoney(n, { withUnit = true } = {}) {
   const v = Math.round(Number(n) || 0);
   const s = new Intl.NumberFormat(LOCALE === 'fa' ? 'fa-IR' : 'en-US').format(v);

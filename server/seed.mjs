@@ -762,7 +762,7 @@ export function buildSeed(state) {
   ];
 
   const notifications = [
-    { id: uid('nt'), userId: null, type: 'announcement', title: 'به فروشگاه اینترنتی بندر موبایل خوش آمدید', titleEn: 'Welcome to Bander Mobile Online Store', body: 'حالا می‌توانی همه‌ی اجناس مغازه را آنلاین ببینی، سفارش بدهی و حضوری یا با پیک تحویل بگیری.', bodyEn: 'Browse the whole shop online and get it delivered or pick it up in store.', link: '#/products', createdAt: t.toISOString(), level: 'info' },
+    { id: uid('nt'), userId: null, type: 'announcement', title: 'به فروشگاه اینترنتی گرین اپل خوش آمدید', titleEn: 'Welcome to Green Apple Online Store', body: 'حالا می‌توانی همه‌ی اجناس مغازه را آنلاین ببینی، سفارش بدهی و حضوری یا با پیک تحویل بگیری.', bodyEn: 'Browse the whole shop online and get it delivered or pick it up in store.', link: '#/products', createdAt: t.toISOString(), level: 'info' },
   ];
 
   const feedback = [

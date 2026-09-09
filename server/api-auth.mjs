@@ -39,6 +39,33 @@ function registerFailure(k) {
 function clearFailure(k) { failedLogins.delete(k); }
 function failCount(k) { return failedLogins.get(k)?.count || 0; }
 
+const DAY = 24 * 3600 * 1000;
+/** نشان‌های کاربر: خریدار پرکار، پیشگام، نقدنویس و… */
+export function computeBadges(state, user) {
+  if (!user) return [];
+  const orders = state.orders.filter((o) => o.userId === user.id);
+  const done = orders.filter((o) => ['delivered', 'sent', 'processing', 'paid'].includes(o.status));
+  const spent = done.reduce((a, o) => a + (o.total || 0), 0);
+  const reviews = state.reviews.filter((r) => r.userId === user.id).length;
+  const tickets = state.tickets.filter((x) => x.userId === user.id).length;
+  const ageDays = (Date.now() - new Date(user.createdAt || Date.now()).getTime()) / DAY;
+  const plusActive = !!(user.plus?.active && user.plus?.until && new Date(user.plus.until) > new Date());
+  const earlyIdx = state.users.slice().sort((a, b) => String(a.createdAt || '').localeCompare(String(b.createdAt || ''))).findIndex((u) => u.id === user.id);
+  const defs = [
+    { id: 'first-buy', got: done.length >= 1, hint: 'firstBuy' },
+    { id: 'silver-buyer', got: done.length >= 5, hint: 'silver' },
+    { id: 'gold-buyer', got: done.length >= 15, hint: 'gold' },
+    { id: 'big-spender', got: spent >= 50_000_000, hint: 'spender' },
+    { id: 'early-bird', got: earlyIdx >= 0 && earlyIdx < 100, hint: 'early' },
+    { id: 'veteran', got: ageDays >= 365, hint: 'vet' },
+    { id: 'reviewer', got: reviews >= 3, hint: 'rev' },
+    { id: 'plus-member', got: plusActive, hint: 'plus' },
+    { id: 'wallet-user', got: (user.wallet?.balance || 0) > 0 || (user.wallet?.txs?.length || 0) > 0, hint: 'wallet' },
+    { id: 'supporter', got: tickets >= 1, hint: 'ticket' },
+  ];
+  return defs.map((d) => ({ ...d, progress: d.id === 'silver-buyer' ? Math.min(done.length, 5) : d.id === 'gold-buyer' ? Math.min(done.length, 15) : d.id === 'reviewer' ? Math.min(reviews, 3) : undefined }));
+}
+
 export function mePayload(state, user) {
   if (!user) return null;
   const cart = state.carts.find((c) => c.userId === user.id);
@@ -60,6 +87,7 @@ export function mePayload(state, user) {
     mustChangePassword: !!user.mustChangePassword,
     twoFA: { enabled: !!user.twoFA?.enabled, method: user.twoFA?.method || null, methods: user.twoFA?.methods || [] },
     points: user.points || 0,
+    badges: computeBadges(state, user),
     referralCode: user.referralCode || '',
     prefs: user.prefs || {},
     notificationsPrefs: user.notificationsPrefs || {},
@@ -121,12 +149,12 @@ export function registerAuth(router) {
     const { code } = await db.tx((st) => makeOtp(st, { userId: existing?.id || null, channel, target, purpose }));
     const demo = (state.settings.auth?.otpMode || 'demo') === 'demo';
     const text = channel === 'phone'
-      ? `کد تأیید بندر موبایل: ${code}\nاین کد ۵ دقیقه اعتبار دارد و در اختیار دیگران قرار ندهید.`
-      : `کد تأیید بندر موبایل: ${code} — این کد ۵ دقیقه اعتبار دارد.`;
+      ? `کد تأیید گرین اپل: ${code}\nاین کد ۵ دقیقه اعتبار دارد و در اختیار دیگران قرار ندهید.`
+      : `کد تأیید گرین اپل: ${code} — این کد ۵ دقیقه اعتبار دارد.`;
     await db.tx((st) => {
       deliver(st, {
         channel: channel === 'phone' ? 'sms' : 'email', target, code: demo ? code : '',
-        subject: channel === 'phone' ? '' : 'کد تأیید بندر موبایل', body: text, purpose,
+        subject: channel === 'phone' ? '' : 'کد تأیید گرین اپل', body: text, purpose,
       });
     });
     logAudit(ctx.user, 'auth.otp.send', target, { channel, purpose });
@@ -208,7 +236,7 @@ export function registerAuth(router) {
       }
       pushNotification(st, {
         userId: user.id, type: 'welcome', level: 'success',
-        title: 'به بندر موبایل خوش آمدی', titleEn: 'Welcome to Bander Mobile',
+        title: 'به گرین اپل خوش آمدی', titleEn: 'Welcome to Green Apple',
         body: 'حساب کاربری‌ات ساخته شد. کد تخفیف WELCOME10 برای اولین خرید فعال است.',
         bodyEn: 'Your account is ready. Use code WELCOME10 on your first order.',
         link: '#/products',
@@ -257,11 +285,11 @@ export function registerAuth(router) {
       let sent = null;
       if (methods.includes('sms') && user.phone) {
         const { code } = await db.tx((st) => makeOtp(st, { userId: user.id, channel: 'phone', target: user.phone, purpose: '2fa', ttlMs: 3 * 60 * 1000 }));
-        await db.tx((st) => deliver(st, { channel: 'sms', target: user.phone, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', body: `کد ورود دومرحله‌ای بندر موبایل: ${code}`, purpose: '2fa' }));
+        await db.tx((st) => deliver(st, { channel: 'sms', target: user.phone, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', body: `کد ورود دومرحله‌ای گرین اپل: ${code}`, purpose: '2fa' }));
         sent = { channel: 'sms', target: maskTarget(user.phone, 'phone'), demoCode: (state.settings.auth?.otpMode || 'demo') === 'demo' ? code : undefined };
       } else if (methods.includes('email') && user.email) {
         const { code } = await db.tx((st) => makeOtp(st, { userId: user.id, channel: 'email', target: user.email, purpose: '2fa', ttlMs: 3 * 60 * 1000 }));
-        await db.tx((st) => deliver(st, { channel: 'email', target: user.email, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', subject: 'کد ورود دومرحله‌ای', body: `کد ورود دومرحله‌ای بندر موبایل: ${code}`, purpose: '2fa' }));
+        await db.tx((st) => deliver(st, { channel: 'email', target: user.email, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', subject: 'کد ورود دومرحله‌ای', body: `کد ورود دومرحله‌ای گرین اپل: ${code}`, purpose: '2fa' }));
         sent = { channel: 'email', target: maskTarget(user.email, 'email'), demoCode: (state.settings.auth?.otpMode || 'demo') === 'demo' ? code : undefined };
       }
       return sendJson(ctx.res, 200, { ok: true, twoFactor: true, challengeToken: challenge, methods, sent, expiresIn: 600 });
@@ -468,13 +496,22 @@ export function registerAuth(router) {
   router.get('/api/me/2fa', async (ctx) => {
     ctx.requireUser();
     const u = ctx.user;
+    // راز TOTP باید ماندگار شود؛ وگرنه کد اپ هرگز با سرور نمی‌خواند
+    if (!u.twoFA?.secret) {
+      await db.tx((st) => {
+        const user = st.users.find((x) => x.id === u.id);
+        user.twoFA = user.twoFA || { enabled: false, method: null, methods: [], backupCodes: [] };
+        if (!user.twoFA.secret) user.twoFA.secret = generateTotpSecret();
+        u.twoFA = user.twoFA;
+      });
+    }
     sendJson(ctx.res, 200, {
       ok: true,
       enabled: !!u.twoFA?.enabled,
       method: u.twoFA?.method || null,
       methods: u.twoFA?.methods || [],
       secret: u.twoFA?.secret || '',
-      otpauth: otpauthUrl(u.twoFA?.secret || generateTotpSecret(), u.username),
+      otpauth: otpauthUrl(u.twoFA.secret, u.username),
       hasPhone: !!u.phone, hasEmail: !!u.email,
       backupCodes: u.twoFA?.backupCodes || [],
       currentCodeHint: 'برای فعال‌سازی، کد ۶ رقمی اپ احراز هویت را وارد کن.',

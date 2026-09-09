@@ -207,6 +207,7 @@ export function registerCatalog(router) {
 
   router.get('/api/products', async (ctx) => {
     const q = ctx.query;
+    if ((q.get('q') || '').trim()) { try { logAudit(ctx.user || null, 'search', q.get('q').slice(0, 80), {}); } catch { /* noop */ } }
     const opts = {
       q: q.get('q') || '', cat: q.get('cat') || '', sort: q.get('sort') || 'relevant',
       brands: (q.get('brand') || '').split(',').filter(Boolean),
@@ -233,6 +234,7 @@ export function registerCatalog(router) {
     if (!p || p.active === false) throw notFound('product_not_found', 'کالا یافت نشد.');
     // ثبت بازدید (بدون قفل سنگین)
     await db.tx((st) => { const t = st.products.find((x) => x.id === p.id); if (t) t.views = (t.views || 0) + 1; });
+    try { logAudit(ctx.user || null, 'product.view', p.id, {}); } catch { /* noop */ }
     invalidateSearchIndex();
     const related = state.products
       .filter((x) => x.id !== p.id && x.active !== false && (x.categoryId === p.categoryId || x.brandId === p.brandId))

@@ -2,7 +2,7 @@
 //  جزئیات سفارش: تایم‌لاین، اقلام، خلاصهٔ مالی، لغو/پرداخت/سفارش مجدد،
 //  ثبت نظر پس از تحویل و فاکتور چاپی
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, esc, fmtNum, fmtMoney, fmtDate, applyDyn } from '../lib/dom.mjs';
+import { html as h, icon, esc, fmtNum, fmtMoney, fmtDate, applyDyn, fmtTel } from '../lib/dom.mjs';
 import { t, lang, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S, ship } from '../state.mjs';
@@ -163,9 +163,9 @@ act('od-invoice', async (e, el) => {
       <div class="invoice-print" dir="rtl">
         <div class="inv-head">
           <div>
-            <strong>${esc(st.name || 'Bander Mobile')}</strong>
+            <strong>${esc(st.name || 'Green Apple')}</strong>
             <div class="tiny">${esc(st.address || '')}</div>
-            <div class="tiny">${fmtNum(st.phone || '')}</div>
+            <div class="tiny">${fmtTel(st.phone || '')}</div>
           </div>
           <div class="t-center">
             <div class="inv-code mono">${o.code}</div>

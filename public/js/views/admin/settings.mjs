@@ -3,12 +3,12 @@
 //  پلاس، سفارش/پرداخت، سئو، ارز، احراز هویت و پشتیبانی
 //  فرم‌ها از روی ساختار تنظیمات ساخته می‌شوند (schema-driven)
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, esc, applyDyn } from '../../lib/dom.mjs';
+import { html as h, raw, icon, esc, applyDyn, fmtNum, fmtDate } from '../../lib/dom.mjs';
 import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
 import { can, refreshBootstrap, applyPrefs } from '../../state.mjs';
 import { field, textareaField, selectField, switchField } from '../../components.mjs';
-import { toastSuccess, toastError, toastApiError, withBusy, errorState, emptyState } from '../../ui.mjs';
+import { toastSuccess, toastError, toastApiError, withBusy, errorState, emptyState, confirmDialog } from '../../ui.mjs';
 import { act } from '../../actions.mjs';
 import { refresh } from '../../router.mjs';
 
@@ -145,7 +145,10 @@ const TABS = {
     { id: 'theme', icon: 'sun', label: () => t('adm.sTheme') },
     { id: 'ui', icon: 'grid', label: () => t('adm.sUi') },
   ],
-  features: [{ id: 'features', icon: 'zap', label: () => t('adm.sFeatures') }],
+  features: [
+    { id: 'features', icon: 'zap', label: () => t('adm.sFeatures') },
+    { id: 'backups', icon: 'download', label: () => t('adm.sBackups') },
+  ],
 };
 
 let CFG = null;
@@ -170,6 +173,7 @@ export async function render(ctx) {
         <a class="tab ${x.id === tab.id ? 'active' : ''}" href="#/admin/${sec}/${x.id}">${icon(x.icon)} ${x.label()}</a>`)}
     </div>
     ${tab.id === 'features' ? featuresForm(CFG.settings?.features || {})
+      : tab.id === 'backups' ? raw('<div data-backups-panel></div>')
       : tab.id === 'partners' ? partnersForm(CFG.settings?.partners?.items || [])
       : schemaForm(tab.id, values)}
     <p class="hint mt">${L('تغییرها بلافاصله روی سایت اعمال می‌شود؛ برای دیدن نتیجه صفحه را تازه کن.', 'Changes apply to the site immediately; refresh the page to see them.')}</p>`;
@@ -439,8 +443,9 @@ act('adm-row-add', (e, el) => {
 
 act('adm-row-del', (e, el) => { el.closest('[data-row]')?.remove(); });
 
-export function mount(root) {
+export function mount(root, ctx) {
   applyDyn(root);
+  if (ctx?.params?.id === 'backups') loadBackupsPanel(root);
   // همگام‌سازی انتخابگر رنگ با فیلد متنی
   root.querySelectorAll('[data-color-for]').forEach((pick) => {
     const text = root.querySelector(`[name="${pick.dataset.colorFor}"]`);
@@ -449,3 +454,52 @@ export function mount(root) {
   });
   return null;
 }
+
+async function loadBackupsPanel(root) {
+  const box = root.querySelector('[data-backups-panel]');
+  if (!box) return;
+  box.innerHTML = '<div class="sk sk-line w70"></div>';
+  try {
+    const r = await api.get('/api/admin/backups');
+    box.innerHTML = h`
+      <div class="card">
+        <div class="row row-between row-wrap">
+          <strong>${icon('download')} ${t('adm.sBackups')}</strong>
+          <div class="row row-wrap">
+            <a class="btn btn-ghost btn-sm" href="/api/admin/dump" download>${icon('download')} ${t('adm.dumpFull')}</a>
+            <button type="button" class="btn btn-primary btn-sm" data-act="adm-backup-now">${icon('plus')} ${t('adm.backupNow')}</button>
+          </div>
+        </div>
+        <p class="muted small mt-s">${t('adm.backupsHint', { hours: fmtNum(r.everyHours || 12), keep: fmtNum(r.keep || 14) })}</p>
+        ${r.items?.length ? h`<div class="table-wrap mt-s"><table class="table">
+          <thead><tr><th>${t('common.date')}</th><th>${t('adm.backupSize')}</th><th></th></tr></thead>
+          <tbody>${r.items.map((b) => h`<tr>
+            <td class="tiny">${fmtDate(b.at)}</td>
+            <td class="tiny muted">${fmtNum(Math.round(b.bytes / 1024))} KB</td>
+            <td><div class="row row-end">
+              <a class="btn btn-ghost btn-sm" href="/api/admin/backups/${b.id}/download" download>${icon('download')} ${t('common.download')}</a>
+              <button type="button" class="btn btn-danger btn-sm" data-act="adm-backup-restore" data-id="${b.id}">${icon('refresh')} ${t('adm.backupRestore')}</button>
+            </div></td>
+          </tr>`)}</tbody></table></div>` : h`<p class="muted small mt-s">${t('adm.backupsEmpty')}</p>`}
+      </div>`;
+  } catch (err) { box.innerHTML = h`<div class="notice notice-error">${icon('alert')} ${err?.message || t('err.generic')}</div>`; }
+}
+
+act('adm-backup-now', async (e, el) => {
+  await withBusy(el, async () => {
+    try {
+      await api.post('/api/admin/backups', {});
+      toastSuccess(t('adm.backupDone'));
+      await loadBackupsPanel(document.querySelector('#view') || el.closest('#view')?.parentNode || document);
+    } catch (err) { toastApiError(err); }
+  });
+});
+
+act('adm-backup-restore', async (e, el) => {
+  const ok = await confirmDialog({ text: t('adm.backupRestoreWarn'), danger: true });
+  if (!ok) return;
+  await withBusy(el, async () => {
+    try { await api.post('/api/admin/backups/restore', { id: el.dataset.id }); toastSuccess(t('adm.backupRestored')); setTimeout(() => location.reload(), 900); }
+    catch (err) { toastApiError(err); }
+  });
+});

@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────
 //  صفحهٔ اصلی
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, fmtNum, esc, raw } from '../lib/dom.mjs';
+import { html as h, icon, fmtNum, esc, raw, fmtTel } from '../lib/dom.mjs';
 import { t, lang, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S, feat, store, plusCfg, adInSlot, isPlus, catName, prodName, brandName } from '../state.mjs';
@@ -159,7 +159,7 @@ export async function render() {
           <p class="muted small mb">${esc(isFa() ? (st.address || '') : (st.addressEn || st.address || ''))}</p>
           <div class="row row-wrap">
             <a class="btn btn-primary" href="#/pages/contact">${icon('map')} ${t('home.openMap')}</a>
-            <a class="btn btn-ghost" href="tel:${st.phone}">${icon('phone')} ${fmtNum(st.phone || '')}</a>
+            <a class="btn btn-ghost" href="tel:${st.phone}">${icon('phone')} ${fmtTel(st.phone || '')}</a>
           </div>
         </div>
         <div class="card">
@@ -190,8 +190,74 @@ export async function render() {
 }
 
 export function mount() {
-  // نگه‌داشتن کروکی در ارتفاع مناسب
-  return null;
+  // نوار برندها: حرکت خودکار + کشیدن با نگه‌داشتن ماوس/انگشت
+  const box = document.querySelector('.marquee');
+  const track = box?.querySelector('.marquee-track');
+  if (!box || !track) return null;
+  let pos = 0;
+  let dragging = false;
+  let moved = 0;
+  let suppressClick = false;
+  let lastX = 0;
+  let last = performance.now();
+  let raf = 0;
+  const speed = 42; // پیکسل بر ثانیه
+  const half = () => track.scrollWidth / 2 || 1;
+  const wrap = () => { const hw = half(); if (pos <= -hw) pos += hw; if (pos > 0) pos -= hw; };
+  const tick = (now) => {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (!dragging) pos -= speed * dt;
+    wrap();
+    track.style.transform = `translateX(${pos.toFixed(1)}px)`;
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+  const down = (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    suppressClick = false;
+    dragging = true;
+    moved = 0;
+    lastX = e.clientX;
+    box.classList.add('grabbing');
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
+  };
+  const move = (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - lastX;
+    pos += dx;
+    moved += Math.abs(dx);
+    lastX = e.clientX;
+  };
+  const up = () => {
+    dragging = false;
+    box.classList.remove('grabbing');
+    if (moved > 8) suppressClick = true;
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', up);
+    window.removeEventListener('pointercancel', up);
+  };
+  const onClick = (e) => {
+    if (!suppressClick) return;
+    suppressClick = false;
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  const noDrag = (e) => e.preventDefault();
+  box.addEventListener('dragstart', noDrag);
+  box.addEventListener('click', onClick, true);
+  box.addEventListener('pointerdown', down);
+  return () => {
+    cancelAnimationFrame(raf);
+  box.removeEventListener('pointerdown', down);
+    box.removeEventListener('dragstart', noDrag);
+    box.removeEventListener('click', onClick, true);
+    window.removeEventListener('pointermove', move);
+    window.removeEventListener('pointerup', up);
+    window.removeEventListener('pointercancel', up);
+  };
 }
 
 export const title = () => t('nav.home');

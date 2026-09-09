@@ -13,6 +13,7 @@ import { invalidateSearchIndex, publicCategory, publicReview } from './api-catal
 import { publicOrder, restoreStock } from './api-shop.mjs';
 import { PERMISSIONS, hashPassword, generateTotpSecret, destroyUserSessions } from './lib/auth.mjs';
 import { ean13 } from './seed.mjs';
+import { listBackups, createBackup, restoreBackup, readBackup } from './lib/backup.mjs';
 import { productSvg, writeProductImages } from './art.mjs';
 import { ORDER_STATUSES } from './defaults.mjs';
 
@@ -147,6 +148,11 @@ export function registerAdmin(router) {
         .map((x) => V.optStr(x, { max: 300, field: 'تصویر' }))
         .filter((x) => x.startsWith('/assets/') || x.startsWith('/uploads/'));
       if (!out.images.length && !existing) out.images = [];
+    }
+    if (body.videos !== undefined) {
+      out.videos = V.arr(body.videos, { max: 4, field: 'ویدیوها' })
+        .map((x) => V.optStr(x, { max: 300, field: 'ویدیو' }))
+        .filter((x) => x.startsWith('/assets/') || x.startsWith('/uploads/') || x.startsWith('https://'));
     }
     if (body.featured !== undefined) out.featured = V.bool(body.featured);
     if (body.active !== undefined) out.active = V.bool(body.active);
@@ -956,6 +962,43 @@ export function registerAdmin(router) {
   });
 
   // ── گزارش رویدادها ──────────────────────────────────────
+  // ── پشتیبان‌گیری و دامپ کامل ──
+  A('GET', '/api/admin/backups', 'settings.edit', async (ctx) => {
+    sendJson(ctx.res, 200, { ok: true, items: listBackups(), everyHours: 12, keep: 14 });
+  });
+  A('POST', '/api/admin/backups', 'settings.edit', async (ctx) => {
+    const meta = createBackup(ctx.user, 'manual');
+    sendJson(ctx.res, 200, { ok: true, backup: meta });
+  });
+  A('POST', '/api/admin/backups/restore', 'settings.edit', async (ctx) => {
+    const id = V.optStr(ctx.body?.id, { max: 60, field: 'نسخه' });
+    const r = restoreBackup(id, ctx.user);
+    if (!r) throw notFound('backup_not_found', 'نسخهٔ پشتیبان پیدا نشد.');
+    sendJson(ctx.res, 200, r);
+  });
+  A('GET', '/api/admin/backups/:id/download', 'settings.edit', async (ctx) => {
+    const snap = readBackup(ctx.params.id);
+    if (!snap) throw notFound('backup_not_found', 'نسخهٔ پشتیبان پیدا نشد.');
+    const buf = Buffer.from(JSON.stringify(snap, null, 2), 'utf8');
+    ctx.res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Disposition': `attachment; filename="greenapple-backup-${String(ctx.params.id).replace(/[^a-zA-Z0-9-]/g, '')}.json"`,
+      'Content-Length': String(buf.length),
+    });
+    ctx.res.end(buf);
+  });
+  A('GET', '/api/admin/dump', 'settings.edit', async (ctx) => {
+    const st = db.raw;
+    const payload = { exportedAt: nowISO(), store: st.settings?.store?.name || 'Green Apple', db: st };
+    const buf = Buffer.from(JSON.stringify(payload, null, 2), 'utf8');
+    ctx.res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Disposition': 'attachment; filename="greenapple-full-dump.json"',
+      'Content-Length': String(buf.length),
+    });
+    ctx.res.end(buf);
+  });
+
   A('GET', '/api/admin/audit', 'audit.view', async (ctx) => {
     const st = ctx.state;
     const q = normalizeText(ctx.query.get('q') || '');

@@ -94,6 +94,22 @@ async function dashboardHtml() {
       <div class="stat-card"><span class="stat-ic">${icon('heart')}</span><div><div class="stat-val">${fmtNum(S.wishlist.length)}</div><div class="stat-lbl">${t('acc.wishlist')}</div></div></div>
       <div class="stat-card"><span class="stat-ic">${icon('gift')}</span><div><div class="stat-val">${fmtNum(S.me?.points || 0)}</div><div class="stat-lbl">${t('common.points')}</div></div></div>
     </div>
+    ${(() => {
+      const badges = S.me?.badges || [];
+      const got = badges.filter((b) => b.got).length;
+      if (!badges.length) return '';
+      return h`<div class="card mb">
+        <div class="row row-between"><strong>${icon('award')} ${t('acc.badges')}</strong><span class="muted tiny">${fmtNum(got)} / ${fmtNum(badges.length)}</span></div>
+        <div class="badges-grid mt-s">
+          ${badges.map((b) => h`
+            <div class="badge-item ${b.got ? 'got' : ''}" title="${t(`badge.${b.id}.d`)}">
+              <span class="bi-ic">${icon(b.got ? 'award' : 'lock')}</span>
+              <b>${t(`badge.${b.id}`)}</b>
+              <span class="tiny muted">${b.got ? t('badge.got') : (b.progress !== undefined ? `${fmtNum(b.progress)}×` : t('badge.locked'))}</span>
+            </div>`) }
+        </div>
+      </div>`;
+    })()}
     ${isPlus() ? h`<div class="notice notice-success mb">${icon('sparkles')}<span>${t('acc.plusActive', { date: fmtDate(S.me?.plus?.until, { time: false }) })}</span></div>`
       : feat('plus') ? h`<div class="notice notice-info mb">${icon('sparkles')}<span>${t('acc.plusInactive')} — <a class="section-link" href="#/account/plus">${t('acc.plusSubscribe')}</a></span></div>` : ''}
     ${orders.length ? h`

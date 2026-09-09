@@ -227,15 +227,34 @@ export function promptDialog({ title = '', text = '', label = '', value = '', ty
 
 // ── لایت‌باکس تصاویر ────────────────────────────────────────
 export function lightbox(images, startIndex = 0, title = '') {
-  const list = (Array.isArray(images) ? images : [images]).filter(Boolean);
+  const norm = (x) => (typeof x === 'string' ? { url: x, kind: 'image' } : x);
+  const list = (Array.isArray(images) ? images : [images]).filter(Boolean).map(norm).filter((x) => x.url);
   if (!list.length) return null;
   let i = Math.max(0, Math.min(startIndex, list.length - 1));
   let onKey = null;
-  const render = () => h`
+  let scale = 1; let tx = 0; let ty = 0;
+  const apply = (fig) => {
+    const m = fig?.querySelector('.lb-img');
+    if (m) m.style.transform = `translate(${tx.toFixed(0)}px, ${ty.toFixed(0)}px) scale(${scale.toFixed(2)})`;
+    fig?.classList.toggle('zoomed', scale > 1.01);
+  };
+  const reset = () => { scale = 1; tx = 0; ty = 0; };
+  const render = () => {
+    const it = list[i];
+    const media = it.kind === 'video'
+      ? `<video class="lb-img lb-video" src="${it.url}" controls playsinline autoplay preload="metadata"></video>`
+      : `<img class="lb-img" src="${it.url}" alt="${title || t('img.alt')}" decoding="async" draggable="false">`;
+    return h`
     <figure class="lb-figure">
-      <img class="lb-img" src="${list[i]}" alt="${title || t('img.alt')}" decoding="async">
-      ${list.length > 1 ? h`<figcaption class="lb-count">${i + 1} / ${list.length}</figcaption>` : ''}
+      ${raw(media)}
+      <div class="lb-tools" role="toolbar" aria-label="${t('pdp.zoomHint')}">
+        <button type="button" class="icon-btn" data-zin aria-label="${t('pdp.zoomIn')}">${icon('plus')}</button>
+        <button type="button" class="icon-btn" data-zout aria-label="${t('pdp.zoomOut')}">${icon('minus')}</button>
+        <button type="button" class="icon-btn tiny-txt" data-zreset aria-label="${t('pdp.zoomReset')}">1x</button>
+      </div>
+      ${list.length > 1 ? h`<figcaption class="lb-count">${i + 1} / ${list.length}${it.kind === 'video' ? ` · ${t('pdp.video')}` : ''}</figcaption>` : ''}
     </figure>`;
+  };
   return makeLayer({
     kind: 'modal',
     size: 'lg',
@@ -247,12 +266,67 @@ export function lightbox(images, startIndex = 0, title = '') {
     onClose: () => { if (onKey) document.removeEventListener('keydown', onKey); onKey = null; },
     onMount: (panel) => {
       const box = panel.querySelector('[data-lb]');
-      const go = (d) => { i = (i + d + list.length) % list.length; box.innerHTML = render(); };
+      const fig = () => box.querySelector('.lb-figure');
+      const go = (d) => { i = (i + d + list.length) % list.length; reset(); box.innerHTML = render(); wireFig(); };
       panel.querySelector('[data-prev]')?.addEventListener('click', () => go(-1));
       panel.querySelector('[data-next]')?.addEventListener('click', () => go(1));
+      const zoomBy = (f, cx, cy) => {
+        const ns = Math.max(1, Math.min(4, scale * f));
+        if (ns === 1) { tx = 0; ty = 0; }
+        else if (cx != null) { tx = cx - (cx - tx) * (ns / scale); ty = cy - (cy - ty) * (ns / scale); }
+        scale = ns; apply(fig());
+      };
+      let ptrs = new Map(); let pinch0 = 0; let scale0 = 1;
+      const wireFig = () => {
+        const f = fig(); if (!f) return;
+        const media = f.querySelector('.lb-img');
+        f.addEventListener('wheel', (e) => {
+          if (list[i].kind === 'video') return;
+          e.preventDefault();
+          const r = f.getBoundingClientRect();
+          zoomBy(e.deltaY < 0 ? 1.18 : 1 / 1.18, e.clientX - r.left - r.width / 2, e.clientY - r.top - r.height / 2);
+        }, { passive: false });
+        f.addEventListener('dblclick', (e) => {
+          if (list[i].kind === 'video') return;
+          const r = f.getBoundingClientRect();
+          if (scale > 1.01) { reset(); } else zoomBy(2.5, e.clientX - r.left - r.width / 2, e.clientY - r.top - r.height / 2);
+          apply(f);
+        });
+        f.addEventListener('pointerdown', (e) => {
+          if (list[i].kind === 'video') return;
+          ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+          if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]); scale0 = scale; }
+          f.setPointerCapture?.(e.pointerId);
+        });
+        f.addEventListener('pointermove', (e) => {
+          if (!ptrs.has(e.pointerId)) return;
+          const prev = ptrs.get(e.pointerId);
+          ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+          if (ptrs.size === 2 && pinch0) {
+            const [a, b] = [...ptrs.values()];
+            const d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+            scale = Math.max(1, Math.min(4, scale0 * (d / pinch0)));
+            if (scale === 1) { tx = 0; ty = 0; }
+            apply(f);
+          } else if (scale > 1.01) {
+            tx += e.clientX - prev[0]; ty += e.clientY - prev[1]; apply(f);
+          }
+        });
+        const up = (e) => { ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch0 = 0; };
+        f.addEventListener('pointerup', up);
+        f.addEventListener('pointercancel', up);
+        f.querySelector('[data-zin]')?.addEventListener('click', () => zoomBy(1.3));
+        f.querySelector('[data-zout]')?.addEventListener('click', () => zoomBy(1 / 1.3));
+        f.querySelector('[data-zreset]')?.addEventListener('click', () => { reset(); apply(f); });
+        apply(f);
+      };
+      wireFig();
       onKey = (e) => {
         if (e.key === 'ArrowLeft') go(1);
         else if (e.key === 'ArrowRight') go(-1);
+        else if (e.key === '+' || e.key === '=') zoomBy(1.3);
+        else if (e.key === '-') zoomBy(1 / 1.3);
+        else if (e.key === '0') { reset(); apply(fig()); }
       };
       document.addEventListener('keydown', onKey);
     },
@@ -396,8 +470,8 @@ export async function copyWithToast(text, msg) {
 /** راهنمای نصب PWA */
 export function installHintModal() {
   const steps = lang() === 'fa'
-    ? ['منوی مرورگر (⋮ یا دکمهٔ اشتراک‌گذاری) را باز کن.', 'گزینهٔ «افزودن به صفحهٔ اصلی» یا «Install app» را بزن.', 'تأیید کن؛ آیکون بندر موبایل به صفحهٔ اصلی اضافه می‌شود.']
-    : ['Open the browser menu (⋮ or the Share button).', 'Choose “Add to Home screen” or “Install app”.', 'Confirm — the Bander Mobile icon appears on your home screen.'];
+    ? ['منوی مرورگر (⋮ یا دکمهٔ اشتراک‌گذاری) را باز کن.', 'گزینهٔ «افزودن به صفحهٔ اصلی» یا «Install app» را بزن.', 'تأیید کن؛ آیکون گرین اپل به صفحهٔ اصلی اضافه می‌شود.']
+    : ['Open the browser menu (⋮ or the Share button).', 'Choose “Add to Home screen” or “Install app”.', 'Confirm — the Green Apple icon appears on your home screen.'];
   modal({
     title: t('misc.addToHome'),
     size: 'sm',
@@ -489,3 +563,68 @@ export function updateSleepScreen({ sleeping = false, canWake = false, since = n
   box.querySelector('[data-sleep-reload]')?.addEventListener('click', () => location.reload());
   box.querySelector('[data-sleep-login]')?.addEventListener('click', () => onLogin?.());
 }
+
+// ── چشم نمایش/پنهان رمز عبور — خودکار روی همهٔ input[type=password] ──
+function enhancePwd(root) {
+  root.querySelectorAll?.('input[type="password"]')?.forEach((inp) => {
+    if (inp.dataset.pwdDone) return;
+    inp.dataset.pwdDone = '1';
+    const wrap = document.createElement('span');
+    wrap.className = 'pwd-wrap';
+    inp.parentNode.insertBefore(wrap, inp);
+    wrap.appendChild(inp);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pwd-eye';
+    btn.dataset.eye = '1';
+    btn.setAttribute('aria-label', t('pwd.show'));
+    btn.title = t('pwd.show');
+    btn.innerHTML = icon('eye');
+    wrap.appendChild(btn);
+  });
+}
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest?.('[data-eye]');
+  if (!btn) return;
+  const inp = btn.parentElement?.querySelector('input');
+  if (!inp) return;
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.innerHTML = icon(show ? 'eye-off' : 'eye');
+  const lbl = show ? t('pwd.hide') : t('pwd.show');
+  btn.setAttribute('aria-label', lbl);
+  btn.title = lbl;
+  inp.focus({ preventScroll: true });
+}, true);
+new MutationObserver((muts) => {
+  for (const m of muts) m.addedNodes.forEach((n) => { if (n.nodeType === 1) enhancePwd(n); });
+}).observe(document.documentElement, { childList: true, subtree: true });
+enhancePwd(document);
+
+// ── صدای کلیک ظریف رابط کاربری (WebAudio، بدون فایل صوتی) ──
+let _ac = null;
+export function uiClickSound(force = false) {
+  if (!force && !uiSoundEnabled()) return;
+  try {
+    _ac = _ac || new (window.AudioContext || window.webkitSoundContext || window.webkitAudioContext)();
+    if (_ac.state === 'suspended') _ac.resume();
+    const t0 = _ac.currentTime;
+    const o = _ac.createOscillator();
+    const g = _ac.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(1560, t0);
+    o.frequency.exponentialRampToValueAtTime(1180, t0 + 0.06);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.045, t0 + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.075);
+    o.connect(g).connect(_ac.destination);
+    o.start(t0); o.stop(t0 + 0.09);
+  } catch { /* بی‌صدا */ }
+}
+export function uiSoundEnabled() {
+  try { return !!JSON.parse(localStorage.getItem('bm_prefs_v1') || '{}').uiSound; } catch { return false; }
+}
+document.addEventListener('pointerdown', (e) => {
+  if (!uiSoundEnabled()) return;
+  if (e.target.closest?.('button, a, [role="button"], .pcard, .chip, .gal-thumb')) uiClickSound(true);
+}, true);

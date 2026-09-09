@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   بندر موبایل · سامانهٔ طراحی
+   گرین اپل · سامانهٔ طراحی
    تاریک/روشن · راست‌به‌چپ و چپ‌به‌راست · واکنش‌گرا · تم بندری
    ══════════════════════════════════════════════════════════════ */
 
@@ -1172,8 +1172,9 @@ body.boot-slow .splash-slow{display:block}
 .partners-top .section-head{margin-bottom:4px}
 .partners-top .section-title{font-size:15px}
 .marquee{overflow:hidden;padding:4px 0}
-.marquee-track{display:flex;gap:10px;width:max-content;animation:marq 34s linear infinite}
-.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-track{display:flex;gap:10px;width:max-content;will-change:transform}
+.marquee{cursor:grab;touch-action:pan-y}
+.marquee.grabbing{cursor:grabbing}
 @keyframes marq{to{transform:translateX(-50%)}}
 .partner-chip{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;background:var(--surface-2);border:1px solid var(--border);font-size:12.5px;white-space:nowrap;color:var(--text-1);text-decoration:none;transition:border-color var(--dur),transform var(--dur)}
 .partner-chip:hover{border-color:var(--accent);transform:translateY(-1px)}
@@ -1192,3 +1193,42 @@ body.boot-slow .splash-slow{display:block}
 .list{display:flex;flex-direction:column;gap:8px}
 .list-row{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
 .list-row .rank{width:26px;height:26px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:12px;font-weight:800;flex:none}
+
+/* ── چشم رمز عبور ── */
+.pwd-wrap{position:relative;display:block}
+.pwd-eye{position:absolute;inset-inline-end:8px;top:50%;translate:0 -50%;display:grid;place-items:center;width:32px;height:32px;border:0;background:transparent;color:var(--muted);border-radius:9px;cursor:pointer}
+.pwd-eye:hover{background:var(--hover);color:var(--text)}
+.pwd-eye .ic{width:19px;height:19px}
+.pwd-wrap input{padding-inline-end:44px}
+.topbar.no-ticker #ticker{display:none}
+.topbar.no-ticker{justify-content:center}
+
+/* ── لایت‌باکس زوم + ویدیو ── */
+.lb-tools{position:absolute;top:8px;inset-inline-end:8px;display:flex;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:4px;z-index:3}
+.lb-tools .tiny-txt{font-size:11px;font-weight:700;color:var(--muted)}
+.lb-figure{position:relative;overflow:hidden;touch-action:none}
+.lb-figure .lb-img{transition:transform .12s ease;transform-origin:center center;cursor:zoom-in;max-width:100%}
+.lb-figure.zoomed .lb-img{cursor:grab}
+.lb-video{cursor:default;background:#000;border-radius:12px}
+.gal-main{position:relative}
+.gal-zoom-hint{position:absolute;bottom:8px;inset-inline-start:8px;display:flex;gap:6px;align-items:center;background:color-mix(in srgb, var(--card) 82%, transparent);border:1px solid var(--border);border-radius:10px;padding:4px 8px;font-size:11px;color:var(--muted);pointer-events:none}
+.gal-zoom-hint .ic{width:14px;height:14px}
+.gal-video{width:100%;aspect-ratio:1/1;object-fit:contain;background:#000;border-radius:var(--r)}
+.gt-video{position:relative;display:grid;place-items:center;width:100%;height:100%}
+.gt-video img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
+.gt-video .ic{position:relative;width:22px;height:22px;color:#fff;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
+
+/* ── کلید صدای کلیک در منوی کاربر ── */
+.um-sw{margin-inline-start:auto;width:34px;height:20px;border-radius:99px;background:var(--border);position:relative;transition:background .15s}
+.um-sw::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:14px;height:14px;border-radius:50%;background:var(--card);transition:inset .15s}
+.um-sw.on{background:var(--accent)}
+.um-sw.on::after{inset-inline-start:17px}
+[data-act="sound-toggle"]{display:flex;align-items:center;gap:8px;width:100%}
+
+/* ── نشان‌های کاربر ── */
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;border:1px dashed var(--border);border-radius:12px;padding:10px 6px;color:var(--muted);opacity:.75}
+.badge-item .bi-ic .ic{width:22px;height:22px}
+.badge-item.got{border-style:solid;border-color:color-mix(in srgb, var(--accent) 55%, transparent);background:color-mix(in srgb, var(--accent) 10%, transparent);color:var(--text);opacity:1}
+.badge-item.got .bi-ic{color:var(--accent)}
+.badge-item b{font-size:12px}

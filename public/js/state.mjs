@@ -101,6 +101,7 @@ export function loadPrefs() {
     if (p.locale) S.prefs.locale = p.locale;
     if (p.density && p.density !== 'normal') S.prefs.density = p.density;
     if (p.reduceMotion !== undefined) S.prefs.reduceMotion = !!p.reduceMotion;
+    if (p.uiSound !== undefined) S.prefs.uiSound = !!p.uiSound;
   }
   return S.prefs;
 }
@@ -110,8 +111,8 @@ export function setPref(key, value, { sync = true } = {}) {
   writeLS(LS.prefs, S.prefs);
   applyPrefs();
   emit('prefs', { key, value });
-  if (sync && S.me && ['theme', 'locale', 'density', 'reduceMotion'].includes(key)) {
-    const prefs = { theme: S.prefs.theme, locale: S.prefs.locale, density: S.prefs.density, reduceMotion: S.prefs.reduceMotion };
+  if (sync && S.me && ['theme', 'locale', 'density', 'reduceMotion', 'uiSound'].includes(key)) {
+    const prefs = { theme: S.prefs.theme, locale: S.prefs.locale, density: S.prefs.density, reduceMotion: S.prefs.reduceMotion, uiSound: !!S.prefs.uiSound };
     api.patch('/api/me', { prefs }).then((r) => { if (r?.me) { S.me = r.me; emit('me', S.me); } }).catch(() => { /* بی‌صدا */ });
   }
 }

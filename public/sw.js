@@ -1,5 +1,5 @@
-/* سرویس‌ورکر بندر موبایل — پوستهٔ آفلاین + کش هوشمند */
-const VERSION = 'bm-v24';
+/* سرویس‌ورکر گرین اپل — پوستهٔ آفلاین + کش هوشمند */
+const VERSION = 'bm-v25';
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 const DATA = `${VERSION}-data`;

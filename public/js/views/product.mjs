@@ -28,6 +28,10 @@ export async function render(ctx) {
   while (c) { chain.unshift(c); c = c.parentId ? catById(c.parentId) : null; }
 
   const images = (p.images && p.images.length ? p.images : []).slice(0, 6);
+  const media = [
+    ...images.map((u) => ({ url: u, kind: 'image' })),
+    ...(p.videos || []).slice(0, 4).map((u) => ({ url: u, kind: 'video', poster: images[0] || '' })),
+  ];
   const stock = p.stock ?? 0;
   const zones = ship().zones || [];
 
@@ -35,11 +39,18 @@ export async function render(ctx) {
     ${breadcrumbs([...chain.map((x) => ({ label: catName(x), href: `#/category/${x.id}` })), { label: prodName(p) }])}
     <div class="pdp">
       <div class="gallery">
-        <div class="gal-main" data-act="lightbox" data-imgs='${esc(JSON.stringify(images))}' data-i="0" role="button" tabindex="0" aria-label="${t('pdp.share')}">
-          ${images[0] ? h`<img src="${images[0]}" alt="${prodName(p)}" data-glyph="${p.glyph}">` : raw(`<svg class="ic"><use href="#i-${p.glyph || 'box'}"/></svg>`)}
+        <div class="gal-main" data-act="lightbox" data-imgs='${esc(JSON.stringify(media))}' data-i="0" role="button" tabindex="0" aria-label="${t('pdp.zoomHint')}">
+          ${media[0]?.kind === 'video'
+            ? h`<video src="${media[0].url}" poster="${media[0].poster}" controls playsinline preload="metadata" class="gal-video"></video>`
+            : (images[0] ? h`<img src="${images[0]}" alt="${prodName(p)}" data-glyph="${p.glyph}">` : raw(`<svg class="ic"><use href="#i-${p.glyph || 'box'}"/></svg>`))}
+          <span class="gal-zoom-hint" aria-hidden="true">${icon('search')} ${t('pdp.zoomHint')}</span>
         </div>
-        ${images.length > 1 ? h`<div class="gal-thumbs">${images.map((im, i) => h`
-          <button type="button" class="gal-thumb ${i === 0 ? 'active' : ''}" data-thumb="${i}" aria-label="${i + 1}"><img src="${im}" alt="" loading="lazy"></button>`)}</div>` : ''}
+        ${media.length > 1 ? h`<div class="gal-thumbs">${media.map((m, i) => h`
+          <button type="button" class="gal-thumb ${i === 0 ? 'active' : ''}" data-thumb="${i}" aria-label="${i + 1}">
+            ${m.kind === 'video'
+              ? raw(`<span class="gt-video">${m.poster ? `<img src="${m.poster}" alt="" loading="lazy">` : ''}<svg class="ic"><use href="#i-play"/></svg></span>`)
+              : h`<img src="${m.url}" alt="" loading="lazy">`}
+          </button>`)}</div>` : ''}
         <div class="row row-wrap">
           ${feat('wishlist') ? h`<button type="button" class="btn btn-ghost btn-sm ${inWishlist(p.id) ? 'btn-danger' : ''}" data-act="wish-toggle" data-id="${p.id}">${icon('heart')} ${inWishlist(p.id) ? t('card.wishlistRemove') : t('card.wishlistAdd')}</button>` : ''}
           ${feat('compare') ? h`<button type="button" class="btn btn-ghost btn-sm ${inCompare(p.id) ? 'active' : ''}" data-act="compare-toggle" data-id="${p.id}">${icon('scale')} ${t('compare.add')}</button>` : ''}
@@ -224,9 +235,22 @@ export function mount(root, ctx) {
   // بندانگشتی‌ها
   root.querySelectorAll('[data-thumb]').forEach((b) => b.addEventListener('click', () => {
     const i = Number(b.dataset.thumb);
-    const imgs = JSON.parse(root.querySelector('[data-imgs]').dataset.imgs || '[]');
-    const main = root.querySelector('.gal-main img');
-    if (main && imgs[i]) main.src = imgs[i];
+    const items = JSON.parse(root.querySelector('[data-imgs]').dataset.imgs || '[]');
+    const gal = root.querySelector('.gal-main');
+    const m = items[i];
+    if (gal && m) {
+      gal.querySelector('img, video')?.remove();
+      if (m.kind === 'video') {
+        const v = document.createElement('video');
+        v.src = m.url; v.controls = true; v.playsInline = true; v.preload = 'metadata'; v.className = 'gal-video';
+        if (m.poster) v.poster = m.poster;
+        gal.prepend(v);
+      } else {
+        const img = document.createElement('img');
+        img.src = m.url; img.alt = '';
+        gal.prepend(img);
+      }
+    }
     root.querySelectorAll('[data-thumb]').forEach((x) => x.classList.toggle('active', x === b));
     root.querySelector('[data-imgs]').dataset.i = String(i);
   }));

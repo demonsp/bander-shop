@@ -2,7 +2,7 @@
 //  صفحه‌های محتوایی: دربارهٔ ما، راهنمای خرید، خدمات، سؤالات متداول،
 //  قوانین، حریم خصوصی، بیمه، قوانین تیکت، گزارش باگ و تماس با ما
 // ─────────────────────────────────────────────────────────────
-import { html as h, raw, icon, esc, fmtNum, applyDyn } from '../lib/dom.mjs';
+import { html as h, raw, icon, esc, fmtNum, applyDyn, fmtTel } from '../lib/dom.mjs';
 import { t, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S, feat, store } from '../state.mjs';
@@ -209,8 +209,8 @@ function contactHtml(page) {
             ${st.email ? h`<a class="btn btn-ghost btn-sm" href="mailto:${st.email}">${icon('mail')} ${t('contact.emailUs')}</a>` : ''}
           </div>
           <div class="contact-list mt">
-            ${st.phone ? h`<div class="row"><span class="muted small">${t('contact.phone')}</span><a class="mono" href="tel:${st.phone}">${fmtNum(st.phone)}</a></div>` : ''}
-            ${st.phone2 ? h`<div class="row"><span class="muted small">${t('contact.mobile')}</span><a class="mono" href="tel:${st.phone2}">${fmtNum(st.phone2)}</a></div>` : ''}
+            ${st.phone ? h`<div class="row"><span class="muted small">${t('contact.phone')}</span><a class="mono" href="tel:${st.phone}">${fmtTel(st.phone)}</a></div>` : ''}
+            ${st.phone2 ? h`<div class="row"><span class="muted small">${t('contact.mobile')}</span><a class="mono" href="tel:${st.phone2}">${fmtTel(st.phone2)}</a></div>` : ''}
             ${st.whatsapp ? h`<div class="row"><span class="muted small">${t('contact.whatsapp')}</span><span class="mono">${fmtNum(st.whatsapp)}</span></div>` : ''}
             ${st.email ? h`<div class="row"><span class="muted small">${t('common.email')}</span><span class="mono small">${esc(st.email)}</span></div>` : ''}
           </div>

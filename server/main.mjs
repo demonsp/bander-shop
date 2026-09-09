@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  بندر موبایل · سرور اصلی
+//  گرین اپل · سرور اصلی
 //  اجرای بدون هیچ وابستگی خارجی:  node server/main.mjs
 // ─────────────────────────────────────────────────────────────
 import http from 'node:http';
@@ -112,6 +112,8 @@ function normalizeSettings(state) {
   for (const k of Object.keys(DEFAULT_PAGES)) if (!state.pages?.[k]) state.pages[k] = structuredClone(DEFAULT_PAGES[k]);
   return state;
 }
+
+import { startBackupScheduler } from './lib/backup.mjs';
 
 const server = http.createServer(async (req, res) => {
   const started = process.hrtime.bigint();
@@ -241,6 +243,10 @@ const server = http.createServer(async (req, res) => {
       if (m && !m.methodNotAllowed) {
         ctx.params = m.params;
         await m.route.handler(ctx);
+        // ثبت ممیزی فراگیر: هر نوشتن روی API لاگ می‌شود
+        if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && pathname.startsWith('/api')) {
+          try { logAudit(ctx.user || null, `api.${method.toLowerCase()}`, pathname, {}); } catch { /* noop */ }
+        }
         return;
       }
       if (isApi) {
@@ -332,12 +338,13 @@ setInterval(async () => {
   await load(ensureSeed);
   normalizeSettings(db.raw);
   db.markDirty();
+  startBackupScheduler();
   server.listen(PORT, HOST, () => {
     const st = db.raw;
     const owner = st.users.find((u) => u.role === 'owner');
     console.log('');
     console.log('  ╭──────────────────────────────────────────────╮');
-    console.log('  │   بندر موبایل · Bander Mobile Store           │');
+    console.log('  │   گرین اپل · Green Apple Store           │');
     console.log('  ╰──────────────────────────────────────────────╯');
     console.log(`  ➜ آدرس:      http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`);
     console.log(`  ➜ محصولات:   ${st.products.length}  ·  دسته‌ها: ${st.categories.length}  ·  برندها: ${st.brands.length}`);

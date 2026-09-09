@@ -145,7 +145,7 @@ export async function render(ctx) {
 
   // عنوان صفحه
   try {
-    const base = S.settings?.store?.[ctx.lang === 'en' ? 'nameEn' : 'name'] || 'بندر موبایل';
+    const base = S.settings?.store?.[ctx.lang === 'en' ? 'nameEn' : 'name'] || 'گرین اپل';
     const tt = typeof mod.title === 'function' ? mod.title(ctx) : (mod.title || ctx.route.title?.(ctx) || '');
     document.title = tt ? `${tt} · ${base}` : base;
   } catch { /* noop */ }

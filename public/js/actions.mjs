@@ -1,9 +1,9 @@
 // ─────────────────────────────────────────────────────────────
 //  رجیستری اکشن‌های واگذارشده (event delegation)
 // ─────────────────────────────────────────────────────────────
-import { S, addToCart, toggleWishlist, toggleCompare, toggleAlert, hasAlert, feat } from './state.mjs';
+import { S, addToCart, toggleWishlist, toggleCompare, toggleAlert, hasAlert, feat, setPref } from './state.mjs';
 import { t, lang } from './i18n.mjs';
-import { toast, toastSuccess, toastError, toastApiError, modal, lightbox, confirmDialog, withBusy } from './ui.mjs';
+import { toast, toastSuccess, toastError, toastApiError, modal, lightbox, confirmDialog, withBusy, uiClickSound } from './ui.mjs';
 import { api } from './lib/api.mjs';
 import { html as h, icon, esc, fmtMoney, fmtNum, stars } from './lib/dom.mjs';
 import { prodName } from './state.mjs';
@@ -60,6 +60,15 @@ act('lightbox', (e, el) => {
   let imgs = [];
   try { imgs = JSON.parse(el.dataset.imgs || '[]'); } catch { imgs = [el.dataset.imgs || '']; }
   lightbox(imgs, Number(el.dataset.i || 0), el.dataset.alt || '');
+});
+
+act('sound-toggle', () => {
+  const on = !S.prefs?.uiSound;
+  setPref('uiSound', on);
+  const btn = document.querySelector('[data-act="sound-toggle"]');
+  if (btn) { btn.setAttribute('aria-pressed', String(on)); btn.innerHTML = h`${icon(on ? 'volume' : 'volume-off')} ${t('misc.uiSound')} <span class="um-sw ${on ? 'on' : ''}" aria-hidden="true"></span>`; }
+  toast(on ? t('misc.uiSoundOn') : t('misc.uiSoundOff'), { timeout: 1600 });
+  if (on) uiClickSound(true);
 });
 
 act('copy', async (e, el) => {
