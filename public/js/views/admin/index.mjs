@@ -20,6 +20,7 @@ const SECTIONS = [
   { grp: 'people', id: 'feedback', perm: 'feedback.manage', icon: 'flag', label: () => t('adm.feedback'), mod: () => import('./feedback.mjs') },
   { grp: 'people', id: 'users', perm: 'users.view', icon: 'users', label: () => t('adm.users'), mod: () => import('./users.mjs') },
   { grp: 'growth', id: 'coupons', perm: 'coupons.manage', icon: 'percent', label: () => t('adm.coupons'), mod: () => import('./marketing.mjs'), feat: 'coupons' },
+  { grp: 'growth', id: 'settings/partners', perm: 'settings.edit', icon: 'store', label: () => t('adm.sPartners'), mod: () => import('./settings.mjs'), feat: 'partners' },
   { grp: 'growth', id: 'ads', perm: 'ads.manage', icon: 'tag', label: () => t('adm.ads'), mod: () => import('./marketing.mjs'), feat: 'ads' },
   { grp: 'growth', id: 'notifications', perm: 'notifications.send', icon: 'bell', label: () => t('adm.notifications'), mod: () => import('./marketing.mjs'), feat: 'announcements' },
   { grp: 'system', id: 'settings', perm: 'settings.edit', icon: 'settings', label: () => t('adm.settings'), mod: () => import('./settings.mjs') },

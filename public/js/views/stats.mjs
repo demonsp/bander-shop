@@ -15,9 +15,9 @@ export async function render() {
 
   const max = Math.max(1, ...chart.map((c) => c.visits));
   const bars = chart.map((c) => {
-    const px = Math.max(6, Math.round((c.visits / max) * 118));
+    const step = Math.min(12, Math.max(1, Math.round((c.visits / max) * 12)));
     return h`<div class="ch-col" title="${c.date}: ${faDigits(c.visits)}">
-      <i style="height:${px}px"></i>
+      <i class="hb-${step}"></i>
       <span>${faDigits(Number(c.date.slice(8, 10)))}</span>
     </div>`;
   }).join('');

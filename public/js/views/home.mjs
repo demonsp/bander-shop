@@ -41,6 +41,16 @@ export async function render() {
 
   return h`
     ${bannerSlot('home_hero', adInSlot('home_hero'))}
+    ${feat('partners') && (S.settings.partners?.items?.length) ? h`
+    <section class="partners-sec partners-top">
+      ${sectionHead({ titleIcon: 'store', title: t('home.partnersTitle') })}
+      <div class="marquee" aria-label="${t('home.partnersTitle')}">
+        <div class="marquee-track">
+          ${[...S.settings.partners.items, ...S.settings.partners.items].map((p) => h`<span class="partner-chip">${icon('check')} <b>${isFa() ? p.fa : (p.en || p.fa)}</b></span>`).join('')}
+        </div>
+      </div>
+    </section>` : ''}
+
     <section class="hero">
       <div class="hero-bg"><img src="/assets/img/hero-port.svg" alt="" decoding="async"></div>
       <div class="hero-inner">
@@ -96,16 +106,6 @@ export async function render() {
       ${sectionHead({ titleIcon: 'tag', title: t('home.brands') })}
       <div class="row row-wrap">
         ${brands.slice(0, 18).map((b) => h`<a class="chip" href="#/products?brand=${b.id}">${brandName(b)}</a>`)}
-      </div>
-    </section>` : ''}
-
-    ${feat('partners') && (S.settings.partners?.items?.length) ? h`
-    <section class="section partners-sec">
-      ${sectionHead({ titleIcon: 'store', title: t('home.partnersTitle') })}
-      <div class="marquee" aria-label="${t('home.partnersTitle')}">
-        <div class="marquee-track">
-          ${[...S.settings.partners.items, ...S.settings.partners.items].map((p) => h`<span class="partner-chip">${icon('check')} <b>${isFa() ? p.fa : (p.en || p.fa)}</b></span>`).join('')}
-        </div>
       </div>
     </section>` : ''}
 
