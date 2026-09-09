@@ -137,8 +137,11 @@ with sync_playwright() as p:
     step('login', login_user)
 
     def checkout_user():
-        pg.goto(BASE + '/#/checkout', wait_until='networkidle'); pg.wait_for_timeout(800)
-        r = probe(pg, 'checkout-user'); assert r['viewLen'] > 400
+        pid = pg.evaluate("() => fetch('/api/products?inStock=1&limit=1').then(r=>r.json()).then(d=>d.items[0].id)")
+        pg.goto(BASE + '/#/product/' + pid, wait_until='networkidle'); pg.wait_for_timeout(700)
+        clk(pg, '[data-act=pdp-add]', 'checkout-user'); pg.wait_for_timeout(500)
+        pg.goto(BASE + '/#/checkout', wait_until='networkidle'); pg.wait_for_timeout(900)
+        r = probe(pg, 'checkout-user'); assert r['viewLen'] > 400, r['viewLen']
         w.flush('checkout-user')
     step('checkout_user', checkout_user)
 
