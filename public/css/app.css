@@ -736,9 +736,9 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--bord
 kbd{background:var(--surface-3);border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:1px 6px;font-size:11px;font-family:var(--font)}
 
 /* کروکی نقشه */
-.minimap{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:transform var(--dur)}
+.minimap{position:relative;aspect-ratio:16/9;min-height:150px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;transition:transform var(--dur)}
 .minimap:hover{transform:scale(1.01)}
-.minimap svg{width:100%;height:auto;display:block}
+.minimap svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .minimap-hint{position:absolute;bottom:10px;inset-inline-start:10px;background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:11.8px;font-weight:600;display:flex;align-items:center;gap:6px}
 .map-marker{animation:bob 2.4s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -784,8 +784,8 @@ kbd{background:var(--surface-3);border:1px solid var(--border);border-bottom-wid
 .contact-list li{display:flex;gap:9px;align-items:flex-start;font-size:12.8px;color:var(--text-2);margin-bottom:9px;line-height:1.8}
 .contact-list .ic{width:16px;height:16px;color:var(--accent);margin-top:4px;flex:none}
 .f-map{margin-top:12px}
-.minimap-link{display:block;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
-.minimap-link svg{width:100%;height:auto}
+.minimap-link{position:relative;display:block;aspect-ratio:16/9;min-height:120px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.minimap-link svg{position:absolute;inset:0;width:100%;height:100%}
 .footer-bottom{border-top:1px solid var(--border);padding-block:14px}
 .fb-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .fb-inner p{font-size:12.5px;color:var(--muted)}

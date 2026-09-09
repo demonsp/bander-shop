@@ -165,8 +165,7 @@ function serveFile(req, res, abs, stat) {
 }
 
 function cachePolicy(abs) {
-  if (/\.(?:mjs|js|css)$/.test(abs)) return 'public, max-age=300, must-revalidate';
-  if (/\.(?:woff2|svg|png|jpg|jpeg|webp|ico)$/.test(abs)) return 'public, max-age=86400, must-revalidate';
+  // همیشه بازاعتبارسازی با ETag: پس از هر استقرار، هیچ مرورگری فایل کهنه نگه نمی‌دارد
   return 'no-cache';
 }
 
