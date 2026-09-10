@@ -9,6 +9,10 @@ import { db, logAudit } from './db.mjs';
 const API = (token) => `https://api.telegram.org/bot${token}`;
 let polling = false;
 let currentToken = '';
+// فقط «یک» حلقهٔ poll مجاز است: شناسهٔ نسل (generation) جلوی ping-pong دو حلقه
+// (که با خاموش/روشن شدن بات ساخته می‌شد و با 409 یکدیگر را می‌زدند) را می‌گیرد.
+let loopSeq = 0;
+let activeLoop = 0;
 
 export function telegramEnabled() {
   const tg = db.raw.settings?.telegram;
@@ -135,16 +139,18 @@ export function startTelegramBot() {
     // سرویس «-legacy» هرگز poll نمی‌کند: دو poller روی یک توکن = 409 تلگرام و سکوت بات
     const svc = String(process.env.RENDER_SERVICE_NAME || '');
     const want = !!(tg?.enabled && tg?.token) && process.env.BM_TG !== 'off' && !/-legacy$/i.test(svc);
-    if (!want) { polling = false; currentToken = ''; return; }
+    if (!want) { polling = false; currentToken = ''; activeLoop++; /* حلقهٔ قبلی می‌میرد */ return; }
     if (polling && currentToken === tg.token) return;
     polling = true; currentToken = tg.token;
+    const id = ++loopSeq;
+    activeLoop = id;
     (async function loop() {
-      while (polling && db.raw.settings?.telegram?.token === currentToken) {
+      while (polling && activeLoop === id && db.raw.settings?.telegram?.token === currentToken) {
         try { await pollOnce(currentToken); }
         catch (e) {
           // خطای poll (مثلاً 409 تداخل دو poller) ثبت شود تا در پنل دیده شود
           db.raw.meta = { ...(db.raw.meta || {}), tgLastError: `${new Date().toISOString()} poll: ${e?.message || e}` };
-          await new Promise((r) => setTimeout(r, 5000));
+          await new Promise((r) => setTimeout(r, 8000));
         }
       }
     })();
