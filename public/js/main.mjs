@@ -668,6 +668,8 @@ function wireScroll() {
 // ── توافق‌نامهٔ اولین بازدید ────────────────────────────────
 function openConsent() {
   if (!feat('consent')) return;
+  // اگر کاربر برای خواندن قوانین/حریم خصوصی از مودال خارج شده، در همین نشست دیگر مزاحمش نمی‌شویم
+  if (sessionStorage.getItem('consentDeferred')) return;
   modal({
     title: t('consent.title'),
     dismissible: false,
@@ -684,6 +686,11 @@ function openConsent() {
     footer: h`<button type="button" class="btn btn-ghost" data-consent-min>${t('consent.rejectOptional')}</button><button type="button" class="btn btn-primary" data-consent-go>${t('consent.accept')}</button>`,
     onMount: (panel, handle) => {
       const form = panel.querySelector('[data-act="consent-form"]');
+      // باگ‌گیری راند جاری: کلیک روی لینک داخلی مودال رضایت، قبلاً مودال را روی صفحه نگه می‌داشت
+      panel.querySelectorAll('a[href^="#/"]').forEach((a) => a.addEventListener('click', () => {
+        sessionStorage.setItem('consentDeferred', '1');
+        handle.close();
+      }));
       const go = () => {
         const terms = form.querySelector('[name=terms]').checked;
         const privacy = form.querySelector('[name=privacy]').checked;
