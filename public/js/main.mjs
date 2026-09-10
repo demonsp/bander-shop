@@ -1,5 +1,15 @@
 // ─────────────────────────────────────────────────────────────
 //  نقطهٔ ورود برنامه: راه‌اندازی، اسکلت سایت، جست‌وجو، پالت فرمان
+//
+//  نقشهٔ کد سمت کلاینت (برای ویرایش‌های آینده):
+//   • state.mjs    : وضعیت سراسری + بوت‌استرپ + اعمال تم/زبان/پوسته
+//   • router.mjs   : مسیریاب هش‌محور؛ نماها تنبل بارگیری می‌شوند
+//   • views/*      : هر صفحه یک ماژول با render()/mount() است
+//   • lib/api.mjs  : کلاینت API با CSRF، تلاش مجدد، روکش صف انتظار
+//   • lib/dom.mjs  : قالب امن h`…` (هربخشی خودکار escape می‌شود)
+//   • actions.mjs  : هندلرهای data-act (کلیک/submit) یک‌جا ثبت می‌شوند
+//   • ui.mjs       : توست، مودال، دراور، دیالوگ تأیید
+//  برای افزودن صفحه: یک فایل در views/ بساز و در router ثبتش کن.
 // ─────────────────────────────────────────────────────────────
 import {
   S, boot, on, settings, store, ui, feat, can, refreshBootstrap,
@@ -44,7 +54,56 @@ async function init() {
   maybeCouponFromUrl();
   maybeConsent();
   maybeForcePasswordChange();
+  hideWelcome();
+  wireRefresh();
+  enhanceTooltips();
+  wireErrorTelemetry();
   document.getElementById('bootSplash')?.remove();
+}
+
+// ── صفحه خوش‌آمد: حداقل ۷۰۰ms بماند، سپس نرم محو شود ──────
+const T0 = performance.now();
+function hideWelcome() {
+  const ws = document.getElementById('welcomeScreen');
+  if (!ws) return;
+  const wait = Math.max(0, 700 - (performance.now() - T0));
+  setTimeout(() => { ws.classList.add('gone'); setTimeout(() => ws.remove(), 520); }, wait);
+}
+
+// ── دکمهٔ تازه‌سازی بالای صفحه ──────────────────────────────
+function wireRefresh() {
+  const b = document.getElementById('btnRefresh');
+  if (!b) return;
+  b.addEventListener('click', () => { location.reload(); });
+}
+
+// ── تولتیپ سراسری: هر دکمه/لینکی که برچسب دارد ولی title نه ──
+function enhanceTooltips() {
+  const pass = () => {
+    for (const elx of document.querySelectorAll('button[aria-label],a[aria-label],[role="button"][aria-label]')) {
+      if (!elx.title) elx.title = elx.getAttribute('aria-label') || '';
+    }
+  };
+  pass();
+  const ob = new MutationObserver(() => { clearTimeout(ob._t); ob._t = setTimeout(pass, 350); });
+  ob.observe(document.body, { childList: true, subtree: true });
+}
+
+// ── تله‌متری خطاهای کلاینت → پنل مدیر (خودآگاهی باگ‌ها) ─────
+function wireErrorTelemetry() {
+  const seen = new Set();
+  const send = (msg, src, line) => {
+    const key = String(msg).slice(0, 120);
+    if (seen.has(key) || seen.size > 12) return;
+    seen.add(key);
+    try {
+      const body = JSON.stringify({ msg: String(msg).slice(0, 300), src: String(src || '').slice(0, 200), line: line || 0, path: location.hash.slice(0, 120), build: window.__BM_BUILD || '' });
+      if (navigator.sendBeacon) navigator.sendBeacon('/api/client-error', new Blob([body], { type: 'application/json' }));
+      else fetch('/api/client-error', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {});
+    } catch { /* noop */ }
+  };
+  window.addEventListener('error', (e) => send(e.message, e.filename, e.lineno));
+  window.addEventListener('unhandledrejection', (e) => send(`unhandledrejection: ${e.reason?.message || e.reason}`, location.href, 0));
 }
 
 // ── اسکلت سایت ──────────────────────────────────────────────

@@ -30,6 +30,7 @@ export const DEFAULT_SETTINGS = {
   },
 
   theme: {
+    variant: 'fresh',        // 'fresh' = پوستهٔ تازه · 'classic' = پوستهٔ قبلی (کلید برگشت)
     accent: '#31afd4',
     accentEn: '#31afd4',
     mode: 'dark',            // dark | light

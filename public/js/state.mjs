@@ -139,6 +139,8 @@ export function applyPrefs() {
   // پوستهٔ بندری و سبک پس‌زمینه
   root.setAttribute('data-port', th.portTheme === false ? 'off' : 'on');
   root.setAttribute('data-bg', th.bgStyle || 'waves');
+  // پوستهٔ تازه/کلاسیک (کلید برگشت در پنل مدیر)
+  root.setAttribute('data-variant', th.variant === 'classic' ? 'classic' : 'fresh');
 
   // گردی و تراکم و کنتراست
   const r = Math.max(0, Math.min(28, Number(th.radius ?? 16)));

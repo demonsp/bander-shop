@@ -1,6 +1,17 @@
 // ─────────────────────────────────────────────────────────────
 //  گرین اپل · سرور اصلی
 //  اجرای بدون هیچ وابستگی خارجی:  node server/main.mjs
+//
+//  نقشهٔ کد (برای ویرایش‌های آینده):
+//   • lib/db.mjs       : ذخیره‌ساز JSON اتمیک + تراکنش سریال + بازیابی خودکار
+//   • lib/http.mjs     : لایهٔ HTTP (gzip، کوکی، استاتیک امن، هدرهای امنیتی)
+//   • lib/auth.mjs     : رمز scrypt، نشست، CSRF، TOTP دومرحله‌ای
+//   • lib/queue.mjs    : اتاق انتظار ضد-DDoS (صف، گذرنامهٔ HMAC، سنجه‌ها)
+//   • lib/util.mjs     : اعتبارسنجی ورودی‌ها (V)، محدودساز نرخ، متن فارسی
+//   • api-*.mjs        : مسیرهای API به تفکیک حوزه (کاتالوگ/احراز/فروش/مدیر)
+//   • بدنهٔ createServer: ترتیب مهم است → بن IP → سنجهٔ بار → محدودساز نرخ →
+//     CSRF → نشست → اتاق انتظار → مسیریاب → استاتیک → SPA fallback
+//   هر بخش با کامنت «──» جدا شده؛ قبل از جابه‌جایی کد، ترتیب بالا را حفظ کن.
 // ─────────────────────────────────────────────────────────────
 import http from 'node:http';
 import path from 'node:path';
@@ -156,7 +167,28 @@ router.get('/api/admin/system/load', async (ctx) => {
   const snap = loadSnapshot();
   const sec = secOf(st);
   const autoBans = (st.bans || []).filter((b) => b.auto && (!b.until || new Date(b.until) > new Date()));
-  sendJson(ctx.res, 200, { ok: true, ...snap, sec, autoBans: autoBans.slice(0, 30), onlineNow: publicStats(st).onlineNow ?? null });
+  sendJson(ctx.res, 200, { ok: true, ...snap, sec, autoBans: autoBans.slice(0, 30), clientErrors: (st.clientErrors || []).slice(0, 12), onlineNow: publicStats(st).onlineNow ?? null });
+});
+
+// ── تله‌متری خطاهای کلاینت: مرورگرها باگ‌ها را خودشان گزارش می‌دهند ──
+router.post('/api/client-error', async (ctx) => {
+  ctx.rateLimit(`cerr:${ctx.ip}`, 20, 60 * 1000);
+  const b = ctx.body || {};
+  const rec = {
+    id: uid('cerr'), at: nowISO(),
+    msg: V.optStr(b.msg, { max: 300, field: 'msg' }),
+    src: V.optStr(b.src, { max: 200, field: 'src' }),
+    line: Number(b.line) || 0,
+    path: V.optStr(b.path, { max: 120, field: 'path' }),
+    build: V.optStr(b.build, { max: 20, field: 'build' }),
+    ua: ctx.ua.slice(0, 120),
+  };
+  await db.tx((st) => {
+    st.clientErrors = st.clientErrors || [];
+    st.clientErrors.unshift(rec);
+    if (st.clientErrors.length > 300) st.clientErrors.length = 300;
+  });
+  sendJson(ctx.res, 200, { ok: true });
 });
 
 router.get('/robots.txt', async (ctx) => {
@@ -183,6 +215,20 @@ async function ensureSeed(state) {
   if (state.seeded) return state;
   buildSeed(state);
   return state;
+}
+
+/**
+ * خودترمیمی: اگر هر یک از مجموعه‌های اصلی دیتابیس مفقود یا از نوع اشتباه باشد
+ * (مثلاً بر اثر ویرایش دستی یا نیمه‌ماندن یک نوشتن)، بدون دست‌زدن به داده‌های
+ * سالم، همان یک کلید را بازسازی می‌کند. تعداد اصلاح‌ها برگردانده می‌شود.
+ */
+function repairState(st) {
+  let fixed = 0;
+  const lists = ['categories', 'brands', 'products', 'users', 'sessions', 'otps', 'carts', 'orders', 'reviews', 'tickets', 'notifications', 'supportMessages', 'feedback', 'coupons', 'ads', 'audit', 'priceAlerts', 'bans', 'visitors', 'lotteries', 'telegramInbox', 'clientErrors'];
+  for (const k of lists) if (!Array.isArray(st[k])) { st[k] = []; fixed++; }
+  const maps = ['pages', 'settings', 'visits', 'visitSessions', 'stats', 'imageHashes', 'telegramSubs', 'meta'];
+  for (const k of maps) if (!st[k] || typeof st[k] !== 'object' || Array.isArray(st[k])) { st[k] = {}; fixed++; }
+  return fixed;
 }
 
 function normalizeSettings(state) {
@@ -294,8 +340,8 @@ const server = http.createServer(async (req, res) => {
     const state = db.raw;
     const isApi = pathname.startsWith('/api/');
 
-    // CSRF برای درخواست‌های تغییردهنده
-    if (isApi && !['GET', 'HEAD', 'OPTIONS'].includes(method) && !checkCsrf(req, cookies, method)) {
+    // CSRF برای درخواست‌های تغییردهنده (تله‌متری خطای کلاینت معاف است: بدون هدر، فقط لاگ)
+    if (isApi && !['GET', 'HEAD', 'OPTIONS'].includes(method) && pathname !== '/api/client-error' && !checkCsrf(req, cookies, method)) {
       logAudit(null, 'security.csrf.reject', pathname, { ip });
       return respond(403, 'csrf_failed', 'توکن امنیتی درخواست نامعتبر است. صفحه را تازه کن و دوباره تلاش کن.');
     }
@@ -451,6 +497,13 @@ server.keepAliveTimeout = 15_000;
 // ── کارهای پس‌زمینه ────────────────────────────────────────
 setInterval(() => limiter.sweep(), 5 * 60 * 1000).unref?.();
 setInterval(() => { sweepQueue(); }, 30 * 1000).unref?.();
+// واچ‌داگ خودترمیمی: هر ۶۰ ثانیه سلامت مجموعه‌ها بررسی و در صورت نیاز بازسازی می‌شود
+setInterval(() => {
+  try {
+    const n = repairState(db.raw);
+    if (n) { console.warn(`[selfheal] watchdog rebuilt ${n} collection(s)`); db.markDirty(); }
+  } catch (e) { console.error('[selfheal] watchdog failed:', e.message); }
+}, 60 * 1000).unref?.();
 setInterval(() => { heartbeatAll(); }, 25_000).unref?.();
 
 // لغو خودکار سفارش‌های پرداخت‌نشده + آزادسازی موجودی
@@ -496,7 +549,13 @@ setInterval(async () => {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.mkdirSync(path.join(PUBLIC_DIR, 'uploads'), { recursive: true });
   await load(ensureSeed);
+  // خودترمیمی هنگام راه‌اندازی: مجموعه‌های مفقود بازسازی می‌شوند
+  const repaired = repairState(db.raw);
   normalizeSettings(db.raw);
+  if (repaired) {
+    console.warn(`[selfheal] ${repaired} collection(s) rebuilt at boot`);
+    try { logAudit(null, 'system.selfheal', `${repaired} collections`, {}); } catch { /* noop */ }
+  }
   db.markDirty();
   startBackupScheduler();
   startTelegramBot();

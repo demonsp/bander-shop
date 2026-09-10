@@ -83,8 +83,22 @@ export async function load(seedFn) {
         state = { ...EMPTY(), ...bak };
         console.warn('[db] restored from backup');
       } catch {
-        console.warn('[db] starting fresh (no valid backup)');
-        state = EMPTY();
+        // لایهٔ دوم خودترمیمی: تازه‌ترین اسنپ‌شات معتبر در پوشهٔ backups/
+        let restored = false;
+        try {
+          const dir = path.join(DATA_DIR, 'backups');
+          const files = fs.readdirSync(dir)
+            .filter((f) => f.endsWith('.json'))
+            .map((f) => ({ f, t: fs.statSync(path.join(dir, f)).mtimeMs }))
+            .sort((a, b) => b.t - a.t);
+          for (const { f } of files.slice(0, 5)) {
+            try {
+              const bk = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+              if (bk && Array.isArray(bk.products)) { state = { ...EMPTY(), ...bk }; console.warn('[db] restored from snapshot:', f); restored = true; break; }
+            } catch { /* اسنپ‌شات بعدی را امتحان کن */ }
+          }
+        } catch { /* پوشهٔ پشتیبان در دسترس نیست */ }
+        if (!restored) { console.warn('[db] starting fresh (no valid backup)'); state = EMPTY(); }
       }
     }
     if (typeof seedFn === 'function') await seedFn(state);

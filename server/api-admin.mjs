@@ -1420,6 +1420,7 @@ function sanitizeSection(section, patch, current) {
         out.accent = c.toLowerCase();
       }
       b('portTheme', true); b('animations', true);
+      if (patch.variant !== undefined) out.variant = V.oneOf(patch.variant, ['classic', 'fresh'], 'variant');
       if (patch.mode !== undefined) out.mode = V.oneOf(patch.mode, ['dark', 'light'], 'mode');
       if (patch.bgStyle !== undefined) out.bgStyle = V.oneOf(patch.bgStyle, ['waves', 'grid', 'plain'], 'bgStyle');
       if (patch.density !== undefined) out.density = V.oneOf(patch.density, ['compact', 'normal', 'comfy'], 'density');

@@ -1257,3 +1257,28 @@ html.eco .ticker-track{animation-play-state:paused}
 @keyframes bmQslide{0%{transform:translateX(-110%)}100%{transform:translateX(420%)}}
 .bm-q-note{font-size:11.5px;color:#6f95a2}
 @media (prefers-reduced-motion: reduce){.bm-q-bar i{animation:none}}
+
+/* ── صفحه خوش‌آمد (ولکام اسکرین) ─────────────────────────── */
+#welcomeScreen{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:radial-gradient(900px 500px at 70% -10%,#12323d 0%,#0b1418 55%,#070d10 100%);transition:opacity .45s ease,visibility .45s}
+#welcomeScreen.gone{opacity:0;visibility:hidden;pointer-events:none}
+.ws-card{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.ws-logo{filter:drop-shadow(0 10px 30px rgba(49,175,212,.35));animation:wsPop .7s ease both}
+.ws-name{color:#fff;font-size:22px;font-weight:800;letter-spacing:.5px}
+.ws-tag{color:#8fb4c0;font-size:12.5px}
+.ws-ring{margin-top:14px;width:34px;height:34px;border-radius:50%;border:3px solid #1b2c34;border-top-color:#31afd4;animation:wsSpin .9s linear infinite}
+@keyframes wsPop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes wsSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){#welcomeScreen{transition:none}.ws-logo,.ws-ring{animation:none}}
+html[data-mode="light"] #welcomeScreen{background:radial-gradient(900px 500px at 70% -10%,#eaf6fa 0%,#f6fbfd 60%,#fff 100%)}
+html[data-mode="light"] .ws-name{color:#0c2833}
+html[data-mode="light"] .ws-tag{color:#5b7885}
+
+/* ── پوستهٔ تازه (variant=fresh) — با یک کلید در پنل مدیر قابل برگشت به کلاسیک ── */
+html[data-variant="fresh"] .card,html[data-variant="fresh"] .kpi{border-radius:20px}
+html[data-variant="fresh"] .card{box-shadow:0 10px 30px rgba(0,0,0,.22)}
+html[data-variant="fresh"] .btn{border-radius:14px}
+html[data-variant="fresh"] .icon-btn{border-radius:14px;transition:transform .15s ease,background .15s ease}
+html[data-variant="fresh"] .icon-btn:hover{transform:translateY(-1px)}
+html[data-variant="fresh"] .site-header{box-shadow:0 6px 24px rgba(0,0,0,.18)}
+html[data-variant="fresh"] .product-card{border-radius:18px}
+html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
