@@ -63,7 +63,6 @@ const FIELDS = {
     { k: 'density', label: () => t('adm.tDensity'), type: 'select', options: () => [['compact', 'Compact'], ['normal', 'Normal'], ['comfy', 'Comfy']] },
     { k: 'contrast', label: () => t('adm.tContrast'), type: 'select', options: () => [['normal', 'Normal'], ['high', 'High']] },
     { k: 'radius', label: () => t('adm.tRadius'), type: 'number', min: 0, max: 32 },
-    { k: 'variant', label: () => t('adm.tVariant'), type: 'select', hint: () => t('adm.tVariantHint'), options: () => [['fresh', L('تازه (پیشنهادی)', 'Fresh')], ['classic', L('کلاسیک (قبلی)', 'Classic')]] },
     { k: 'portTheme', label: () => t('adm.tPort'), type: 'bool', hint: () => t('adm.tPortHint') },
     { k: 'animations', label: () => t('adm.tAnim'), type: 'bool' },
   ],

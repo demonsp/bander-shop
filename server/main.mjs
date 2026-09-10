@@ -15,6 +15,7 @@
 // ─────────────────────────────────────────────────────────────
 import http from 'node:http';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { db, load, logAudit, DATA_DIR, ROOT } from './lib/db.mjs';
 import { Router } from './lib/router.mjs';
 import {
@@ -39,6 +40,8 @@ import fs from 'node:fs';
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 const limiter = makeRateLimiter();
+// کش ایندکس SPA (با بررسی mtime تازه می‌شود)
+let indexCache = null;
 // ضریب محدودسازی نرخ (برای محیط تست قابل افزایش است)
 const RATE_SCALE = Math.max(0.1, Number(process.env.BM_RATE_SCALE || 1));
 // در محیط تست می‌توان اتاق انتظار را خاموش کرد: BM_QUEUE=off
@@ -462,14 +465,26 @@ const server = http.createServer(async (req, res) => {
     const served = await serveStatic(req, res, url);
     if (served) return;
 
-    // SPA fallback
+    // SPA fallback — با کش حافظه‌ای (mtime) و gzip تا زیر بار سنگین سریع بماند
     if (method === 'GET' || method === 'HEAD') {
       const indexHtml = path.join(PUBLIC_DIR, 'index.html');
-      if (fs.existsSync(indexHtml)) {
-        const buf = fs.readFileSync(indexHtml);
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Length': buf.length, 'Cache-Control': 'no-cache' });
-        return res.end(method === 'HEAD' ? undefined : buf);
-      }
+      try {
+        const stat = fs.statSync(indexHtml);
+        let ent = indexCache;
+        if (!ent || ent.mtime !== stat.mtimeMs) {
+          ent = indexCache = { mtime: stat.mtimeMs, buf: fs.readFileSync(indexHtml), gz: null };
+          ent.gz = zlib.gzipSync(ent.buf, { level: 6 });
+        }
+        const useGz = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
+        const out = useGz ? ent.gz : ent.buf;
+        res.writeHead(200, {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Content-Length': out.length,
+          'Cache-Control': 'no-cache',
+          ...(useGz ? { 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' } : {}),
+        });
+        return res.end(method === 'HEAD' ? undefined : out);
+      } catch { /* فایل ایندکس نیست → ۴۰۴ پایین */ }
     }
     return respond(404, 'not_found', 'صفحه یافت نشد.');
   } catch (err) {

@@ -84,7 +84,6 @@ export async function render() {
         </div>
         <div class="kpi-grid mt-s" id="secKpis"></div>
         <div class="mt-s" id="secTop"></div>
-        <div class="mt-s" id="secErrs"></div>
         ${can('settings.edit') ? h`
         <form class="form-grid mt" id="secForm" data-act="adm-sec-save">
           ${switchField({ label: t('adm.secQueueEnabled'), desc: t('adm.secQueueDesc'), name: 'queueEnabled', checked: true })}
@@ -161,12 +160,6 @@ async function refreshSec() {
     top.innerHTML = (d.top || []).length
       ? `<div class="muted tiny">${t('adm.secTop')}</div><div class="table-wrap"><table class="table"><thead><tr><th>IP</th><th class="num">${t('adm.secPerMin')}</th></tr></thead><tbody>${d.top.map((x) => `<tr><td class="mono tiny">${esc(x.ip)}</td><td class="num tiny">${fmtNum(x.perMin)}</td></tr>`).join('')}</tbody></table></div>`
       : `<p class="muted tiny">${t('adm.secTopEmpty')}</p>`;
-  }
-  const errs = document.getElementById('secErrs');
-  if (errs) {
-    errs.innerHTML = (d.clientErrors || []).length
-      ? `<div class="muted tiny">${t('adm.errTitle')}</div><div class="table-wrap"><table class="table"><tbody>${d.clientErrors.map((e2) => `<tr><td class="tiny mono">${esc(String(e2.msg || '').slice(0, 90))}</td><td class="tiny muted nowrap">${esc(e2.path || '')}</td><td class="tiny muted nowrap">${timeAgo(e2.at)}</td></tr>`).join('')}</tbody></table></div>`
-      : `<p class="muted tiny">${t('adm.errEmpty')}</p>`;
   }
   const st = document.getElementById('secState');
   if (st) {
