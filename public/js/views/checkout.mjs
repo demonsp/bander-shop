@@ -58,7 +58,7 @@ export async function render(ctx) {
         <section class="card">
           <strong class="row mb-s">${icon('truck')} ${t('checkout.delivery')}</strong>
           <div class="col">
-            <label class="radio-card ${['snapppay', 'azki', 'digipay'].includes(m.id) && (!S.me || S.me.kycStatus !== 'approved') ? 'disabled' : ''}">
+            <label class="radio-card">
               <input type="radio" name="delivery" value="pickup" ${sh.pickupEnabled === false ? 'disabled' : ''} ${S.me ? '' : 'checked'}>
               <span class="dot"></span>
               <span><span class="b">${t('checkout.pickup')}</span><span class="hint" >${t('checkout.pickupDesc')} ${t('checkout.pickupReady', { h: fmtNum(sh.handlingHours || 24) })}</span></span>
