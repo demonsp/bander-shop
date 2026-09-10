@@ -1,10 +1,19 @@
 // ─────────────────────────────────────────────────────────────
-//  بات پشتیبانی تلگرام — long-polling بدون وابستگی بیرونی
+//  بات پشتیبانی تلگرام — حالت وب‌هوک (اولویت) با فال‌بک long-polling
 //  توکن در تنظیمات ادمین: settings.telegram.token
 //  دستورات: /start /help /status <کد سفارش> /products <جستجو> /contact
 //  سایر پیام‌ها → صندوق ورودی پنل ادمین + پاسخ خودکار
+//  چرا وب‌هوک؟ هر poller سرگردان (نمونهٔ قدیمی/سرویس دیگر) با 409 کل
+//  long-polling را قفل می‌کرد؛ وب‌هوک یعنی تلگرام خودش پیام را به ما می‌دهد.
 // ─────────────────────────────────────────────────────────────
+import crypto from 'node:crypto';
 import { db, logAudit } from './db.mjs';
+
+const CANON = 'https://greenapple-shop.onrender.com';
+export const TG_WEBHOOK_PATH = '/api/tg/webhook';
+export const tgSecret = (token) => crypto.createHash('sha256').update(String(token || '')).digest('hex').slice(0, 24);
+let webhookState = { url: '', ok: false, err: '' };
+export const tgWebhookState = () => ({ ...webhookState });
 
 const API = (token) => `https://api.telegram.org/bot${token}`;
 let polling = false;
@@ -74,7 +83,7 @@ function answerProducts(q) {
   return `${head}\n${items.map((p) => `• ${p.name} — ${Number(p.price).toLocaleString('fa-IR')} تومان`).join('\n')}${s ? '' : tail}`;
 }
 
-async function handleUpdate(up) {
+export async function handleUpdate(up) {
   const msg = up.message;
   if (!msg) return;
   const chatId = String(msg.chat?.id || '');
@@ -131,6 +140,21 @@ async function pollOnce(token) {
 // برای تست واحد (tools/tests) — بدون اثر جانبی
 export const tgInternals = { answerStatus, answerProducts };
 
+// ثبت وب‌هوک روی آدرس کانال اصلی؛_secret_ در هدر X-Telegram-Bot-Api-Secret-Token
+async function ensureWebhook(token) {
+  const url = `${CANON}${TG_WEBHOOK_PATH}`;
+  if (webhookState.ok && webhookState.url === url) return true;
+  const r = await fetch(`${API(token)}/setWebhook`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, allowed_updates: ['message'], secret_token: tgSecret(token) }),
+  });
+  const j = await r.json().catch(() => null);
+  if (r.ok && j?.ok) { webhookState = { url, ok: true, err: '' }; return true; }
+  webhookState = { url, ok: false, err: j?.description || 'setWebhook failed' };
+  return false;
+}
+
 /** حلقهٔ long-poll؛ هر ۲۰ ثانیه وضعیت تنظیمات بازبررسی می‌شود */
 export function startTelegramBot() {
   setInterval(async () => {
@@ -140,6 +164,9 @@ export function startTelegramBot() {
     const svc = String(process.env.RENDER_SERVICE_NAME || '');
     const want = !!(tg?.enabled && tg?.token) && process.env.BM_TG !== 'off' && !/-legacy$/i.test(svc);
     if (!want) { polling = false; currentToken = ''; activeLoop++; /* حلقهٔ قبلی می‌میرد */ return; }
+    // اولویت با وب‌هوک است؛ فقط اگر ثبت وب‌هوک شکست خورد به polling برمی‌گردیم
+    const wok = await ensureWebhook(tg.token).catch(() => false);
+    if (wok) { polling = false; currentToken = tg.token; activeLoop++; return; }
     if (polling && currentToken === tg.token) return;
     polling = true; currentToken = tg.token;
     const id = ++loopSeq;

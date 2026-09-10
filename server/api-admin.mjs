@@ -14,7 +14,7 @@ import { publicOrder, restoreStock } from './api-shop.mjs';
 import { PERMISSIONS, hashPassword, generateTotpSecret, destroyUserSessions } from './lib/auth.mjs';
 import { ean13 } from './seed.mjs';
 import { listBackups, createBackup, restoreBackup, readBackup } from './lib/backup.mjs';
-import { tgBroadcast, tgSend, telegramEnabled } from './lib/telegram.mjs';
+import { tgBroadcast, tgSend, telegramEnabled, tgWebhookState } from './lib/telegram.mjs';
 import { sendMail, mailConfigured } from './lib/mail.mjs';
 import { sendSms, smsConfigured } from './lib/sms.mjs';
 import { productSvg, writeProductImages } from './art.mjs';
@@ -1097,6 +1097,7 @@ export function registerAdmin(router) {
       ok: true, enabled: !!tg.enabled, tokenSet: !!tg.token, welcome: tg.welcome || '',
       inbox: (ctx.state.telegramInbox || []).slice(0, 60), subs: Object.keys(ctx.state.telegramSubs || {}).length,
       lastPoll: meta.tgLastPoll || '', lastError: meta.tgLastError || '',
+      webhook: tgWebhookState(),
     });
   });
   A('POST', '/api/admin/telegram', 'settings.edit', async (ctx) => {

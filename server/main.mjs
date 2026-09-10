@@ -94,6 +94,7 @@ router.get('/api/system/status', async (ctx) => {
   const m = ctx.state.meta || {};
   sendJson(ctx.res, 200, {
     ok: true, sleeping: !!m.sleeping, since: m.sleepSince || null, by: m.sleepBy || '', build: BUILD,
+    svc: process.env.RENDER_SERVICE_NAME || 'local', tgWebhook: (tgWebhookState().ok ? 'on' : 'off'),
     uptime: Math.round(process.uptime()), time: nowISO(),
   });
 });
@@ -174,6 +175,20 @@ router.get('/api/admin/system/load', async (ctx) => {
 });
 
 // ── تله‌متری خطاهای کلاینت: مرورگرها باگ‌ها را خودشان گزارش می‌دهند ──
+// ── وب‌هوک ربات تلگرام: تلگرام پیام‌ها را این‌جا push می‌کند ──
+router.post(TG_WEBHOOK_PATH, async (ctx) => {
+  const tg = ctx.state.settings?.telegram;
+  const want = tg?.token ? tgSecret(tg.token) : '';
+  const got = String(ctx.req.headers['x-telegram-bot-api-secret-token'] || '');
+  if (!want || got !== want) { sendJson(ctx.res, 403, { ok: false, code: 'forbidden', message: 'invalid secret' }); return; }
+  ctx.rateLimit('tgwh:' + ctx.ip, 120, 60 * 1000);
+  sendJson(ctx.res, 200, { ok: true }); // پاسخ سریع به تلگرام؛ پردازش ناهمگام
+  const up = ctx.body || {};
+  if (up && up.update_id) await handleUpdate(up).catch((e) => {
+    db.raw.meta = { ...(db.raw.meta || {}), tgLastError: `${nowISO()} webhook handle: ${e?.message || e}` };
+  });
+});
+
 router.post('/api/client-error', async (ctx) => {
   ctx.rateLimit(`cerr:${ctx.ip}`, 20, 60 * 1000);
   const b = ctx.body || {};
@@ -251,7 +266,7 @@ function normalizeSettings(state) {
 }
 
 import { startBackupScheduler } from './lib/backup.mjs';
-import { startTelegramBot } from './lib/telegram.mjs';
+import { startTelegramBot, handleUpdate, tgSecret, tgWebhookState, TG_WEBHOOK_PATH } from './lib/telegram.mjs';
 
 /** تجزیهٔ User-Agent: سیستم‌عامل، دستگاه، مرورگر */
 function parseAgent(ua) {
@@ -344,7 +359,7 @@ const server = http.createServer(async (req, res) => {
     const isApi = pathname.startsWith('/api/');
 
     // CSRF برای درخواست‌های تغییردهنده (تله‌متری خطای کلاینت معاف است: بدون هدر، فقط لاگ)
-    if (isApi && !['GET', 'HEAD', 'OPTIONS'].includes(method) && pathname !== '/api/client-error' && !checkCsrf(req, cookies, method)) {
+    if (isApi && !['GET', 'HEAD', 'OPTIONS'].includes(method) && pathname !== '/api/client-error' && pathname !== TG_WEBHOOK_PATH && !checkCsrf(req, cookies, method)) {
       logAudit(null, 'security.csrf.reject', pathname, { ip });
       return respond(403, 'csrf_failed', 'توکن امنیتی درخواست نامعتبر است. صفحه را تازه کن و دوباره تلاش کن.');
     }

@@ -390,7 +390,8 @@ async function telegramView() {
               ${r.lastError
                 ? h`<span class="c-danger">${L('خطا', 'error')}: ${esc(String(r.lastError).slice(0, 120))}</span>`
                 : h`<span class="c-success">${L('سالم', 'healthy')}</span>`}
-              · ${L('آخرین بررسی پیام‌ها:', 'last poll:')} ${r.lastPoll ? timeAgo(r.lastPoll) : L('در انتظار…', 'waiting…')}
+              · ${L('حالت اتصال:', 'mode:')} ${r.webhook?.ok ? L('وب‌هوک ✔', 'webhook ✔') : L('پولینگ', 'polling')}
+              ${r.lastPoll ? `· ${L('آخرین بررسی:', 'last poll:')} ${timeAgo(r.lastPoll)}` : ''}
             </p>` : ''}
           <div class="notif-list mt-s">
             ${(r.inbox || []).slice(0, 30).map((m) => h`
