@@ -1,3 +1,5 @@
+import { sendSms, smsConfigured } from './lib/sms.mjs';
+import { sendMail, mailConfigured } from './lib/mail.mjs';
 // ─────────────────────────────────────────────────────────────
 //  API فروشگاه: سبد خرید، پرداخت، سفارش، نظرات، تیکت، پشتیبانی
 // ─────────────────────────────────────────────────────────────
@@ -19,6 +21,7 @@ const ALLOWED_MAGIC = [
   { mime: 'image/png', ext: 'png', magic: [0x89, 0x50, 0x4e, 0x47] },
   { mime: 'image/webp', ext: 'webp', magic: [0x52, 0x49, 0x46, 0x46], extra: 'WEBP' },
   { mime: 'image/gif', ext: 'gif', magic: [0x47, 0x49, 0x46, 0x38] },
+  { mime: 'application/pdf', ext: 'pdf', magic: [0x25, 0x50, 0x44, 0x46] },
 ];
 
 // ── سبد خرید ───────────────────────────────────────────────
@@ -26,10 +29,31 @@ function cartKey(ctx) { return ctx.user ? `u:${ctx.user.id}` : `g:${ctx.cookies[
 
 function getCart(ctx, create = false) {
   const state = ctx.state;
-  const key = cartKey(ctx);
-  let cart = state.carts.find((c) => (ctx.user ? c.userId === ctx.user.id : c.guestId === (ctx.cookies['bm_guest'] || null) && !c.userId));
-  if (!cart && create && key !== 'g:') {
-    cart = { id: uid('cart'), userId: ctx.user?.id || null, guestId: ctx.user ? null : ctx.cookies['bm_guest'] || null, items: [], coupon: null, updatedAt: nowISO() };
+  const guestId = ctx.cookies['bm_guest'] || null;
+  let cart = state.carts.find((c) => ctx.user ? c.userId === ctx.user.id : c.guestId === guestId && !c.userId);
+  
+  // Merge guest cart if user just logged in and has an old guest cart
+  if (ctx.user && guestId) {
+    const gCart = state.carts.find((c) => c.guestId === guestId && !c.userId);
+    if (gCart) {
+      if (!cart) {
+        gCart.userId = ctx.user.id;
+        cart = gCart;
+      } else {
+        // Merge items into user cart
+        for (const it of gCart.items) {
+          const ex = cart.items.find(x => x.productId === it.productId);
+          if (ex) ex.qty += it.qty;
+          else cart.items.push(it);
+        }
+        gCart.items = []; // Empty the guest cart
+        cart.updatedAt = nowISO();
+      }
+    }
+  }
+
+  if (!cart && create && (ctx.user || guestId)) {
+    cart = { id: uid('cart'), userId: ctx.user?.id || null, guestId: ctx.user ? null : guestId, items: [], coupon: null, updatedAt: nowISO() };
     state.carts.push(cart);
   }
   return cart;
@@ -140,6 +164,28 @@ export function calcQuote(state, { items, user, delivery, zone, express, insuran
 }
 
 export function registerShop(router) {
+  router.post('/api/reports/lower-price', async (ctx) => {
+    const productId = V.id(ctx.body.productId, 'شناسه کالا');
+    const price = V.int(ctx.body.price, { min: 1000, field: 'قیمت' });
+    const url = V.str(ctx.body.url, { min: 3, max: 500, field: 'آدرس' });
+    
+    await db.tx((st) => {
+      if (!st.lowerPriceReports) st.lowerPriceReports = [];
+      st.lowerPriceReports.push({
+        id: uid('lrp'),
+        productId,
+        price,
+        url,
+        userId: ctx.user ? ctx.user.id : null,
+        createdAt: nowISO(),
+        status: 'pending'
+      });
+      if (st.lowerPriceReports.length > 1000) st.lowerPriceReports = st.lowerPriceReports.slice(-1000);
+    });
+    
+    sendJson(ctx.res, 200, { ok: true });
+  });
+
   // ── سبد خرید ────────────────────────────────────────────
   router.get('/api/cart', async (ctx) => {
     const cart = await db.tx((st) => getCart({ ...ctx, state: st }, true));
@@ -153,6 +199,7 @@ export function registerShop(router) {
     const qty = V.int(ctx.body?.qty, { min: 1, max: 99, field: 'تعداد', def: 1 });
     const p = ctx.state.products.find((x) => x.id === productId);
     if (!p || p.active === false) throw notFound('product_not_found', 'کالا یافت نشد.');
+    if (!Number(p.price)) throw new HttpError(422, 'service_item', 'این مورد خدماتی/استعلامی است و به سبد اضافه نمی‌شود — لطفاً با مغازه تماس بگیر.');
     const cart = await db.tx((st) => {
       const c = getCart({ ...ctx, state: st }, true);
       const line = c.items.find((i) => i.productId === productId);
@@ -250,18 +297,27 @@ export function registerShop(router) {
   // ── ثبت سفارش (با قفل موجودی — بدون race) ───────────────
   router.post('/api/checkout', async (ctx) => {
     const state = ctx.state;
-    if (!ctx.user && state.settings.features?.guestCheckout === false) throw forbidden('login_required', 'برای ثبت سفارش وارد حساب کاربری شو.');
+    if (!ctx.user) throw forbidden('login_required', 'برای ثبت سفارش وارد حساب کاربری شو.');
     ctx.rateLimit(`checkout:${ctx.user?.id || ctx.ip}`, 12, 60 * 60 * 1000);
     const delivery = V.oneOf(ctx.body?.delivery, ['pickup', 'courier'], 'delivery', 'courier');
     const zone = V.oneOf(ctx.body?.zone, ['city', 'province', 'country'], 'zone', 'country');
     const express = V.bool(ctx.body?.express, false);
     const insurance = V.bool(ctx.body?.insurance, false);
-    const paymentMethod = V.oneOf(ctx.body?.paymentMethod, ['wallet', 'gateway', 'cod'], 'paymentMethod', 'gateway');
+    const paymentMethod = V.oneOf(ctx.body?.paymentMethod, ['wallet', 'gateway', 'cod', 'snapppay', 'azki', 'digipay'], 'paymentMethod', 'gateway');
     const walletUse = V.bool(ctx.body?.useWallet, false);
     const note = V.optStr(ctx.body?.note, { max: 400, field: 'توضیحات سفارش' });
     const addressId = V.optStr(ctx.body?.addressId, { max: 64, field: 'آدرس' });
+    
     const accepted = V.bool(ctx.body?.acceptTerms, false);
     if (!accepted) throw badRequest('terms_required', 'پذیرش قوانین و مقررات برای ثبت سفارش الزامی است.');
+    
+    
+    // KYC Enforcement for Installments
+    if (['snapppay', 'azki', 'digipay'].includes(paymentMethod) && (!ctx.user || ctx.user.kycStatus !== 'approved')) {
+      throw forbidden('kyc_required', 'خرید اقساطی نیازمند تکمیل و تأیید احراز هویت است.');
+    }
+
+
     // اطلاعات تماس مهمان (برای سفارش‌های بدون حساب کاربری)
     const guestName = !ctx.user ? (V.optStr(ctx.body?.guestName, { max: 60, field: 'نام' }) || '') : '';
     const guestPhoneRaw = !ctx.user ? String(ctx.body?.guestPhone || '').replace(/[\s-]/g, '') : '';
@@ -293,9 +349,16 @@ export function registerShop(router) {
       // آدرس
       let address = null;
       if (delivery === 'courier') {
-        if (!user) throw forbidden('login_required', 'برای ارسال پستی باید وارد حساب کاربری شوی.');
-        address = (user.addresses || []).find((a) => a.id === addressId) || (user.addresses || []).find((a) => a.isDefault) || null;
-        if (!address) throw badRequest('address_required', 'برای ارسال، ابتدا یک آدرس در پروفایل ثبت کن.');
+        if (!user) {
+          const gProv = V.str(ctx.body?.guestProvince, { min: 2, max: 40, field: 'استان' });
+          const gCity = V.str(ctx.body?.guestCity, { min: 2, max: 40, field: 'شهر' });
+          const gAddr = V.str(ctx.body?.guestAddress, { min: 5, max: 300, field: 'آدرس کامل' });
+          const gZip = V.optStr(ctx.body?.guestZip, { max: 20 });
+          address = { title: 'آدرس مهمان', province: gProv, city: gCity, address: gAddr, zip: gZip, name: guestName, phone: guestPhone };
+        } else {
+          address = (user.addresses || []).find((a) => a.id === addressId) || (user.addresses || []).find((a) => a.isDefault) || null;
+          if (!address) throw badRequest('address_required', 'برای ارسال، ابتدا یک آدرس در پروفایل ثبت کن.');
+        }
       }
 
       // روش پرداخت
@@ -654,15 +717,33 @@ export function registerShop(router) {
     if (ctx.state.settings.features?.liveSupport === false) throw badRequest('disabled', 'چت آنلاین موقتاً غیرفعال است.');
     const body = V.str(ctx.body?.body, { min: 1, max: 1000, field: 'پیام' });
     ctx.rateLimit(`chat:${ctx.user.id}`, 40, 10 * 60 * 1000);
-    const msg = await db.tx((st) => {
+    
+    let botReplyText = getAutoReply(body);
+    
+    const { msg, botMsg } = await db.tx((st) => {
       const m = { id: uid('chat'), userId: ctx.user.id, userName: ctx.user.name, from: 'user', body, at: nowISO(), readByStaff: false };
       st.supportMessages.push(m);
       if (st.supportMessages.length > 3000) st.supportMessages = st.supportMessages.slice(-3000);
       pushNotification(st, { userId: null, type: 'support', level: 'info', title: 'پیام جدید در چت پشتیبانی', body: `${ctx.user.name}: ${body.slice(0, 100)}`, link: '#/admin/support' });
       broadcast(null, 'support', { userId: ctx.user.id, id: m.id, at: m.at });
-      return m;
+      
+      let botM = null;
+      if (botReplyText) {
+        botM = { id: uid('chat'), userId: ctx.user.id, userName: ctx.user.name, from: 'staff', staffName: 'پشتیبان خودکار', body: botReplyText, at: nowISO() };
+        st.supportMessages.push(botM);
+        m.readByStaff = true;
+        pushNotification(st, { userId: ctx.user.id, type: 'support', level: 'info', title: 'پاسخ خودکار پشتیبانی', body: botReplyText.slice(0, 100), link: '#/account/support' });
+        broadcast(ctx.user.id, 'support', { userId: ctx.user.id, id: botM.id, at: botM.at });
+      }
+      
+      return { msg: m, botMsg: botM };
     });
-    sendJson(ctx.res, 200, { ok: true, message: msg });
+    
+    if (botReplyText) {
+      notifyReply(ctx.user, botReplyText).catch(()=>{});
+    }
+    
+    sendJson(ctx.res, 200, { ok: true, message: msg, botMessage: botMsg });
   });
 
   // ── پیشنهاد / شکایت / گزارش خطا ─────────────────────────
@@ -729,7 +810,7 @@ export function registerShop(router) {
     const buf = Buffer.from(data.replace(/^data:[^;]+;base64,/, ''), 'base64');
     if (buf.length > MAX_UPLOAD) throw new HttpError(413, 'too_large', 'حجم فایل نباید بیشتر از ۴ مگابایت باشد.');
     const found = ALLOWED_MAGIC.find((m) => m.magic.every((b, i) => buf[i] === b) && (!m.extra || buf.slice(8, 12).toString('latin1') === m.extra));
-    if (!found) throw badRequest('invalid_type', 'فقط فایل تصویری (JPG، PNG، WEBP یا GIF) مجاز است.');
+    if (!found) throw badRequest('invalid_type', 'فقط تصویر یا PDF مجاز است.');
     const name = `${Date.now().toString(36)}-${crypto.randomBytes(6).toString('hex')}.${found.ext}`;
     fs.mkdirSync(UPLOAD_DIR, { recursive: true });
     await fs.promises.writeFile(path.join(UPLOAD_DIR, name), buf);
@@ -812,6 +893,14 @@ export function paymentMethods(state, total) {
   const list = [];
   if (s.walletEnabled !== false) list.push({ id: 'wallet', fa: 'کیف پول', en: 'Wallet', note: 'پرداخت آنی از موجودی کیف پول' });
   if (s.gatewayEnabled !== false) list.push({ id: 'gateway', fa: 'درگاه بانکی', en: 'Bank gateway', note: s.gatewayMode === 'demo' ? 'حالت آزمایشی (بدون کسر واقعی)' : 'پرداخت امن بانکی' });
+  
+  // Installment integrations (mocked)
+  if (total >= 1000000) { // minimum 1M toman for installments
+    list.push({ id: 'snapppay', fa: 'اسنپ‌پی', en: 'SnappPay', note: 'خرید اقساطی ۴ ماهه بدون کارمزد' });
+    list.push({ id: 'azki', fa: 'ازکی‌وام', en: 'AzkiVam', note: 'خرید اقساطی تا ۲۴ ماه' });
+    list.push({ id: 'digipay', fa: 'دیجی‌پی', en: 'DigiPay', note: 'پرداخت اقساطی سریع' });
+  }
+  
   if (s.codEnabled !== false) list.push({ id: 'cod', fa: 'پرداخت در محل', en: 'Cash on delivery', note: 'فقط ارسال پستی تا سقف ۲۰٬۰۰۰٬۰۰۰ تومان' });
   return list;
 }

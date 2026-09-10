@@ -82,7 +82,7 @@ export const DEFAULT_SETTINGS = {
     wishlist: true,
     compare: true,
     recentlyViewed: true,
-    guestCheckout: true,
+    guestCheckout: false,
     priceAlerts: true,
     twoFactor: true,
     referrals: true,

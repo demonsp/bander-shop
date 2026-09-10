@@ -13,7 +13,7 @@ let threadEl = null;
 let unread = 0;
 
 export const msgHtml = (m) => h`
-  <div class="msg ${m.from === 'user' ? 'me' : 'them'}">
+  <div class="msg ${m.from === 'user' ? 'me' : 'them'}" data-id="${m.id || ''}">
     ${esc(m.body)}
     <span class="tm">${timeAgo(m.at)}</span>
   </div>`;
@@ -36,7 +36,7 @@ function scrollThread(box) {
 
 export async function sendChat(body) {
   const r = await api.post('/api/support/messages', { body });
-  return r.message;
+  return r;
 }
 
 // ── پنجرهٔ شناور ────────────────────────────────────────────
@@ -87,6 +87,7 @@ function appendLive(m) {
   if (threadEl) boxes.push(threadEl);
   document.querySelectorAll('[data-thread-page]').forEach((n) => boxes.push(n));
   for (const box of boxes) {
+    if (box.querySelector(`[data-id="${m.id}"]`)) continue;
     const first = box.querySelector('.msg');
     if (first && !first.dataset.id && box.children.length === 1 && first.classList.contains('them') && first.textContent === t('acc.chatWelcome')) box.innerHTML = '';
     box.insertAdjacentHTML('beforeend', msgHtml(m));
@@ -107,11 +108,19 @@ act('chat-send', async (e, form) => {
   document.querySelectorAll('[data-thread-page]').forEach((n) => boxes.push(n));
   for (const b of boxes) { b.insertAdjacentHTML('beforeend', msgHtml(me)); scrollThread(b); }
   try {
-    const saved = await sendChat(body);
+    const r = await sendChat(body);
+    const saved = r.message;
     toast(t('chat.sent'), { timeout: 1600 });
     for (const b of boxes) {
-      const last = b.lastElementChild;
-      if (last) last.querySelector('.tm').textContent = timeAgo(saved.at);
+      // Find the pending me message (it might not be the last one if others came in)
+      const last = b.querySelector('.msg.me:not([data-id])');
+      if (last) {
+        last.dataset.id = saved.id;
+        last.querySelector('.tm').textContent = timeAgo(saved.at);
+      }
+    }
+    if (r.botMessage) {
+      appendLive(r.botMessage);
     }
   } catch (err) {
     toastApiError(err);

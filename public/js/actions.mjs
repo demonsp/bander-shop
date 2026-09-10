@@ -325,3 +325,53 @@ function placeholderFor(glyph) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="300" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#123a52"/><stop offset="1" stop-color="#0a2135"/></linearGradient></defs><rect width="100" height="100" fill="url(#g)"/><g fill="none" stroke="#7fd3ec" stroke-opacity=".8" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"><path d="${d}"/></g></svg>`;
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
+
+act('pdp-lower-price', (e, el) => {
+  const id = el.dataset.id;
+  import('./ui.mjs').then(({ modal }) => {
+    modal({
+      title: 'گزارش قیمت مناسب‌تر',
+      content: h`
+        <form data-act="submit-lower-price" data-id="${id}">
+          <p class="mb">اگر این کالا را در فروشگاه دیگری با قیمت پایین‌تر دیده‌اید، به ما اطلاع دهید:</p>
+          <div class="form-grid mb">
+            ${field({ label: 'قیمت فروشگاه دیگر (تومان)', name: 'price', type: 'number', required: true })}
+            ${field({ label: 'آدرس فروشگاه (لینک سایت یا نام)', name: 'url', required: true })}
+          </div>
+          <div class="row row-wrap mt">
+            <button type="submit" class="btn btn-primary">${icon('send')} ثبت</button>
+            <button type="button" class="btn btn-ghost" data-act="modal-close">لغو</button>
+          </div>
+        </form>
+      `
+    });
+  });
+});
+
+act('submit-lower-price', async (e, form) => {
+  e.preventDefault();
+  const { withBusy, toastSuccess, toastApiError } = await import('./ui.mjs');
+  await withBusy(form, async () => {
+    try {
+      await api.post('/api/reports/lower-price', {
+        productId: form.dataset.id,
+        price: Number(form.price.value),
+        url: form.url.value
+      });
+      toastSuccess('با تشکر! گزارش شما ثبت شد.');
+      form.closest('[role="dialog"]')?.querySelector('[data-lx]')?.click();
+    } catch (err) {
+      toastApiError(err);
+    }
+  });
+});
+
+act('accept-consent-now', async (e, el) => {
+  const { setConsent } = await import('./state.mjs');
+  setConsent({ terms: true, privacy: true, marketing: false });
+  toastSuccess(isFa() ? 'قوانین و مقررات با موفقیت پذیرفته شد.' : 'Terms accepted.');
+  sessionStorage.removeItem('consentDeferred');
+  const { maybeConsent } = await import('./main.mjs');
+  maybeConsent(); // won't do anything since it's already set
+  import('./router.mjs').then(m => m.refresh());
+});

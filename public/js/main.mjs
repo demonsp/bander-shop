@@ -669,7 +669,11 @@ function wireScroll() {
 function openConsent() {
   if (!feat('consent')) return;
   // اگر کاربر برای خواندن قوانین/حریم خصوصی از مودال خارج شده، در همین نشست دیگر مزاحمش نمی‌شویم
-  if (sessionStorage.getItem('consentDeferred')) return;
+  if (sessionStorage.getItem('consentDeferred')) {
+    if (!location.hash.startsWith('#/pages/')) {
+      sessionStorage.removeItem('consentDeferred');
+    } else return;
+  }
   modal({
     title: t('consent.title'),
     dismissible: false,
@@ -714,7 +718,7 @@ function openConsent() {
 }
 act('consent-form', () => {}); // فرم توسط onMount مدیریت می‌شود
 act('consent-manage', () => openConsent());
-function maybeConsent() { if (hasConsent()) return; openConsent(); }
+export function maybeConsent() { if (hasConsent()) return; openConsent(); }
 act('reload', () => location.reload());
 
 // ── اجبار به تغییر رمز پیش‌فرض ──────────────────────────────

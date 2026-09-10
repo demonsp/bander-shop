@@ -42,7 +42,11 @@ function lotteryEntries(st, l) {
       if (o.createdAt >= l.createdAt && (!l.endsAt || o.createdAt <= l.endsAt)) ids.add(o.userId);
     }
   }
-  return [...ids].filter((id) => st.users.some((u) => u.id === id));
+  return [...ids].filter((id) => {
+    const u = st.users.find(x => x.id === id);
+    // KYC REQUIRED for lotteries
+    return u && u.kycStatus === 'approved';
+  });
 }
 
 export function registerAdmin(router) {
@@ -74,6 +78,13 @@ export function registerAdmin(router) {
       const oCount = st.orders.filter((o) => o.createdAt.slice(0, 10) === d).length;
       const oSum = st.orders.filter((o) => o.createdAt.slice(0, 10) === d).reduce((a, b) => a + b.total, 0);
       last14.push({ date: d, visits: v.visits || 0, unique: v.unique || 0, orders: oCount || v.orders || 0, revenue: oSum });
+  A('GET', '/api/admin/reports/lower-price', 'feedback.manage', async (ctx) => {
+    const reports = ctx.state.lowerPriceReports || [];
+    sendJson(ctx.res, 200, { ok: true, items: reports.map(r => {
+      const p = ctx.state.products.find(x => x.id === r.productId);
+      return { ...r, productName: p ? p.name : '?' };
+    }).sort((a,b) => b.createdAt.localeCompare(a.createdAt)) });
+  });
     }
     const topSelling = [...st.products].sort((a, b) => (b.sold || 0) - (a.sold || 0)).slice(0, 6)
       .map((p) => ({ id: p.id, name: p.name, sold: p.sold || 0, stock: p.stock || 0, price: p.price, image: p.images?.[0] }));
@@ -140,6 +151,7 @@ export function registerAdmin(router) {
     if (body.description !== undefined) out.description = V.optStr(body.description, { max: 6000, field: 'توضیحات' });
     if (body.descriptionEn !== undefined) out.descriptionEn = V.optStr(body.descriptionEn, { max: 6000, field: 'توضیحات انگلیسی' });
     if (body.tags !== undefined) out.tags = V.arr(body.tags, { max: 20, field: 'برچسب‌ها' }).map((t) => V.str(t, { min: 1, max: 30, field: 'برچسب' }));
+    if (body.sourcePriceUrl !== undefined) out.sourcePriceUrl = V.optStr(body.sourcePriceUrl, { max: 500, field: 'لینک منبع قیمت' });
     if (body.specs !== undefined) {
       const specs = {};
       const src = body.specs;
@@ -685,9 +697,11 @@ export function registerAdmin(router) {
   A('POST', '/api/admin/support/:userId', 'tickets.manage', async (ctx) => {
     const userId = V.id(ctx.params.userId, 'شناسهٔ کاربر');
     const body = V.str(ctx.body?.body, { min: 1, max: 1000, field: 'پیام' });
+    let uObj = null;
     const msg = await db.tx((st) => {
       const u = st.users.find((x) => x.id === userId);
       if (!u) throw notFound('not_found', 'کاربر یافت نشد.');
+      uObj = u;
       const m = { id: uid('chat'), userId, userName: u.name, from: 'staff', staffName: ctx.user.name, body, at: nowISO() };
       st.supportMessages.push(m);
       for (const x of st.supportMessages) if (x.userId === userId && x.from === 'user') x.readByStaff = true;
@@ -695,6 +709,9 @@ export function registerAdmin(router) {
       broadcast(userId, 'support', { userId, id: m.id, at: m.at });
       return m;
     });
+    
+    notifyReply(uObj, body).catch(()=>{});
+    
     sendJson(ctx.res, 200, { ok: true, message: msg });
   });
 
@@ -747,7 +764,7 @@ export function registerAdmin(router) {
         id: u.id, username: u.username, name: u.name, phone: u.phone, email: u.email, role: u.role,
         status: u.status, permissions: u.permissions || {}, wallet: u.wallet?.balance || 0,
         plus: !!u.plus?.active && new Date(u.plus.until || 0) > new Date(), plusUntil: u.plus?.until || null,
-        points: u.points || 0, twoFA: !!u.twoFA?.enabled,
+        points: u.points || 0, twoFA: !!u.twoFA?.enabled, kycStatus: u.kycStatus || 'none', kycMessage: u.kycMessage || '', kycDocs: u.kycDocs || null,
         orders: st.orders.filter((o) => o.userId === u.id).length,
         spent: st.orders.filter((o) => o.userId === u.id && o.payment?.status === 'paid').reduce((a, b) => a + b.total, 0),
         createdAt: u.createdAt, lastLoginAt: u.lastLoginAt, loginCount: u.loginCount || 0,
@@ -1222,8 +1239,13 @@ export function registerAdmin(router) {
       byBrand[key] = (byBrand[key] || 0) + (p.sold || 0);
     }
     const stockValue = st.products.reduce((a, p) => a + (p.stock || 0) * (p.cost || 0), 0);
+    const missedSearches = Object.entries(st.missedSearches || {})
+      .map(([q, data]) => ({ q, count: data.count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 50);
+
     sendJson(ctx.res, 200, {
-      ok: true, series, byCat, byBrand,
+      ok: true, series, byCat, byBrand, missedSearches,
       summary: {
         orders: st.orders.length,
         revenue: st.orders.filter((o) => o.payment?.status === 'paid').reduce((a, b) => a + b.total, 0),

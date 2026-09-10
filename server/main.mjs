@@ -604,8 +604,8 @@ setInterval(async () => {
       console.log('  ورود مدیر:');
       console.log(`    نام کاربری : ${owner.username}`);
       console.log(`    رمز عبور   : ${owner.mustChangePassword ? 'Bander@1404  (پس از ورود باید تغییر کند)' : '(تغییر یافته)'}`);
-      console.log('  ورود کارمند: staff / Staff@1404');
-      console.log('  کاربران نمونه: maryam | reza | sina  — رمز: Demo@1404');
+      if (st.users?.some((u) => u.username === 'staff')) console.log('  ورود کارمند: staff / Staff@1404');
+      if (st.users?.some((u) => ['maryam','reza','sina'].includes(u.username))) console.log('  کاربران نمونه: maryam | reza | sina  — رمز: Demo@1404');
     }
     console.log('');
   });

@@ -87,8 +87,13 @@ export function mePayload(state, user) {
     mustChangePassword: !!user.mustChangePassword,
     twoFA: { enabled: !!user.twoFA?.enabled, method: user.twoFA?.method || null, methods: user.twoFA?.methods || [] },
     points: user.points || 0,
+    referralCode: user.referralCode || user.id.substring(0, 6).toUpperCase(),
+    referralCount: state.users.filter((u) => u.referredBy === user.id).length,
+    kycStatus: user.kycStatus || 'none',
+
+    kycMessage: user.kycMessage || '',
     badges: computeBadges(state, user),
-    referralCode: user.referralCode || '',
+    
     prefs: user.prefs || {},
     notificationsPrefs: user.notificationsPrefs || {},
     consent: user.consent || {},
@@ -191,6 +196,14 @@ export function registerAuth(router) {
     const password = V.password(ctx.body?.password);
     const accepted = V.bool(ctx.body?.acceptTerms);
     if (!accepted) throw badRequest('terms_required', 'پذیرش قوانین و مقررات و حریم خصوصی الزامی است.');
+    
+    const hearAboutUs = V.optStr(ctx.body?.hearAboutUs, { max: 50 });
+    const refCode = V.optStr(ctx.body?.referralCode, { max: 20 });
+    let referredBy = null;
+    if (refCode) {
+      const referrerUser = state.users.find(u => (u.referralCode || u.id.substring(0, 6).toUpperCase()) === refCode.toUpperCase());
+      if (referrerUser) referredBy = referrerUser.id;
+    }
     if (banHit(state, [ctx.body?.username, ctx.body?.phone, ctx.body?.email])) throw bannedErr();
 
     let username = ''; let phone = ''; let email = ''; let code = '';
@@ -209,8 +222,7 @@ export function registerAuth(router) {
       username = V.optStr(ctx.body?.username) || `user_${sha256(email).slice(0, 6)}`;
       phone = V.optStr(ctx.body?.phone ? V.phone(ctx.body.phone) : '');
     }
-    const referral = V.optStr(ctx.body?.referral, { max: 16, field: 'کد معرف' }).toUpperCase();
-
+    
     const result = await db.tx((st) => {
       if (st.users.some((u) => u.username === username)) throw conflict('username_taken', 'این نام کاربری قبلاً گرفته شده است.');
       if (phone && st.users.some((u) => u.phone === phone)) throw conflict('phone_taken', 'این شمارهٔ موبایل قبلاً ثبت شده است.');
@@ -231,16 +243,15 @@ export function registerAuth(router) {
         prefs: { theme: st.settings.theme?.mode || 'dark', locale: 'fa', density: 'normal' },
         consent: { termsAt: nowISO(), privacyAt: nowISO() },
         notificationsPrefs: { marketing: true, orders: true, restock: true },
-        referralCode: (username.slice(0, 4).toUpperCase() + Math.floor(Math.random() * 900 + 100)),
-        referredBy: null, points: 0, status: 'active',
+        referralCode: uid(6).toUpperCase(),
+        referredBy: referredBy, hearAboutUs: hearAboutUs, points: 0, status: 'active',
         createdAt: nowISO(), lastLoginAt: null, loginCount: 0,
       };
-      if (referral) {
-        const ref = st.users.find((u) => u.referralCode === referral && u.id !== user.id);
+      if (referredBy) {
+        const ref = st.users.find((u) => u.id === referredBy);
         if (ref) {
-          user.referredBy = ref.id;
-          ref.points = (ref.points || 0) + 50;
-          user.points = (user.points || 0) + 50;
+          ref.points = (ref.points || 0) + 10;
+          user.points = (user.points || 0) + 10;
         }
       }
       st.users.push(user);
@@ -253,7 +264,7 @@ export function registerAuth(router) {
       }
       pushNotification(st, {
         userId: user.id, type: 'welcome', level: 'success',
-        title: 'به گرین اپل خوش آمدی', titleEn: 'Welcome to Green Apple',
+        title: 'به گرین اپل خوش آمدی', titleEn: 'Welcome to Yassaei Electronics',
         body: 'حساب کاربری‌ات ساخته شد. کد تخفیف WELCOME10 برای اولین خرید فعال است.',
         bodyEn: 'Your account is ready. Use code WELCOME10 on your first order.',
         link: '#/products',
@@ -304,11 +315,11 @@ export function registerAuth(router) {
       let sent = null;
       if (methods.includes('sms') && user.phone) {
         const { code } = await db.tx((st) => makeOtp(st, { userId: user.id, channel: 'phone', target: user.phone, purpose: '2fa', ttlMs: 3 * 60 * 1000 }));
-        await db.tx((st) => deliver(st, { channel: 'sms', target: user.phone, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', body: `کد ورود دومرحله‌ای گرین اپل: ${code}`, purpose: '2fa' }));
+        await db.tx((st) => deliver(st, { channel: 'sms', target: user.phone, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', body: `کد ورود دومرحله‌ای یاسایی: ${code}`, purpose: '2fa' }));
         sent = { channel: 'sms', target: maskTarget(user.phone, 'phone'), demoCode: (state.settings.auth?.otpMode || 'demo') === 'demo' ? code : undefined };
       } else if (methods.includes('email') && user.email) {
         const { code } = await db.tx((st) => makeOtp(st, { userId: user.id, channel: 'email', target: user.email, purpose: '2fa', ttlMs: 3 * 60 * 1000 }));
-        await db.tx((st) => deliver(st, { channel: 'email', target: user.email, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', subject: 'کد ورود دومرحله‌ای', body: `کد ورود دومرحله‌ای گرین اپل: ${code}`, purpose: '2fa' }));
+        await db.tx((st) => deliver(st, { channel: 'email', target: user.email, code: (st.settings.auth?.otpMode || 'demo') === 'demo' ? code : '', subject: 'کد ورود دومرحله‌ای', body: `کد ورود دومرحله‌ای یاسایی: ${code}`, purpose: '2fa' }));
         sent = { channel: 'email', target: maskTarget(user.email, 'email'), demoCode: (state.settings.auth?.otpMode || 'demo') === 'demo' ? code : undefined };
       }
       return sendJson(ctx.res, 200, { ok: true, twoFactor: true, challengeToken: challenge, methods, sent, expiresIn: 600 });
@@ -446,6 +457,38 @@ export function registerAuth(router) {
   });
 
   // ── اطلاعات کاربر ───────────────────────────────────────
+  
+  // KYC Upload Endpoint
+  router.post('/api/user/kyc', async (ctx) => {
+    const user = ctx.state.user;
+    if (!user) {
+      ctx.status = 401;
+      return;
+    }
+    const b = ctx.request.body;
+    
+    // Validate National ID length (just for simulation)
+    // Connecting to mock "Shahkar / Saha" API
+    const isShahkarValid = Math.random() > 0.15; // 85% success rate for simulation
+    
+    user.kycStatus = 'pending';
+    user.kycMessage = isShahkarValid ? 'تایید اولیه از سامانه شاهکار دریافت شد. در انتظار بررسی سلفی توسط کارشناس.' : 'عدم تطابق اطلاعات در سامانه شاهکار. نیازمند بررسی دقیق کارشناس.';
+    
+    user.kycDocs = {
+      selfie: b.selfie,
+      idCard: b.idCard,
+      formDoc: b.formDoc,
+      shahkarValidated: isShahkarValid,
+      submittedAt: new Date().toISOString()
+    };
+    
+    import('./lib/telegram.mjs').then(tg => {
+      tg.tgBroadcast(ctx.state, `👤 <b>درخواست احراز هویت جدید (KYC)</b>\nکاربر: ${user.name || user.username} (${user.phone || ''})\nاستعلام سامانه شاهکار: ${isShahkarValid ? '✅ تطابق دارد' : '❌ مغایرت یا خطا'}\nجهت بررسی مدارک و تایید سلفی به پنل مدیریت مراجعه کنید.`);
+    }).catch(()=>{});
+
+    ctx.body = { ok: true, status: 'pending' };
+  });
+
   router.get('/api/me', async (ctx) => {
     ctx.requireUser();
     sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, ctx.user) });

@@ -59,7 +59,7 @@ export function emit(ev, data) {
 
 // ── دسترسی به تنظیمات ────────────────────────────────────────
 // برچسب نسخهٔ کلاینت؛ با هر انتشار باید همراه sw.js و BUILD سرور بالا برود
-export const BUILD = 'bm-v35';
+export const BUILD = 'bm-v41';
 export const settings = () => S.settings || {};
 export const store = () => S.settings?.store || {};
 export const ui = () => S.settings?.ui || {};
@@ -135,10 +135,10 @@ export function applyPrefs() {
   let mode = p.theme || th.mode || 'dark';
   if (mode === 'auto') mode = window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   root.setAttribute('data-mode', mode);
-  root.setAttribute('data-theme', mode);
+  root.setAttribute('data-theme', th.theme || 'default');
   root.setAttribute('color-scheme', mode);
 
-  // پوستهٔ بندری و سبک پس‌زمینه
+  // پوستهٔ تهرانی و سبک پس‌زمینه
   root.setAttribute('data-port', th.portTheme === false ? 'off' : 'on');
   root.setAttribute('data-bg', th.bgStyle || 'waves');
   // پوستهٔ تازه/کلاسیک (کلید برگشت در پنل مدیر)
@@ -158,7 +158,7 @@ export function applyPrefs() {
   root.setAttribute('data-motion', motionOff ? 'off' : 'on');
 
   // رنگ اصلی
-  const accent = /^#[0-9a-f]{6}$/i.test(String(th.accent || '').trim()) ? th.accent.trim() : '#31afd4';
+  const accent = /^#[0-9a-f]{6}$/i.test(String(th.accent || '').trim()) ? th.accent.trim() : '#f59e0b';
   const [rr, gg, bb] = hexToRgb(accent).split(',').map((x) => parseInt(x, 10));
   root.style.setProperty('--accent', accent);
   root.style.setProperty('--accent-rgb', `${rr}, ${gg}, ${bb}`);

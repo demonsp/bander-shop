@@ -30,7 +30,9 @@ const SECTIONS = [
   { id: 'support', icon: 'headset', label: () => t('acc.support'), feat: 'liveSupport' },
   { id: 'reviews', icon: 'star', label: () => t('acc.reviews') },
   { id: 'feedback', icon: 'flag', label: () => t('acc.feedback') },
+  { id: 'referrals', icon: 'users', label: () => 'دعوت از دوستان' },
   { id: 'profile', icon: 'user', label: () => t('acc.profile') },
+  { id: 'kyc', icon: 'shield-check', label: () => 'احراز هویت (KYC)' },
   { id: 'security', icon: 'shield', label: () => t('acc.security') },
   { id: 'prefs', icon: 'settings', label: () => t('acc.prefs') },
   { id: 'data', icon: 'download', label: () => t('acc.data') },
@@ -74,7 +76,12 @@ async function sectionHtml(sec, ctx) {
     case 'support': return supportHtml();
     case 'reviews': return reviewsHtml();
     case 'feedback': return feedbackHtml();
+    
+    case 'referrals': return referralsHtml();
     case 'profile': return profileHtml();
+    
+    case 'kyc':
+      return kycHtml();
     case 'security': return securityHtml();
     case 'prefs': return prefsHtml();
     case 'data': return dataHtml();
@@ -784,3 +791,112 @@ export function mount(root, ctx) {
 }
 
 export const title = (ctx) => t('acc.title');
+
+
+async function kycHtml() {
+  const isApproved = S.me.kycStatus === 'approved';
+  const isPending = S.me.kycStatus === 'pending';
+  const isRejected = S.me.kycStatus === 'rejected';
+  
+  if (isApproved) {
+    return h`
+      <div class="card box pad text-center">
+        ${icon('check-circle', {style: 'color:var(--success);width:64px;height:64px;'})}
+        <h3 class="mt-4 mb-2">احراز هویت تأیید شده است</h3>
+        <p class="text-muted">شما می‌توانید بدون محدودیت از تمامی خدمات و ثبت سفارش استفاده کنید.</p>
+      </div>
+    `;
+  }
+  
+  if (isPending) {
+    return h`
+      <div class="card box pad text-center">
+        ${icon('clock', {style: 'color:var(--warning);width:64px;height:64px;'})}
+        <h3 class="mt-4 mb-2">در حال بررسی مدارک</h3>
+        <p class="text-muted">مدارک شما دریافت شده و در صف بررسی توسط کارشناسان یاسایی الکترونیک قرار دارد. لطفاً شکیبا باشید.</p>
+      </div>
+    `;
+  }
+
+  return h`
+    <div class="card box pad">
+      <h3 class="mb-4">${icon('shield-check')} تکمیل احراز هویت</h3>
+      ${isRejected ? h`<div class="alert danger mb-4">مدارک قبلی شما به دلیل نقص یا ناخوانا بودن رد شد. لطفاً دوباره ارسال کنید. (${esc(S.me.kycMessage || '')})</div>` : ''}
+      <p class="text-muted mb-4">احراز هویت <strong>اجباری نیست</strong>، اما با تایید مدارک خود امکان استفاده از <strong>خرید اقساطی (اسنپ‌پی، ازکی‌وام)</strong>، شرکت در <strong>قرعه‌کشی‌ها</strong> و دریافت <strong>کدهای تخفیف ویژه</strong> برای شما فعال خواهد شد.</p>
+      
+      <div class="alert info mb-4">
+        <strong>راهنمای بارگذاری مدارک:</strong>
+        <ol class="mt-2 mb-0" style="padding-right: 20px;">
+          <li>فرم تعهدنامه را <a href="/assets/docs/kyc-form.pdf" target="_blank" download style="font-weight:bold;text-decoration:underline;">دانلود کنید</a>، پرینت گرفته و امضا کنید (یا به صورت دیجیتال پر کنید).</li>
+          <li>یک عکس واضح از کارت ملی یا شناسنامه خود بگیرید.</li>
+          <li>یک عکس سلفی در حالی که کارت ملی و فرم تعهدنامه را در دست دارید بگیرید.</li>
+        </ol>
+      </div>
+
+      <form class="stack grid gap-3" onsubmit="event.preventDefault(); window.submitKyc(event.target);">
+        <div class="field">
+          <label>عکس سلفی (همراه با کارت ملی و فرم)</label>
+          <input type="file" name="selfie" accept="image/*" required class="input">
+        </div>
+        <div class="field">
+          <label>عکس کارت ملی یا شناسنامه</label>
+          <input type="file" name="idCard" accept="image/*" required class="input">
+        </div>
+        <div class="field">
+          <label>فرم امضا شده تعهدنامه (PDF یا عکس)</label>
+          <input type="file" name="formDoc" accept="image/*,.pdf" required class="input">
+        </div>
+        <button type="submit" class="btn primary mt-2">${icon('upload')} ارسال مدارک</button>
+      </form>
+    </div>
+  `;
+}
+
+
+function referralsHtml() {
+  const refCode = S.me?.referralCode || S.me?.id?.substring(0, 6).toUpperCase();
+  const refLink = window.location.origin + '#/auth?ref=' + refCode;
+  
+  return h`
+    <div class="card box pad">
+      <h3 class="mb-4">${icon('users')} دعوت از دوستان (Referral)</h3>
+      <p class="text-muted mb-4">با دعوت از دوستان خود هم به آن‌ها هدیه بدهید و هم خودتان پاداش بگیرید!</p>
+      
+      <div class="grid gap-3 mb-4">
+        <div class="box pad" style="background: var(--surface-2); border-radius: var(--radius);">
+          <div class="muted mb-2">کد معرف شما:</div>
+          <div class="row row-between">
+            <h2 class="mono m-0">${refCode}</h2>
+            <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${refCode}'); import('../ui.mjs').then(m => m.toastSuccess('کد کپی شد'))">${icon('copy')} کپی کد</button>
+          </div>
+        </div>
+        <div class="box pad" style="background: var(--surface-2); border-radius: var(--radius);">
+          <div class="muted mb-2">لینک دعوت اختصاصی:</div>
+          <div class="row row-between gap-2">
+            <input readonly value="${refLink}" class="input flex-1" style="font-size: 0.85rem;" dir="ltr">
+            <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${refLink}'); import('../ui.mjs').then(m => m.toastSuccess('لینک کپی شد'))">${icon('copy')}</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stats-grid mb-4">
+        <div class="stat-card">
+          <span class="stat-ic" style="color:var(--info)">${icon('users')}</span>
+          <div><div class="stat-val">${S.me?.referralCount || 0}</div><div class="stat-lbl">دوستان دعوت‌شده</div></div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-ic" style="color:var(--success)">${icon('gift')}</span>
+          <div><div class="stat-val">${(S.me?.referralCount || 0) * 10}</div><div class="stat-lbl">امتیاز دریافتی</div></div>
+        </div>
+      </div>
+      
+      <div class="alert info">
+        <h4 class="mb-2">${icon('info')} پاداش‌ها (به‌زودی بر اساس قوانین سایت):</h4>
+        <ul class="mb-0" style="padding-right: 20px;">
+          <li>دعوت از هر نفر (ثبت‌نام موفق): <strong>تخفیف روی سبد خرید بعدی یا ارسال رایگان</strong></li>
+          <li>دعوت از بیش از ۱۰ نفر: <strong>دریافت جایزه ویژه وفاداری</strong></li>
+        </ul>
+      </div>
+    </div>
+  `;
+}

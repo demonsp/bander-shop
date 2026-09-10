@@ -70,6 +70,7 @@ async function list() {
           </td>
           <td class="mono tiny nowrap">${fmtTel(u.phone || '')}${u.email ? h`<div class="tiny muted">${esc(u.email)}</div>` : ''}</td>
           <td>${roleBadge(u.role)}</td>
+          <td>${kycBadge(u.kycStatus)}</td>
           <td class="num">${fmtNum(u.wallet || 0)}</td>
           <td class="num">${u.plus ? h`<span class="badge-pill bp-accent">${t('common.active')}</span>` : h`<span class="muted">—</span>`}</td>
           <td class="num">${fmtNum(u.orders || 0)}<div class="tiny muted">${fmtMoney(u.spent || 0)}</div></td>
@@ -127,6 +128,37 @@ async function detail(id) {
         <div class="stat-card"><span class="stat-ic">${icon('card')}</span><div><div class="stat-val">${fmtMoney(u.spent || 0)}</div><div class="stat-lbl">${L('مجموع خرید', 'Total spent')}</div></div></div>
       </div>
     </div>
+
+    
+    <!-- KYC Management -->
+    ${u.kycStatus && u.kycStatus !== 'none' ? h`
+      <div class="card mt box pad border-warning">
+        <h3 class="mb-3">${icon('shield-check')} احراز هویت (KYC)</h3>
+        <p class="muted">وضعیت فعلی: ${kycBadge(u.kycStatus)}</p>
+        ${u.kycDocs ? h`
+          <div class="grid gap-3 mt-3">
+            <div>
+              <strong>سلفی:</strong> <a href="#" target="_blank">${u.kycDocs.selfie}</a>
+            </div>
+            <div>
+              <strong>کارت ملی:</strong> <a href="#" target="_blank">${u.kycDocs.idCard}</a>
+            </div>
+            <div>
+              <strong>فرم تعهدنامه:</strong> <a href="#" target="_blank">${u.kycDocs.formDoc}</a>
+            </div>
+          </div>
+        ` : ''}
+        <form class="mt-4 row row-wrap gap-2" onsubmit="event.preventDefault(); window.submitAdminKyc(event.target, '${u.id}')">
+          <select class="input" name="kycStatus">
+            <option value="pending" ${u.kycStatus==='pending'?'selected':''}>در انتظار</option>
+            <option value="approved" ${u.kycStatus==='approved'?'selected':''}>تأیید شده</option>
+            <option value="rejected" ${u.kycStatus==='rejected'?'selected':''}>رد شده</option>
+          </select>
+          <input class="input flex-1" name="kycMessage" placeholder="پیام در صورت رد شدن مدارک..." value="${esc(u.kycMessage || '')}">
+          <button class="btn primary" type="submit">${icon('save')} ذخیره وضعیت KYC</button>
+        </form>
+      </div>
+    ` : ''}
 
     <form class="card mt" data-act="adm-u-save" data-id="${u.id}">
       <div class="form-grid">
@@ -344,3 +376,11 @@ act('adm-u-ban-toggle', async (e, el) => {
   try { await api.post('/api/admin/bans', { type, value: el.dataset.val, reason: t('adm.banByAdmin') }); toastSuccess(t('adm.banDone')); refresh(true); }
   catch (err) { toastApiError(err); }
 });
+
+
+function kycBadge(status) {
+  if (status === 'approved') return h`<span class="${applyDyn('badge-pill bp-success')}">تأیید شده</span>`;
+  if (status === 'pending') return h`<span class="${applyDyn('badge-pill bp-warning')}">در انتظار</span>`;
+  if (status === 'rejected') return h`<span class="${applyDyn('badge-pill bp-danger')}">رد شده</span>`;
+  return h`<span class="${applyDyn('muted')}">—</span>`;
+}

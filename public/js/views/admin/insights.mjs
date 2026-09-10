@@ -100,6 +100,7 @@ async function stats() {
   const summary = r.summary || {};
   const byCat = Object.entries(r.byCat || {}).sort((a, b) => b[1].sold - a[1].sold);
   const byBrand = Object.entries(r.byBrand || {}).sort((a, b) => b[1] - a[1]).slice(0, 12);
+  const missedSearches = r.missedSearches || [];
   const metric = SF.metric;
   const points = series.map((d) => ({
     label: d.date,
@@ -172,6 +173,23 @@ async function stats() {
           }).join('') : h`<p class="muted small">${t('common.noData')}</p>`}
         </div>
       </aside>
+    </div>
+    
+    <div class="card mt">
+      <strong>${icon('search')} ${isFa() ? 'جستجوهای بدون نتیجه (کالاهای ناموجود)' : 'Missed Searches (Not in stock)'}</strong>
+      ${!missedSearches.length ? h`<p class="muted small mt-s">${t('common.empty')}</p>` :
+        tableHtml(
+          [
+            { label: isFa() ? 'عبارت جستجو شده' : 'Query' },
+            { label: isFa() ? 'دفعات جستجو' : 'Count', cls: 'num' }
+          ],
+          missedSearches.map(m => h`
+            <tr>
+              <td>${esc(m.q)}</td>
+              <td class="num"><span class="badge-pill bp-warn">${fmtNum(m.count)}</span></td>
+            </tr>`)
+        )
+      }
     </div>`;
 }
 

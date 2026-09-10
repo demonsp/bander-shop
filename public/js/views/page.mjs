@@ -147,7 +147,14 @@ function textHtml(page) {
       <a class="btn btn-ghost" href="#/pages/privacy">${icon('shield')} ${t('footer.privacy')}</a>
       <a class="btn btn-ghost" href="#/pages/insurance">${icon('truck')} ${t('footer.insurance')}</a>
       <a class="btn btn-ghost" href="#/pages/ticketRules">${icon('ticket')} ${t('acc.ticketViewRules')}</a>
-    </div>`;
+    </div>
+    ${(page.id === 'terms' || page.id === 'privacy') && !hasConsent() ? h`
+      <div class="card mt bg-shade">
+        <p class="mb-s b">${isFa() ? 'آیا قوانین را مطالعه کردید؟' : 'Have you read the terms?'}</p>
+        <button type="button" class="btn btn-primary" data-act="accept-consent-now">${icon('check')} ${t('consent.accept')}</button>
+      </div>
+    ` : ''}
+    `;
 }
 
 // ── گزارش باگ ───────────────────────────────────────────────

@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────
 //  API عمومی: کاتالوگ، جست‌وجوی پیشرفته، آمار، صفحه‌ها
 // ─────────────────────────────────────────────────────────────
-import { db, publicStats, publicProduct, recordVisit } from './lib/helpers.mjs';
+import { db, publicStats, publicProduct, recordVisit, pushNotification } from './lib/helpers.mjs';
 import { hamming, histDistance } from './lib/helpers.mjs';
 import { normalizeText, phoneticKey, levenshtein, V, notFound, badRequest, nowISO } from './lib/util.mjs';
 import { sendJson } from './lib/http.mjs';
@@ -219,6 +219,28 @@ export function registerCatalog(router) {
     };
     if (!opts.maxPrice) opts.maxPrice = Infinity;
     const r = runSearch(ctx.state, opts);
+    if (opts.q && r.items.length === 0) {
+      db.tx((st) => {
+        st.missedSearches = st.missedSearches || {};
+        const k = String(opts.q).toLowerCase().trim().slice(0, 50);
+        if (k) {
+          if (!st.missedSearches[k]) {
+            const keys = Object.keys(st.missedSearches);
+            if (keys.length > 2000) delete st.missedSearches[keys[0]];
+            st.missedSearches[k] = { count: 0, notified: false };
+          }
+          st.missedSearches[k].count++;
+          if (st.missedSearches[k].count >= 5 && !st.missedSearches[k].notified) {
+            st.missedSearches[k].notified = true;
+            for (const u of st.users) {
+              if (u.role === 'admin' || u.role === 'staff') {
+                pushNotification(st, { userId: u.id, type: 'system', level: 'warn', title: 'تقاضای بالای کالای ناموجود', body: `کلمه «${k}» بیش از ۵ بار جستجو شده اما در فروشگاه موجود نیست. بررسی کنید.`, link: '#/admin/insights' });
+              }
+            }
+          }
+        }
+      }).catch(()=>{});
+    }
     sendJson(ctx.res, 200, {
       ok: true,
       items: r.items.map((p) => publicProduct(p, { categories: ctx.state.categories, brands: ctx.state.brands })),

@@ -143,6 +143,7 @@ export async function render(ctx) {
   if (my !== token) return;
   view.innerHTML = html;
   applyDyn(view);
+  setTimeout(maybeConsent, 300);
 
   // عنوان صفحه
   try {
