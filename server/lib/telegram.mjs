@@ -132,14 +132,20 @@ export function startTelegramBot() {
   setInterval(async () => {
     const tg = db.raw.settings?.telegram;
     // BM_TG=off → بات غیرفعال (برای اجرای لوکالی هم‌زمان با نسخهٔ زنده تا پاسخ دوبله نشود)
-    const want = !!(tg?.enabled && tg?.token) && process.env.BM_TG !== 'off';
+    // سرویس «-legacy» هرگز poll نمی‌کند: دو poller روی یک توکن = 409 تلگرام و سکوت بات
+    const svc = String(process.env.RENDER_SERVICE_NAME || '');
+    const want = !!(tg?.enabled && tg?.token) && process.env.BM_TG !== 'off' && !/-legacy$/i.test(svc);
     if (!want) { polling = false; currentToken = ''; return; }
     if (polling && currentToken === tg.token) return;
     polling = true; currentToken = tg.token;
     (async function loop() {
       while (polling && db.raw.settings?.telegram?.token === currentToken) {
         try { await pollOnce(currentToken); }
-        catch { await new Promise((r) => setTimeout(r, 5000)); }
+        catch (e) {
+          // خطای poll (مثلاً 409 تداخل دو poller) ثبت شود تا در پنل دیده شود
+          db.raw.meta = { ...(db.raw.meta || {}), tgLastError: `${new Date().toISOString()} poll: ${e?.message || e}` };
+          await new Promise((r) => setTimeout(r, 5000));
+        }
       }
     })();
   }, 20000).unref?.();
