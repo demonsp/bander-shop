@@ -2,10 +2,10 @@
 //  مدیریت کالاها: فهرست با فیلتر و صفحه‌بندی، فرم ایجاد/ویرایش،
 //  مشخصات فنی، برچسب‌ها، تصویرها (بارگذاری + جست‌وجوی خودکار)، بارکد
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, esc, fmtNum, fmtMoney, applyDyn, fileToDataURL } from '../../lib/dom.mjs';
+import { html as h, icon, esc, fmtNum, fmtMoney, applyDyn, fileToDataURL, copyText } from '../../lib/dom.mjs';
 import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
-import { S, can, catName, brandName } from '../../state.mjs';
+import { S, can, catName, brandName, store } from '../../state.mjs';
 import { tableHtml, field, textareaField, selectField, switchField, pagination, productImage } from '../../components.mjs';
 import { toast, toastSuccess, toastApiError, modal, confirmDelete, withBusy, errorState, spinner, emptyState } from '../../ui.mjs';
 import { act } from '../../actions.mjs';
@@ -91,6 +91,7 @@ async function list() {
             <div class="act">
               <a class="btn btn-ghost btn-xs" href="#/admin/products/${p.id}">${icon('edit')}</a>
               <a class="btn btn-ghost btn-xs" href="#/product/${p.id}" target="_blank" rel="noopener">${icon('external')}</a>
+              <button class="btn btn-ghost btn-xs" data-act="adm-p-igpack" data-id="${p.id}" title="${t('adm.igPack')}">${icon('camera')}</button>
               ${can('products.delete') ? h`<button class="btn btn-ghost btn-xs" data-act="adm-p-del" data-id="${p.id}" data-name="${esc(p.name)}">${icon('trash')}</button>` : ''}
             </div>
           </td>
@@ -278,6 +279,81 @@ act('adm-p-barcode', async (e, el) => {
       }
     } catch (err) { toastApiError(err); }
   });
+});
+
+// ── بستهٔ پست اینستاگرام: تصویر + متن آمادهٔ کپی + قیمت + هشتگ ──
+function igCaption(p) {
+  const st = store();
+  const name = isFa() ? p.name : (p.nameEn || p.name);
+  const nf = (n) => Number(n || 0).toLocaleString(isFa() ? 'fa-IR' : 'en-US');
+  const old = Number(p.oldPrice || 0);
+  const stock = Math.max(0, (p.stock || 0) - (p.reserved || 0));
+  const link = `${location.origin}/#/product/${p.id}`;
+  const desc = String(isFa() ? (p.description || '') : (p.descriptionEn || p.description || '')).split('\n')[0].trim().slice(0, 160);
+  const rows = isFa() ? [
+    `✨ ${name} ✨`,
+    desc,
+    '',
+    `💰 قیمت: ${nf(p.price)} تومان${old > p.price ? ` (به‌جای ${nf(old)} — ${fmtNum(p.discountPct || 0)}٪ تخفیف)` : ''}`,
+    stock > 0 ? '📦 موجود در انبار — همین حالا سفارش بده' : '📦 فعلاً ناموجود؛ پیام بده تا موجود شد خبرت کنیم',
+    '🛡 ضمانت اصالت کالا + مهلت تست و مرجوع تا ۷ روز',
+    '🚚 ارسال از بندر بوشهر به سراسر ایران',
+    '',
+    `🔗 سفارش آنلاین: ${link}`,
+    `📞 تلفن: ${st.phone || ''} · 🍏 اینستاگرام: @jam.greenapple`,
+  ] : [
+    `✨ ${name} ✨`,
+    desc,
+    '',
+    `💰 Price: ${nf(p.price)} Toman${old > p.price ? ` (was ${nf(old)})` : ''}`,
+    '🛡 Authenticity guarantee + 7-day return',
+    `🔗 Order: ${link}`,
+    `📞 ${st.phone || ''}`,
+  ];
+  return rows.filter((x, i, a) => !(x === '' && (a[i - 1] === '' || i === 0))).join('\n');
+}
+
+function igTags(p) {
+  const base = isFa()
+    ? ['گرین_اپل', 'لوازم_جانبی_موبایل', 'گجت', 'بوشهر', 'جم', 'خرید_آنلاین']
+    : ['GreenApple', 'MobileAccessories', 'Gadget', 'Bushehr', 'OnlineShopping'];
+  const extra = [p.brandName, p.categoryName].filter(Boolean).map((x) => String(x).trim().replace(/\s+/g, '_'));
+  return [...new Set([...base, ...extra])].map((x) => `#${x}`).join(' ');
+}
+
+act('adm-p-igpack', async (e, el) => {
+  let p = null;
+  try { p = (await api.get(`/api/admin/products/${el.dataset.id}`)).product; } catch (err) { toastApiError(err); return; }
+  const img = (p.images || [])[0] || '';
+  modal({
+    title: `${icon('camera')} ${t('adm.igPack')}`,
+    subtitle: isFa() ? p.name : (p.nameEn || p.name),
+    body: h`
+      ${img ? h`
+        <div class="row row-wrap mb">
+          <img class="igpack-img" src="${esc(img)}" alt="">
+          <div class="grow">
+            <p class="small muted">${t('adm.igImgHint')}</p>
+            <a class="btn btn-ghost btn-sm mt-s" href="${esc(img)}" download="greenapple-${esc(p.sku || p.id)}.jpg" target="_blank" rel="noopener">${icon('download')} ${t('adm.igDl')}</a>
+          </div>
+        </div>` : h`<p class="notice notice-warn mb">${icon('info')}<span>${t('adm.igNoImg')}</span></p>`}
+      ${textareaField({ label: t('adm.igCap'), name: 'igcap', rows: 10, value: igCaption(p) })}
+      ${textareaField({ label: t('adm.igTags'), name: 'igtags', rows: 2, value: igTags(p) })}
+      <div class="row row-wrap mt-s">
+        <button type="button" class="btn btn-primary btn-sm" data-act="adm-ig-copy" data-what="cap">${icon('copy')} ${t('adm.igCopyCap')}</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-act="adm-ig-copy" data-what="tags">${icon('copy')} ${t('adm.igCopyTags')}</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-act="adm-ig-copy" data-what="all">${icon('copy')} ${t('adm.igCopyAll')}</button>
+      </div>`,
+  });
+});
+
+act('adm-ig-copy', async (e, el) => {
+  const panel = el.closest('.modal');
+  const cap = panel?.querySelector('[name=igcap]')?.value || '';
+  const tags = panel?.querySelector('[name=igtags]')?.value || '';
+  const text = el.dataset.what === 'tags' ? tags : el.dataset.what === 'all' ? `${cap}\n\n${tags}` : cap;
+  try { await copyText(text); toastSuccess(t('common.copied'), { timeout: 1800 }); }
+  catch { toastApiError(new Error(t('err.generic'))); }
 });
 
 act('adm-p-save', async (e, form) => {

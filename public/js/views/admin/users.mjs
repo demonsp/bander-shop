@@ -2,7 +2,7 @@
 //  مدیریت کاربران: فهرست، نقش‌ها، دسترسی‌های ریز (۳۰+ کلید)،
 //  کیف پول، اشتراک پلاس، امتیاز، مسدودسازی و بازنشانی رمز
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, esc, fmtNum, fmtMoney, fmtDate, applyDyn } from '../../lib/dom.mjs';
+import { fmtTel, html as h, icon, esc, fmtNum, fmtMoney, fmtDate, applyDyn } from '../../lib/dom.mjs';
 import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
 import { S, can } from '../../state.mjs';
@@ -68,7 +68,7 @@ async function list() {
             <span class="tiny muted mono">@${esc(u.username)}</span>
             ${u.twoFA ? h`<span class="badge-pill bp-success tiny">${icon('shield')}</span>` : ''}
           </td>
-          <td class="mono tiny nowrap">${fmtNum(u.phone || '')}${u.email ? h`<div class="tiny muted">${esc(u.email)}</div>` : ''}</td>
+          <td class="mono tiny nowrap">${fmtTel(u.phone || '')}${u.email ? h`<div class="tiny muted">${esc(u.email)}</div>` : ''}</td>
           <td>${roleBadge(u.role)}</td>
           <td class="num">${fmtNum(u.wallet || 0)}</td>
           <td class="num">${u.plus ? h`<span class="badge-pill bp-accent">${t('common.active')}</span>` : h`<span class="muted">—</span>`}</td>
@@ -109,7 +109,7 @@ async function detail(id) {
         <div>
           <h2 class="buy-title">${icon('user')} ${esc(u.name || u.username)} <span class="muted mono small">@${esc(u.username)}</span></h2>
           <p class="muted small mt-s">
-            ${fmtNum(u.phone || '')}${u.email ? ` · ${esc(u.email)}` : ''} ·
+            ${fmtTel(u.phone || '')}${u.email ? ` · ${esc(u.email)}` : ''} ·
             ${t('acc.memberSince', { date: fmtDate(u.createdAt, { time: false }) })} ·
             ${L('آخرین ورود', 'Last login')}: ${u.lastLoginAt ? fmtDate(u.lastLoginAt) : t('common.never')} (${fmtNum(u.loginCount || 0)})
           </p>

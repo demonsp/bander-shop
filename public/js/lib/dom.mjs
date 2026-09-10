@@ -111,7 +111,7 @@ export function fmtNum(n) {
 export function fmtTel(v) {
   const s = String(v ?? '').trim();
   if (!s) return '';
-  if (LOCALE === 'fa') return s.replace(/\d/g, (x) => '۰۱۳۴۵۶۷۸۹'[+x]);
+  if (LOCALE === 'fa') return s.replace(/\d/g, (x) => FA_DIGITS[+x]);
   return s;
 }
 export function fmtMoney(n, { withUnit = true } = {}) {

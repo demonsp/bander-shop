@@ -384,6 +384,14 @@ async function telegramView() {
       <aside class="col">
         <div class="card">
           <strong>${icon('chat')} ${t('adm.tgInbox')} (${fmtNum(r.inbox?.length || 0)}) · ${t('adm.tgSubs')}: ${fmtNum(r.subs || 0)}</strong>
+          ${r.enabled ? h`
+            <p class="tiny muted mt-s">
+              ${L('وضعیت اتصال ربات:', 'bot link:')}
+              ${r.lastError
+                ? h`<span class="c-danger">${L('خطا', 'error')}: ${esc(String(r.lastError).slice(0, 120))}</span>`
+                : h`<span class="c-success">${L('سالم', 'healthy')}</span>`}
+              · ${L('آخرین بررسی پیام‌ها:', 'last poll:')} ${r.lastPoll ? timeAgo(r.lastPoll) : L('در انتظار…', 'waiting…')}
+            </p>` : ''}
           <div class="notif-list mt-s">
             ${(r.inbox || []).slice(0, 30).map((m) => h`
               <div class="notif-item lv-info">

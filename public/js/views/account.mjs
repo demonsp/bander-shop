@@ -2,7 +2,7 @@
 //  حساب کاربری: داشبورد، سفارش‌ها، کیف پول، پلاس، آدرس‌ها، اعلان‌ها،
 //  تیکت‌ها، پشتیبانی، نظرات من، بازخورد، پروفایل، امنیت، ترجیحات، داده‌ها
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, esc, fmtNum, fmtMoney, fmtDate, timeAgo, applyDyn, stars } from '../lib/dom.mjs';
+import { fmtTel, html as h, icon, esc, fmtNum, fmtMoney, fmtDate, timeAgo, applyDyn, stars } from '../lib/dom.mjs';
 import { t, lang, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import {
@@ -260,7 +260,7 @@ function addressesHtml() {
           <strong>${esc(a.title || '')}</strong>
           ${a.isDefault ? h`<span class="badge-pill bp-accent">${t('acc.addrDefault')}</span>` : ''}
         </div>
-        <p class="muted small mt-s">${esc(a.receiver || '')} · ${fmtNum(a.phone || '')}<br>${esc(a.street || '')}${a.city ? `، ${esc(a.city)}` : ''}${a.postal ? `<br>${t('common.postal')}: ${esc(a.postal)}` : ''}</p>
+        <p class="muted small mt-s">${esc(a.receiver || '')} · ${fmtTel(a.phone || '')}<br>${esc(a.street || '')}${a.city ? `، ${esc(a.city)}` : ''}${a.postal ? `<br>${t('common.postal')}: ${esc(a.postal)}` : ''}</p>
         ${a.note ? h`<p class="hint">${esc(a.note)}</p>` : ''}
         <div class="row mt-s">
           <button class="btn btn-ghost btn-xs" data-act="addr-edit" data-id="${a.id}">${icon('edit')} ${t('common.edit')}</button>

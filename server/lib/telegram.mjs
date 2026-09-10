@@ -37,21 +37,37 @@ export async function tgBroadcast(text) {
   return { ok, fail, total: Object.keys(subs).length };
 }
 
+// پیگیری سفارش؛ بدون کد → راهنمای استفاده
 function answerStatus(code) {
+  const c = String(code || '').trim();
+  if (!c) return 'برای پیگیری سفارش، کد سفارش را همین‌جا بفرست.\nمثال: /status BM-123456\nکد سفارش را در «حساب من → سفارش‌ها» یا پیامک تأیید سفارش پیدا می‌کنی.';
   const st = db.raw;
-  const o = (st.orders || []).find((x) => x.code === String(code || '').trim());
-  if (!o) return 'سفارشی با این کد پیدا نشد. کد را مثل BM-123456 بفرست.', false;
-  const u = st.users.find((x) => x.id === o.userId);
-  const fa = { paid: 'پرداخت‌شده', processing: 'در حال آماده‌سازی', sent: 'ارسال‌شده', delivered: 'تحویل‌شده', cancelled: 'لغوشده' };
-  return `سفارش ${o.code}: وضعیت «${fa[o.status] || o.status}» — مجموع ${Number(o.total || 0).toLocaleString('fa-IR')} تومان`, true;
+  const o = (st.orders || []).find((x) => x.code === c || x.code === `BM-${c}` || x.code === c.replace(/^bm-/i, '').toUpperCase());
+  if (!o) return `سفارشی با کد «${c}» پیدا نشد. 😕\nکد صحیح شبیه BM-123456 است؛ آن را از «حساب من → سفارش‌ها» کپی کن و دوباره بفرست:\n/status BM-123456`;
+  const fa = { pending_payment: 'در انتظار پرداخت', paid: 'پرداخت‌شده', processing: 'در حال آماده‌سازی', sent: 'ارسال‌شده', delivered: 'تحویل‌شده', cancelled: 'لغوشده', refunded: 'مرجوع‌شده' };
+  const next = {
+    pending_payment: 'هنوز پرداخت نشده؛ از «حساب من → سفارش‌ها» می‌توانی پرداختش کنی.',
+    paid: 'سفارش تو در صف آماده‌سازی است.',
+    processing: 'داریم بسته‌بندی می‌کنیم؛ به‌زودی ارسال می‌شود.',
+    sent: 'سفارش تحویل پست شده؛ کد رهگیری برایت پیامک می‌شود.',
+    delivered: 'به سلامت رسید؛ نوش جان! 🍏',
+    cancelled: 'این سفارش لغو شده؛ اگر اشتباه است پیام بده.',
+    refunded: 'مرجوع شد؛ مبلغ به کیف پولت برگشت.',
+  };
+  const note = next[o.status] ? `\n${next[o.status]}` : '';
+  return `📦 سفارش ${o.code}\nوضعیت: «${fa[o.status] || o.status}»${note}\nمجموع: ${Number(o.total || 0).toLocaleString('fa-IR')} تومان`;
 }
 
+// جستجوی کالا؛ بدون عبارت → چند نمونه + راهنما
 function answerProducts(q) {
   const st = db.raw;
   const s = String(q || '').trim().toLowerCase();
-  const items = (st.products || []).filter((p) => p.active !== false && (!s || `${p.name} ${p.nameEn || ''}`.toLowerCase().includes(s))).slice(0, 3);
-  if (!items.length) return 'کالایی پیدا نشد.', false;
-  return items.map((p) => `• ${p.name} — ${Number(p.price).toLocaleString('fa-IR')} تومان`).join('\n'), true;
+  const all = (st.products || []).filter((p) => p.active !== false);
+  const items = all.filter((p) => (!s || `${p.name} ${p.nameEn || ''} ${p.brandName || ''} ${p.brandNameEn || ''} ${(p.tags || []).join(' ')}`.toLowerCase().includes(s))).slice(0, 5);
+  if (!items.length) return `کالایی مطابق «${q}» پیدا نشد. 🙁\nعبارت کوتاه‌تر یا نام برند را امتحان کن؛ مثال:\n/products baseus\nلیست چند کالا: /products`;
+  const head = s ? `🔍 نتیجهٔ جستجوی «${q}»:` : '🛍 چند کالای موجود فروشگاه:';
+  const tail = '\n\nبرای جستجوی دقیق‌تر: /products عبارت\nمثال: /products کابل';
+  return `${head}\n${items.map((p) => `• ${p.name} — ${Number(p.price).toLocaleString('fa-IR')} تومان`).join('\n')}${s ? '' : tail}`;
 }
 
 async function handleUpdate(up) {
@@ -67,21 +83,30 @@ async function handleUpdate(up) {
     st.telegramSubs[chatId] = name;
     reply = st.settings?.telegram?.welcome || 'سلام! من ربات پشتیبانی گرین اپل هستم. /help را ببین.';
   } else if (text === '/help') {
-    reply = 'دستورات:\n/status کدسفارش — پیگیری سفارش\n/products عبارت — جستجوی کالا\n/contact — راه‌های تماس\nهر پیام دیگر را به پشتیبانی انسانی می‌رسانم.';
+    reply = '🍏 راهنمای ربات گرین اپل:\n\n۱) /status کدسفارش — پیگیری وضعیت سفارش\nمثال: /status BM-123456\n\n۲) /products عبارت — جستجو در کالاها\nمثال: /products کابل\n\n۳) /contact — تلفن و آدرس فروشگاه\n\n۴) هر پیام متنی دیگر = پیام به پشتیبانی انسانی؛\nپاسخ‌ش را همین‌جا می‌گیری.\n\nاشتباه زدی؟ ایرادی ندارد؛ همین راهنما را دوباره بخواه: /help';
   } else if (text.startsWith('/status')) {
     reply = answerStatus(text.slice(7));
   } else if (text.startsWith('/products')) {
     reply = answerProducts(text.slice(9));
   } else if (text === '/contact') {
     const s = st.settings?.store || {};
-    reply = `تماس: ${s.phone || ''} — ${s.address || ''}`;
+    reply = `📞 تلفن: ${s.phone || ''}\n📱 موبایل/واتساپ: ${s.phone2 || ''}\n📍 آدرس: ${s.address || ''}\n🕘 ساعت کاری: ${(s.workingHours || []).map((w) => `${w.fa || w.day} ${w.time || ''}`).join(' · ')}`;
+  } else if (text.startsWith('/')) {
+    // دستور ناشناخته → به‌جای سکوت، راهنمایی کن
+    reply = `دستور «${text.split(/\s/)[0]}» را نمی‌شناسم. 🤖\nنگران نباش؛ این‌ها را دارم:\n/status کدسفارش — پیگیری سفارش\n/products عبارت — جستجوی کالا\n/contact — راه‌های تماس\n/help — راهنمای کامل`;
   } else if (text) {
     st.telegramInbox = st.telegramInbox || [];
     st.telegramInbox.unshift({ id: `tg${up.update_id}`, chatId, name, text, at: new Date().toISOString(), replied: false });
     if (st.telegramInbox.length > 300) st.telegramInbox.length = 300;
-    reply = 'پیامت ثبت شد؛ پشتیبانی گرین اپل به‌زودی در همین چت پاسخ می‌دهد.';
+    reply = 'پیامت ثبت شد؛ پشتیبانی گرین اپل به‌زودی در همین چت پاسخ می‌دهد. 🍏\n(اگر دنبال سفارش یا کالا بودی: /status کدسفارش یا /products عبارت)';
   }
-  if (reply && chatId) { try { await tgSend(chatId, reply); } catch { /* noop */ } }
+  if (reply && chatId) {
+    try { await tgSend(chatId, String(reply)); }
+    catch (e) {
+      // ثبت خطا برای diagnos از پنل ادمین؛ سکوت مطلق ممنوع
+      st.meta = { ...(st.meta || {}), tgLastError: `${new Date().toISOString()} send→${chatId}: ${e?.message || e}` };
+    }
+  }
 }
 
 async function pollOnce(token) {
@@ -90,11 +115,17 @@ async function pollOnce(token) {
   const r = await fetch(`${API(token)}/getUpdates?timeout=20&offset=${off}`, { signal: AbortSignal.timeout(25000) });
   const j = await r.json().catch(() => null);
   if (!j?.ok) throw new Error(j?.description || 'getUpdates failed');
+  st.meta = { ...(st.meta || {}), tgLastPoll: new Date().toISOString(), tgLastError: '' };
   for (const up of j.result || []) {
     st.meta = { ...(st.meta || {}), tgOffset: up.update_id + 1 };
-    await handleUpdate(up).catch(() => {});
+    await handleUpdate(up).catch((e) => {
+      st.meta = { ...(st.meta || {}), tgLastError: `${new Date().toISOString()} handle: ${e?.message || e}` };
+    });
   }
 }
+
+// برای تست واحد (tools/tests) — بدون اثر جانبی
+export const tgInternals = { answerStatus, answerProducts };
 
 /** حلقهٔ long-poll؛ هر ۲۰ ثانیه وضعیت تنظیمات بازبررسی می‌شود */
 export function startTelegramBot() {

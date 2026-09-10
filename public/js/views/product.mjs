@@ -227,10 +227,59 @@ function reviewHtml(r) {
     </div>`;
 }
 
+// ── ذره‌بین زوم (هاور موس روی تصویر کالا) ───────────────────
+// فقط روی دستگاه‌های دارای موس؛ لنز دایره‌ای همان تصویر را با بزرگ‌نمایی
+// پیکسل‌به‌پیکسل (object-fit:cover یکسان) نشان می‌دهد.
+function wireLens(root) {
+  const gal = root.querySelector('.gal-main');
+  if (!gal) return;
+  if (!window.matchMedia?.('(hover: hover) and (pointer: fine)')?.matches) return;
+  const Z = 2.6; // میزان بزرگ‌نمایی ذره‌بین
+  let lens = null;
+  let limg = null;
+  const hide = () => { if (lens) lens.style.display = 'none'; };
+  gal.addEventListener('mousemove', (e) => {
+    const img = gal.querySelector('img');
+    if (!img || !img.currentSrc) { hide(); return; }
+    const r = gal.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    if (x < 0 || y < 0 || x > r.width || y > r.height) { hide(); return; }
+    if (!lens) {
+      lens = document.createElement('div');
+      lens.className = 'gal-lens';
+      lens.setAttribute('aria-hidden', 'true');
+      limg = document.createElement('img');
+      limg.alt = '';
+      lens.appendChild(limg);
+      gal.appendChild(lens);
+    }
+    const size = Math.max(120, Math.min(190, Math.round(r.width * 0.46)));
+    lens.style.width = `${size}px`;
+    lens.style.height = `${size}px`;
+    lens.style.display = 'block';
+    lens.style.left = `${Math.max(-size * 0.15, Math.min(r.width - size * 0.85, x - size / 2))}px`;
+    lens.style.top = `${Math.max(-size * 0.15, Math.min(r.height - size * 0.85, y - size / 2))}px`;
+    const bw = r.width * Z;
+    const bh = r.height * Z;
+    limg.src = img.currentSrc;
+    limg.style.width = `${bw}px`;
+    limg.style.height = `${bh}px`;
+    // نقطهٔ زیر نشانگر در مرکز لنز؛ با clamp لبه‌ها خالی نمی‌ماند
+    const qx = Math.max(size / 2, Math.min(bw - size / 2, (x / r.width) * bw));
+    const qy = Math.max(size / 2, Math.min(bh - size / 2, (y / r.height) * bh));
+    limg.style.left = `${size / 2 - qx}px`;
+    limg.style.top = `${size / 2 - qy}px`;
+  });
+  gal.addEventListener('mouseleave', hide);
+  gal.addEventListener('click', hide);
+}
+
 export function mount(root, ctx) {
   applyDyn(root);
   pushRecent(ctx.params.id);
   wireTabs(root);
+  wireLens(root);
 
   // بندانگشتی‌ها
   // سوئیپ گالری در موبایل

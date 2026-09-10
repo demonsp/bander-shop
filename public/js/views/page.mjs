@@ -212,7 +212,7 @@ function contactHtml(page) {
             ${st.phone ? h`<div class="row"><span class="muted small">${t('contact.phone')}</span><a class="mono" href="tel:${st.phone}">${fmtTel(st.phone)}</a></div>` : ''}
             ${st.phone2 ? h`<div class="row"><span class="muted small">${t('contact.mobile')}</span><a class="mono" href="tel:${st.phone2}">${fmtTel(st.phone2)}</a></div>` : ''}
             ${st.phone3 ? h`<div class="row"><span class="muted small">${t('contact.phone3')}</span><a class="mono" href="tel:${st.phone3}">${fmtTel(st.phone3)}</a></div>` : ''}
-            ${st.whatsapp ? h`<div class="row"><span class="muted small">${t('contact.whatsapp')}</span><span class="mono">${fmtNum(st.whatsapp)}</span></div>` : ''}
+            ${st.whatsapp ? h`<div class="row"><span class="muted small">${t('contact.whatsapp')}</span><span class="mono">${fmtTel(st.whatsapp)}</span></div>` : ''}
             ${st.email ? h`<div class="row"><span class="muted small">${t('common.email')}</span><span class="mono small">${esc(st.email)}</span></div>` : ''}
           </div>
           ${socialList.length ? h`<div class="row row-wrap mt-s">${socialList.map((s) => h`<a class="btn btn-ghost btn-sm" href="${esc(s.url)}" target="_blank" rel="noopener">${icon(s.icon)} ${t('social.' + s.key)}</a>`)}</div>` : ''}
@@ -239,7 +239,14 @@ function contactHtml(page) {
       </div>
 
       <aside class="col">
+        ${socials.telegram ? h`
         <div class="card">
+          <h2 class="page-h2">${icon('send')} ${t('contact.tgBotTitle')}</h2>
+          <p class="muted small">${t('contact.tgBotText')}</p>
+          <a class="btn btn-primary btn-sm mt-s" href="${esc(socials.telegram)}" target="_blank" rel="noopener">${icon('send')} ${t('contact.tgBotBtn')}</a>
+        </div>` : ''}
+
+        <div class="card ${socials.telegram ? 'mt' : ''}">
           <h2 class="page-h2">${icon('map')} ${t('contact.mapTitle')}</h2>
           <div class="minimap" data-act="open-map" role="button" tabindex="0" aria-label="${t('contact.mapTitle')}">
             ${raw(minimapSvg())}

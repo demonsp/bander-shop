@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────
 //  مدیریت سفارش‌ها: فهرست با فیلتر، جزئیات، تغییر وضعیت، کد رهگیری
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, esc, fmtNum, fmtMoney, fmtDate, applyDyn } from '../../lib/dom.mjs';
+import { fmtTel, html as h, icon, esc, fmtNum, fmtMoney, fmtDate, applyDyn } from '../../lib/dom.mjs';
 import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
 import { can } from '../../state.mjs';
@@ -62,7 +62,7 @@ async function list() {
       items.map((o) => h`
         <tr>
           <td class="mono b nowrap">${o.code}</td>
-          <td class="nowrap">${esc(o.userName || '')}<div class="tiny muted mono">${fmtNum(o.userPhone || '')}</div></td>
+          <td class="nowrap">${esc(o.userName || '')}<div class="tiny muted mono">${fmtTel(o.userPhone || '')}</div></td>
           <td class="nowrap tiny">${fmtDate(o.createdAt)}</td>
           <td class="tiny">${t(o.delivery === 'pickup' ? 'dl.pickup' : 'dl.courier')}${o.express ? h` <span class="badge-pill bp-accent">${t('checkout.express')}</span>` : ''}</td>
           <td class="num b">${fmtMoney(o.total)}</td>
@@ -104,7 +104,7 @@ function detailHtml(o, statuses) {
           <div class="row row-between row-wrap">
             <div>
               <h2 class="buy-title">${icon('package-check')} ${o.code}</h2>
-              <p class="muted small">${fmtDate(o.createdAt)} · ${esc(o.userName || '')} · <span class="mono">${fmtNum(o.userPhone || '')}</span></p>
+              <p class="muted small">${fmtDate(o.createdAt)} · ${esc(o.userName || '')} · <span class="mono">${fmtTel(o.userPhone || '')}</span></p>
             </div>
             <div class="row row-wrap">${statusBadge(o.status)}${payBadge(o.payment)}</div>
           </div>
@@ -156,7 +156,7 @@ function detailHtml(o, statuses) {
         <div class="card mt">
           <strong>${icon('truck')} ${t(o.delivery === 'pickup' ? 'dl.pickup' : 'dl.courier')}</strong>
           ${o.address ? h`
-            <p class="small mt-s"><strong>${esc(o.address.receiver || '')}</strong> · <span class="mono">${fmtNum(o.address.phone || '')}</span></p>
+            <p class="small mt-s"><strong>${esc(o.address.receiver || '')}</strong> · <span class="mono">${fmtTel(o.address.phone || '')}</span></p>
             <p class="muted small">${esc(o.address.street || '')}${o.address.city ? `، ${esc(o.address.city)}` : ''}</p>
             ${o.address.postal ? h`<p class="muted small">${t('common.postal')}: ${esc(o.address.postal)}</p>` : ''}
             ${o.address.note ? h`<p class="hint">${esc(o.address.note)}</p>` : ''}` : h`<p class="muted small mt-s">${t('checkout.pickupDesc')}</p>`}

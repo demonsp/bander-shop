@@ -21,7 +21,7 @@ export const DEFAULT_SETTINGS = {
       { day: 'پنجشنبه', fa: 'پنجشنبه', en: 'Thursday', time: '۹:۰۰ تا ۲۲:۰۰', timeEn: '09:00 – 22:00' },
       { day: 'جمعه', fa: 'جمعه', en: 'Friday', time: '۱۶:۰۰ تا ۲۱:۰۰', timeEn: '16:00 – 21:00' },
     ],
-    socials: { instagram: 'https://instagram.com/jam.greenapple', telegram: '', eitaa: '', whatsapp: '' },
+    socials: { instagram: 'https://instagram.com/jam.greenapple', telegram: 'https://t.me/greenapple_shop_bot', eitaa: '', whatsapp: '' },
     mapCoords: { lat: 28.9684, lng: 50.8385 },
     enamad: '',
     established: 1396,

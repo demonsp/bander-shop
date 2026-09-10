@@ -2,7 +2,7 @@
 //  پشتیبانی: تیکت‌ها (فهرست + گفت‌وگو + اولویت/وضعیت)
 //  و چت زندهٔ پشتیبانی (پشتیبانی آنلاین)
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, esc, fmtNum, fmtDate, timeAgo, applyDyn } from '../../lib/dom.mjs';
+import { fmtTel, html as h, icon, esc, fmtNum, fmtDate, timeAgo, applyDyn } from '../../lib/dom.mjs';
 import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
 import { S } from '../../state.mjs';
@@ -60,7 +60,7 @@ async function ticketList() {
           </td>
           <td>${t(`tc.${x.category}`)}</td>
           <td><span class="badge-pill ${PRI_CLASS[x.priority] || 'bp-info'}">${t(`tp.${x.priority}`)}</span></td>
-          <td class="tiny">${esc(x.userName || '')}<div class="tiny muted mono">${fmtNum(x.userPhone || '')}</div></td>
+          <td class="tiny">${esc(x.userName || '')}<div class="tiny muted mono">${fmtTel(x.userPhone || '')}</div></td>
           <td class="num">${fmtNum(x.messageCount || 0)}</td>
           <td><span class="badge-pill ${STATUS_CLASS[x.status] || 'bp-muted'}">${t(`tk.${x.status}`)}</span></td>
           <td class="num tiny nowrap">${timeAgo(x.updatedAt || x.createdAt)}</td>
@@ -135,7 +135,7 @@ async function ticketDetail(id) {
         <div class="card">
           <strong>${icon('user')} ${esc(u?.name || tk.userName || '')}</strong>
           <div class="mt-s">
-            <div class="sum-row"><span>${t('common.phone')}</span><span class="v mono">${fmtNum(u?.phone || tk.userPhone || '')}</span></div>
+            <div class="sum-row"><span>${t('common.phone')}</span><span class="v mono">${fmtTel(u?.phone || tk.userPhone || '')}</span></div>
             ${u?.email ? h`<div class="sum-row"><span>${t('common.email')}</span><span class="v tiny">${esc(u.email)}</span></div>` : ''}
             <div class="sum-row"><span>${t('acc.plus')}</span><span class="v">${u?.plus ? h`<span class="badge-pill bp-accent">${t('common.active')}</span>` : h`<span class="muted">—</span>`}</span></div>
             <div class="sum-row"><span>${t('common.orders')}</span><span class="v">${fmtNum(u?.orders || 0)}</span></div>

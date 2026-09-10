@@ -114,7 +114,7 @@ export async function render(ctx) {
             <p class="muted small mt-s">${t('checkout.pickupDesc')}</p>
             <p class="mt-s small">${esc(S.settings?.store?.address || '')}</p>` : h`
             ${o.address ? h`
-              <p class="small mt-s"><strong>${esc(o.address.receiver || '')}</strong> · ${fmtNum(o.address.phone || '')}</p>
+              <p class="small mt-s"><strong>${esc(o.address.receiver || '')}</strong> · ${fmtTel(o.address.phone || '')}</p>
               <p class="muted small">${esc(o.address.street || '')}${o.address.city ? `، ${esc(o.address.city)}` : ''}</p>
               ${o.address.postal ? h`<p class="muted small">${t('common.postal')}: ${esc(o.address.postal)}</p>` : ''}` : h`<p class="muted small mt-s">${t('acc.noAddress')}</p>`}
             ${o.zone ? h`<p class="small mt-s">${t('checkout.zone')}: ${esc(zoneLabel(o.zone))}</p>` : ''}`}

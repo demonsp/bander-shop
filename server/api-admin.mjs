@@ -1092,7 +1092,12 @@ export function registerAdmin(router) {
   // ── بات تلگرام ──
   A('GET', '/api/admin/telegram', 'settings.edit', async (ctx) => {
     const tg = ctx.state.settings?.telegram || {};
-    sendJson(ctx.res, 200, { ok: true, enabled: !!tg.enabled, tokenSet: !!tg.token, welcome: tg.welcome || '', inbox: (ctx.state.telegramInbox || []).slice(0, 60), subs: Object.keys(ctx.state.telegramSubs || {}).length });
+    const meta = ctx.state.meta || {};
+    sendJson(ctx.res, 200, {
+      ok: true, enabled: !!tg.enabled, tokenSet: !!tg.token, welcome: tg.welcome || '',
+      inbox: (ctx.state.telegramInbox || []).slice(0, 60), subs: Object.keys(ctx.state.telegramSubs || {}).length,
+      lastPoll: meta.tgLastPoll || '', lastError: meta.tgLastError || '',
+    });
   });
   A('POST', '/api/admin/telegram', 'settings.edit', async (ctx) => {
     await db.tx((st) => {

@@ -24,7 +24,7 @@ import { installDelegation, act } from './actions.mjs';
 import { initRouter, navigate, refresh, parseHash } from './router.mjs';
 import { initChat, openChat } from './chat.mjs';
 import './map.mjs';
-import { catName, brandName, prodName } from './state.mjs';
+import { catName, brandName, prodName, BUILD } from './state.mjs';
 import { bannerHtml, minimapSvg } from './components.mjs';
 
 // ── راه‌اندازی ──────────────────────────────────────────────
@@ -476,13 +476,17 @@ async function startVoice(input, go) {
   rec.maxAlternatives = 1;
   const btn = qs('#btnVoiceSearch');
   btn.classList.add('active');
-  toast(t('search.listening'), { timeout: 2600 });
+  // تاست «در حال گوش دادن» را نگه می‌داریم تا به‌محض خطا/پایان، بسته شود
+  // (باگ قبلی: تاست گوش‌دادن و تاست خطا هم‌زمان روی هم می‌ماندند)
+  const listening = toast(t('search.listening'), { timeout: 2600 });
   rec.onresult = (e) => {
+    listening?.close();
     const text = e.results?.[0]?.[0]?.transcript || '';
     if (text) { input.value = text; go(text); }
     else toast(t('search.noSpeech'));
   };
   rec.onerror = (e) => {
+    listening?.close();
     const map = {
       'not-allowed': 'search.micDenied',
       'service-not-allowed': 'search.micDenied',
@@ -495,7 +499,7 @@ async function startVoice(input, go) {
     if (key) toastError(t(key));
     else if (e.error !== 'aborted') toastError(t('search.noSpeech'));
   };
-  rec.onend = () => btn.classList.remove('active');
+  rec.onend = () => { btn.classList.remove('active'); listening?.close(); };
   try { rec.start(); } catch { btn.classList.remove('active'); }
 }
 
@@ -787,7 +791,15 @@ function wireSearchShortcut() {
 function registerSW() {
   if (!('serviceWorker' in navigator)) return;
   if (settings().features?.offlineMode === false) return;
-  const doReg = () => navigator.serviceWorker.register('/sw.js').catch(() => { /* محیط بدون SW */ });
+  // updateViaCache:'none' → مرورگر هرگز sw.js را از کش HTTP نمی‌خواند
+  // + بررسی به‌روزرسانی هر ساعت و هر بار برگشت به تب
+  const doReg = async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
+      setInterval(() => { reg.update().catch(() => {}); }, 3600000);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+    } catch { /* محیط بدون SW */ }
+  };
   // init پس از رویداد load اجرا می‌شود؛ پس اگر load گذشته، همین حالا ثبت کن
   if (document.readyState === 'complete') doReg();
   else window.addEventListener('load', doReg, { once: true });
@@ -812,6 +824,25 @@ init().catch((e) => {
   const splash = qs('#bootSplash');
   if (splash) splash.innerHTML = h`<div class="empty"><h4>${t('err.generic')}</h4><button class="btn btn-primary" data-act="reload">${t('common.retry')}</button></div>`;
 });
+
+// ── نگهبان تازگی نسخه ───────────────────────────────────────
+// اگر کلاینت (کش/SW قدیمی) با نسخهٔ سرور یکی نبود، تاست «تازه‌سازی» نشان بده
+// تا کاربر هرگز سایت کهنگرفته را نبیند (درمان کش‌های قدیمی موبایل).
+function watchBuild() {
+  fetch('/api/system/status', { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((j) => {
+      if (j?.build && j.build !== BUILD && !sessionStorage.getItem('bm-upd-seen')) {
+        sessionStorage.setItem('bm-upd-seen', '1');
+        toast(t('update.available'), {
+          timeout: 0,
+          action: { label: t('update.reload'), onClick: () => location.reload() },
+        });
+      }
+    })
+    .catch(() => { /* آفلاین — بی‌سروصدا */ });
+}
+setTimeout(watchBuild, 6000);
 
 // ── هالهٔ موس ──────────────────────────────────────────────
 function wireCursorHalo() {

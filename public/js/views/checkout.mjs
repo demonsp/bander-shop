@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────
 //  تکمیل خرید (Checkout)
 // ─────────────────────────────────────────────────────────────
-import { html as h, icon, fmtNum, fmtMoney, esc, applyDyn, debounce } from '../lib/dom.mjs';
+import { fmtTel, html as h, icon, fmtNum, fmtMoney, esc, applyDyn, debounce } from '../lib/dom.mjs';
 import { t, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S, ship, feat, ordersCfg, isPlus, refreshMe, loadCart } from '../state.mjs';
@@ -77,7 +77,7 @@ export async function render(ctx) {
                     <span class="dot"></span>
                     <span>
                       <span class="b">${esc(a.title || t('common.address'))}</span>
-                      <span class="hint">${esc(a.receiver || '')} · ${fmtNum(a.phone || '')}<br>${esc(a.street || '')}${a.city ? `، ${esc(a.city)}` : ''}${a.postal ? ` · ${esc(a.postal)}` : ''}</span>
+                      <span class="hint">${esc(a.receiver || '')} · ${fmtTel(a.phone || '')}<br>${esc(a.street || '')}${a.city ? `، ${esc(a.city)}` : ''}${a.postal ? ` · ${esc(a.postal)}` : ''}</span>
                     </span>
                   </label>`)}
               </div>` : h`<p class="notice notice-warn">${icon('alert')}<span>${t('checkout.noAddress')}</span></p>`}
