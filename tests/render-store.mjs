@@ -46,7 +46,9 @@ const store = (res) => { for (const c of res.headers.getSetCookie?.() || []) { c
 const cookieHeader = () => [...jar].map(([k, v]) => `${k}=${v}`).join('; ');
 const realFetch = globalThis.fetch;
 { const r = await realFetch(BASE + '/api/bootstrap'); store(r); }
-{ const r = await realFetch(BASE + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': jar.get('bm_csrf') || '', Cookie: cookieHeader() }, body: JSON.stringify({ identifier: 'maryam', password: 'Demo@1404' }) }); store(r); const j = await r.json(); if (!j.me) { console.log('login failed', JSON.stringify(j).slice(0, 200)); process.exit(1); } console.log('logged in as', j.me.username, 'wallet', j.me.wallet?.balance); }
+{ let __ct; const c = await realFetch(BASE + '/api/captcha'); const cj = await c.json(); store(c);
+  if (!cj.disabled) { const v = await realFetch(BASE + '/api/captcha/verify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': jar.get('bm_csrf') || '', Cookie: cookieHeader() }, body: JSON.stringify({ id: cj.id, answer: solveSvgCap(cj.svg) }) }); store(v); __ct = (await v.json()).token; }
+  const r = await realFetch(BASE + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': jar.get('bm_csrf') || '', Cookie: cookieHeader() }, body: JSON.stringify({ identifier: 'maryam', password: 'Demo@1404', captchaToken: __ct }) }); store(r); const j = await r.json(); if (!j.me) { console.log('login failed', JSON.stringify(j).slice(0, 200)); process.exit(1); } console.log('logged in as', j.me.username, 'wallet', j.me.wallet?.balance); }
 document.cookie = `bm_csrf=${jar.get('bm_csrf') || ''}`;
 
 globalThis.fetch = async (input, init = {}) => {

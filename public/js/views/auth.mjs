@@ -10,6 +10,29 @@ import { toast, toastSuccess, toastApiError, withBusy, clearInvalid, markInvalid
 import { act, loadCaptcha, refreshCaptchaIn } from '../actions.mjs';
 import { navigate } from '../router.mjs';
 
+
+// جلوگیری از ارسال فرم وقتی کپچای نمایان حل نشده (تیک باید اثر داشته باشد)
+async function gateCaptcha(form) {
+  const box = form?.querySelector?.('[data-captcha]');
+  if (!box || box.hidden) return true;
+  // اگر تأیید در جریان است (تایپ تازه تمام شده) تا ۲٫۵ ثانیه صبر کن
+  if (box.dataset.verifying) {
+    await new Promise((r) => {
+      const t0 = Date.now();
+      const iv = setInterval(() => { if (!box.dataset.verifying || Date.now() - t0 > 2500) { clearInterval(iv); r(); } }, 60);
+    });
+  }
+  if (String(box.querySelector('[data-ctok]')?.value || '').trim()) return true;
+  const cb = box.querySelector('[name=captchaBox]');
+  const ch = box.querySelector('[data-cch]');
+  if (cb) cb.checked = true;
+  if (ch) ch.hidden = false;
+  if (!box.dataset.cid) loadCaptcha(box);
+  box.querySelector('[name=captchaAnswer]')?.focus();
+  toast(t('captcha.required'), { type: 'error', timeout: 4500 });
+  return false;
+}
+
 const state = { challenge: null, methods: [], sent: null, channel: 'phone', target: '', demoCode: '', mode: 'login', regMode: 'username' };
 
 function afterAuth(next) {
@@ -200,6 +223,7 @@ export function mount(root, ctx) {
   act('login-pass', async (e, form) => {
     e.preventDefault();
     clearInvalid(form);
+    if (!(await gateCaptcha(form))) return;
     const fd = new FormData(form);
     await withBusy(form.querySelector('button[type=submit]'), async () => {
       try {
@@ -223,6 +247,7 @@ export function mount(root, ctx) {
 
   act('otp-send', async (e, form) => {
     e.preventDefault();
+    if (!(await gateCaptcha(form))) return;
     const fd = new FormData(form);
     const channel = form.dataset.apf === 'email' ? 'email' : 'phone';
     state.channel = channel;
@@ -290,6 +315,7 @@ export function mount(root, ctx) {
   act('register', async (e, form) => {
     e.preventDefault();
     clearInvalid(form);
+    if (!(await gateCaptcha(form))) return;
     const fd = new FormData(form);
     const payload = {
       mode: state.regMode, name: fd.get('name'), password: fd.get('password'),
@@ -318,6 +344,7 @@ export function mount(root, ctx) {
 
   act('forgot-send', async (e, form) => {
     e.preventDefault();
+    if (!(await gateCaptcha(form))) return;
     const fd = new FormData(form);
     const channel = form.querySelector('[data-fch] .active').dataset.m;
     state.channel = channel;

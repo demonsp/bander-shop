@@ -141,7 +141,9 @@ async function fresh() {
     return m[2] === '×' ? Number(m[1]) * Number(m[3]) : Number(m[1]) + Number(m[3]);
   };
   const capAdmin = await fresh();
-  ok('ورود مدیر برای کلید کپچا', (await req(capAdmin, 'POST', '/api/auth/login', { identifier: 'admin', password: 'Bander@1404' })).status === 200);
+  const capPre = await req(capAdmin, 'GET', '/api/captcha');
+  const capPreV = capPre.json?.disabled ? { json: {} } : await req(capAdmin, 'POST', '/api/captcha/verify', { id: capPre.json.id, answer: solveCap(capPre.json.svg) });
+  ok('ورود مدیر برای کلید کپچا', (await req(capAdmin, 'POST', '/api/auth/login', { identifier: 'admin', password: 'Bander@1404', captchaToken: capPreV.json?.token })).status === 200);
   await req(capAdmin, 'PATCH', '/api/admin/settings/features', { value: { captcha: true } }); // خودترمیمی: اگر اجرای قبلی خاموش رها کرده
   const cap1 = await req(anon, 'GET', '/api/captcha');
   ok('دریافت چالش کپچا (SVG)', cap1.status === 200 && String(cap1.json.svg).includes('<svg'));

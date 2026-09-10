@@ -17,14 +17,16 @@ function makeClient() {
 const out = [];
 const chk = (name, got, want) => { const ok = JSON.stringify(got) === JSON.stringify(want); out.push(`${ok ? '✔' : '✘'} ${name} → ${JSON.stringify(got)}${ok ? '' : ` (انتظار: ${JSON.stringify(want)})`}`); if (!ok) process.exitCode = 1; };
 
+const solveSvgCap = (svg) => { const fa = '۰۱۲۳۴۵۶۷۸۹'; const txt = [...String(svg).matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join('').replace(/&#160;/g, ' '); const en = txt.replace(/[۰-۹]/g, (c) => String(fa.indexOf(c))); const m = en.match(/(\d+)\s*([+×])\s*(\d+)/); if (!m) return null; return m[2] === '×' ? Number(m[1]) * Number(m[3]) : Number(m[1]) + Number(m[3]); };
+const capFor = async (cl) => { const c = await cl.get('/api/captcha'); if (!c.json || c.json.disabled) return undefined; const v = await cl.post('/api/captcha/verify', { id: c.json.id, answer: solveSvgCap(c.json.svg) }); return v.json?.token; };
 const admin = makeClient();
 await admin.get('/api/bootstrap');
-const lg = await admin.post('/api/auth/login', { identifier: 'admin', password: 'Bander@1404' });
+const lg = await admin.post('/api/auth/login', { identifier: 'admin', password: 'Bander@1404', captchaToken: await capFor(admin) });
 chk('ورود مدیر', !!lg.json.me, true);
 
 const mary = makeClient();
 await mary.get('/api/bootstrap');
-await mary.post('/api/auth/login', { identifier: 'maryam', password: 'Demo@1404' });
+await mary.post('/api/auth/login', { identifier: 'maryam', password: 'Demo@1404', captchaToken: await capFor(mary) });
 
 const st0 = await admin.get('/api/system/status');
 chk('وضعیت اولیه sleeping', st0.json.sleeping, false);
@@ -54,7 +56,7 @@ chk('خواندن محصولات در خواب', (await mary.get('/api/products?
 chk('خواندن bootstrap در خواب', (await mary.get('/api/bootstrap')).status, 200);
 // لاگین در خواب مجاز
 const reza2 = makeClient(); await reza2.get('/api/bootstrap');
-const relogin = await reza2.post('/api/auth/login', { identifier: 'reza', password: 'Demo@1404' });
+const relogin = await reza2.post('/api/auth/login', { identifier: 'reza', password: 'Demo@1404', captchaToken: await capFor(reza2) });
 chk('لاگین در خواب مجاز', relogin.status, 200);
 // ادمین در خواب کار می‌کند
 chk('پنل مدیر در خواب', (await admin.get('/api/admin/overview')).status, 200);

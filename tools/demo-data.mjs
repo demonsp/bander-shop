@@ -36,9 +36,11 @@ const step = (name, r, expect = 200) => {
 };
 const pick = (arr, n) => arr.slice(0, n);
 
+const solveSvgCap = (svg) => { const fa = '۰۱۲۳۴۵۶۷۸۹'; const txt = [...String(svg).matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join('').replace(/&#160;/g, ' '); const en = txt.replace(/[۰-۹]/g, (c) => String(fa.indexOf(c))); const m = en.match(/(\d+)\s*([+×])\s*(\d+)/); if (!m) return null; return m[2] === '×' ? Number(m[1]) * Number(m[3]) : Number(m[1]) + Number(m[3]); };
+const capFor = async (cl) => { const c = await cl.get('/api/captcha'); if (!c.json || c.json.disabled) return undefined; const v = await cl.post('/api/captcha/verify', { id: c.json.id, answer: solveSvgCap(c.json.svg) }); return v.json?.token; };
 async function login(c, identifier, password) {
   await c.get('/api/bootstrap');
-  const r = await c.post('/api/auth/login', { identifier, password });
+  const r = await c.post('/api/auth/login', { identifier, password, captchaToken: await capFor(c) });
   if (r.status !== 200 || !r.json.me) throw new Error(`login failed for ${identifier}: ${r.status} ${JSON.stringify(r.json).slice(0, 160)}`);
   return r.json.me;
 }

@@ -1295,3 +1295,10 @@ html[data-variant="fresh"] .icon-btn:hover{transform:translateY(-1px)}
 html[data-variant="fresh"] .site-header{box-shadow:0 6px 24px rgba(0,0,0,.18)}
 html[data-variant="fresh"] .product-card{border-radius:18px}
 html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
+
+/* راند ۳۰: رفع سرریز افقی صفحهٔ محصول در نمایشگرهای خیلی باریک */
+@media (max-width:560px){
+  .buy-box .row.mt{flex-wrap:wrap}
+  .buy-box .row.mt > .btn{flex:1 1 100%;width:100%}
+  .buy-box .row.mt > .qty{flex:1 1 100%;justify-content:center}
+}

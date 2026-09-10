@@ -199,10 +199,13 @@ act('captcha-open', (e, input) => {
 act('captcha-refresh', (e, btn) => loadCaptcha(btn.closest('[data-captcha]')));
 act('captcha-check', async (e, input) => {
   const box = input.closest('[data-captcha]');
+  // نگهبان ورود مجدد: دو تأیید هم‌زمان روی یک چالش = باگ «انقضی» و پاک‌شدن فرم
+  if (!box || input.disabled || box.dataset.verifying) return;
   const st = box?.querySelector('[data-cst]');
   const tok = box?.querySelector('[data-ctok]');
   const val = String(input.value || '').trim();
   if (!val || !box?.dataset.cid) return;
+  box.dataset.verifying = '1';
   try {
     const r = await api.post('/api/captcha/verify', { id: box.dataset.cid, answer: val });
     if (tok) tok.value = r.token || '';
@@ -213,6 +216,8 @@ act('captcha-check', async (e, input) => {
   } catch (err) {
     if (st) st.textContent = err?.message || t('captcha.hint');
     await loadCaptcha(box);
+  } finally {
+    delete box.dataset.verifying;
   }
 });
 
@@ -265,6 +270,16 @@ export function installDelegation() {
       const r = fn(e, target);
       if (r && typeof r.catch === 'function') r.catch((err) => console.error(err));
     } catch (err) { console.error(err); }
+  });
+
+
+  // تأیید کپچا هم‌زمان با تایپ (بدون نیاز به blur/کلیک دوم)
+  let capDebounce = 0;
+  document.addEventListener('input', (e) => {
+    const el = e.target;
+    if (!el.matches?.('[data-act=captcha-check]')) return;
+    clearTimeout(capDebounce);
+    capDebounce = setTimeout(() => { const fn = registry.get('captcha-check'); if (fn && !el.disabled) fn(new Event('change'), el); }, 450);
   });
 
   // کلیک روی دکمه‌های شمارنده

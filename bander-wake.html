@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بیدارساز فروشگاه گرین اپل</title>
+<style>
+  :root{--accent:#31afd4;--bg:#060c15;--surface:#0d1726;--border:#1d2b3d;--text:#e8f1f6;--muted:#8aa0ad}
+  *{box-sizing:border-box;margin:0}
+  body{background:radial-gradient(1200px 600px at 80% -10%,#0a2434 0%,var(--bg) 55%);color:var(--text);font-family:Vazirmatn,Segoe UI,Tahoma,sans-serif;min-height:100vh;display:grid;place-items:center;padding:24px}
+  .card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  h1{font-size:19px;margin-bottom:6px}
+  p.sub{color:var(--muted);font-size:12.5px;line-height:1.9;margin-bottom:18px}
+  button{width:100%;border:0;border-radius:14px;padding:16px;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--accent);color:#04222c;transition:transform .15s,filter .15s}
+  button:active{transform:scale(.98)}
+  button.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:10px;font-weight:600;font-size:13px;padding:12px}
+  .status{margin-top:16px;font-size:13px;min-height:44px;line-height:1.9;color:var(--muted)}
+  .status.ok{color:#7ee2a8}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted);margin-inline-end:6px;vertical-align:middle}
+  .dot.work{background:#f5c542;animation:p 1s infinite}
+  .dot.ok{background:#7ee2a8}
+  @keyframes p{50%{opacity:.35}}
+  .log{margin-top:14px;max-height:120px;overflow:auto;font-size:11px;color:var(--muted);text-align:right;background:#0a1220;border:1px solid var(--border);border-radius:10px;padding:10px;display:none}
+  .tiny{font-size:10.5px;color:var(--muted);margin-top:14px;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🌊 بیدارساز فروشگاه گرین اپل</h1>
+  <p class="sub">سرور رایگان ابری بعد از بی‌کاری می‌خوابد. این صفحه با فرستادن درخواست‌های پیاپی بیدارش می‌کند؛ لازم نیست اینترنتِ سرور داشته باشی، فقط همین فایل را در مرورگر گوشی/کامپیوترت باز کن.</p>
+  <button id="go">بیدار کردن فروشگاه</button>
+  <button id="open" class="ghost" hidden>فروشگاه بیدار شد — باز کردن فروشگاه</button>
+  <div class="status" id="st"><span class="dot"></span>منتظر فرمان تو…</div>
+  <div class="log" id="log"></div>
+  <p class="tiny">نکته: برای اینکه دیگر هرگز نخوابد، در uptimerobot.com (رایگان) یک Monitor با آدرس<br><b dir="ltr">https://greenapple-shop.onrender.com/api/system/status</b><br>بساز تا هر ۵ دقیقه خودش پینگ بزند.</p>
+</div>
+<script>
+const URL='https://greenapple-shop.onrender.com/api/system/status';
+const st=document.getElementById('st'), log=document.getElementById('log'),
+      go=document.getElementById('go'), openBtn=document.getElementById('open');
+let running=false, tries=0, t0=0;
+const line=(m)=>{const d=new Date();log.style.display='block';log.innerHTML=`[${d.toLocaleTimeString('fa-IR')}] ${m}<br>`+log.innerHTML;};
+const set=(cls,html)=>{st.className='status '+cls;st.innerHTML=html;};
+async function ping(){
+  const ctrl=new AbortController(); const to=setTimeout(()=>ctrl.abort(),60000);
+  try{ await fetch(URL,{mode:'no-cors',cache:'no-store',signal:ctrl.signal}); clearTimeout(to); return true; }
+  catch(e){ clearTimeout(to); return false; }
+}
+async function wake(){
+  if(running) return; running=true; tries=0; t0=Date.now();
+  go.disabled=true; go.textContent='در حال بیدارکردن…';
+  openBtn.hidden=true;
+  while(true){
+    tries++;
+    set('','<span class="dot work"></span>تلاش '+tries+' — درخواست به سرور فرستاده شد…');
+    line('تلاش '+tries+' شروع شد');
+    const ok=await ping();
+    if(ok){
+      const sec=Math.round((Date.now()-t0)/1000);
+      set('ok','<span class="dot ok"></span>سرور بیدار است! ('+sec+' ثانیه)');
+      line('سرور پاسخ داد ✔');
+      go.disabled=false; go.textContent='بیدار کردن فروشگاه';
+      openBtn.hidden=false;
+      setTimeout(()=>{location.href='https://greenapple-shop.onrender.com/';},1200);
+      running=false; return;
+    }
+    line('پاسخی نرسید؛ ۴ ثانیه دیگر دوباره');
+    set('','<span class="dot work"></span>هنوز خواب است… تلاش دوباره تا چند ثانیه');
+    await new Promise(r=>setTimeout(r,4000));
+  }
+}
+go.addEventListener('click',wake);
+openBtn.addEventListener('click',()=>{location.href='https://greenapple-shop.onrender.com/';});
+</script>
+</body>
+</html>

@@ -45,9 +45,12 @@ const jar = new Map();
 const store = (res) => { for (const c of res.headers.getSetCookie?.() || []) { const [kv] = c.split(';'); const i = kv.indexOf('='); jar.set(kv.slice(0, i).trim(), kv.slice(i + 1).trim()); } };
 const cookieHeader = () => [...jar].map(([k, v]) => `${k}=${v}`).join('; ');
 const realFetch = globalThis.fetch;
+const solveSvgCap = (svg) => { const fa = '۰۱۲۳۴۵۶۷۸۹'; const txt = [...String(svg).matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join('').replace(/&#160;/g, ' '); const en = txt.replace(/[۰-۹]/g, (c) => String(fa.indexOf(c))); const m = en.match(/(\d+)\s*([+×])\s*(\d+)/); if (!m) return null; return m[2] === '×' ? Number(m[1]) * Number(m[3]) : Number(m[1]) + Number(m[3]); };
 await (await realFetch(BASE + '/api/bootstrap')).headers.getSetCookie?.().forEach?.(() => {});
 { const r = await realFetch(BASE + '/api/bootstrap'); store(r); }
-{ const r = await realFetch(BASE + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': jar.get('bm_csrf') || '', Cookie: cookieHeader() }, body: JSON.stringify({ identifier: 'admin', password: 'Bander@1404' }) }); store(r); const j = await r.json(); if (j.me?.role !== 'owner') { console.log('login failed', JSON.stringify(j).slice(0, 200)); process.exit(1); } }
+{ let __ct; const c = await realFetch(BASE + '/api/captcha'); const cj = await c.json(); store(c);
+  if (!cj.disabled) { const v = await realFetch(BASE + '/api/captcha/verify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': jar.get('bm_csrf') || '', Cookie: cookieHeader() }, body: JSON.stringify({ id: cj.id, answer: solveSvgCap(cj.svg) }) }); store(v); __ct = (await v.json()).token; }
+  const r = await realFetch(BASE + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': jar.get('bm_csrf') || '', Cookie: cookieHeader() }, body: JSON.stringify({ identifier: 'admin', password: 'Bander@1404', captchaToken: __ct }) }); store(r); const j = await r.json(); if (j.me?.role !== 'owner') { console.log('login failed', JSON.stringify(j).slice(0, 200)); process.exit(1); } }
 document.cookie = `bm_csrf=${jar.get('bm_csrf') || ''}`;
 
 globalThis.fetch = async (input, init = {}) => {

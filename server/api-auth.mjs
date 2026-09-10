@@ -276,7 +276,7 @@ export function registerAuth(router) {
     const lockKey = failKey(identifier, ctx.ip);
     const locked = isLocked(lockKey);
     if (locked) throw new (await import('./lib/util.mjs')).HttpError(423, 'locked', `به دلیل تلاش‌های ناموفق زیاد، تا ${locked} ثانیه دیگر نمی‌توانی وارد شوی.`);
-    requireCaptcha(ctx, failCount(lockKey) >= 1); // پس از اولین خطا، کپچا الزامی می‌شود
+    requireCaptcha(ctx); // کپچا برای ورود با رمز همیشه الزامی است (همسان با ثبت‌نام/OTP/بازیابی)
     ctx.rateLimit(`login:${ctx.ip}`, 40, 10 * 60 * 1000); // آی‌پی‌های اشتراکی/CGNAT؛ ضدبروت‌فورس واقعی = قفل هر شناسه
 
     const user = state.users.find((u) =>
