@@ -273,4 +273,4 @@ export function titleCase(s) {
 }
 
 /** برچسب بیلد جاری — برای نمایش در پنل ادمین و status */
-export const BUILD = 'bm-v26';
+export const BUILD = 'bm-v27';
