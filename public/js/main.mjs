@@ -18,7 +18,7 @@ import {
 } from './state.mjs';
 import { t, lang, isFa, applyI18n, setLang } from './i18n.mjs';
 import { api } from './lib/api.mjs';
-import { html as h, raw, esc, icon, el, qs, debounce, fmtNum, fmtTel, faDigits, catIcon, applyDyn } from './lib/dom.mjs';
+import { html as h, raw, esc, icon, el, qs, debounce, fmtNum, fmtTel, faDigits, catIcon, applyDyn, safeHref } from './lib/dom.mjs';
 import { toast, toastSuccess, toastError, toastApiError, modal, drawer, confirmDialog, installHintModal, updateSleepScreen } from './ui.mjs';
 import { installDelegation, act } from './actions.mjs';
 import { initRouter, navigate, refresh, parseHash } from './router.mjs';
@@ -210,10 +210,10 @@ function renderFooter() {
   // شبکه‌های اجتماعی
   const soc = st.socials || {};
   const socList = [
-    ['instagram', soc.instagram, 'camera'],
-    ['telegram', soc.telegram, 'send'],
+    ['instagram', safeHref(soc.instagram), 'camera'],
+    ['telegram', safeHref(soc.telegram), 'send'],
     ['whatsapp', soc.whatsapp ? `https://wa.me/${String(soc.whatsapp).replace(/\D/g, '')}` : '', 'chat'],
-    ['eitaa', soc.eitaa, 'globe'],
+    ['eitaa', safeHref(soc.eitaa), 'globe'],
   ].filter((x) => x[1]);
   qs('#fSocial').innerHTML = socList.length
     ? socList.map(([name, url, ic]) => h`<a href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${name}" title="${name}">${icon(ic)}</a>`).join('')

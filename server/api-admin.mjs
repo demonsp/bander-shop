@@ -1410,7 +1410,13 @@ function sanitizeSection(section, patch, current) {
       }
       if (patch.socials) {
         out.socials = {};
-        for (const k of ['instagram', 'telegram', 'eitaa', 'whatsapp', 'website']) out.socials[k] = V.optStr(patch.socials[k], { max: 120, field: k });
+        for (const k of ['instagram', 'telegram', 'eitaa', 'whatsapp', 'website']) {
+          const v = V.optStr(patch.socials[k], { max: 120, field: k }).trim();
+          // فقط http/https (و برای واتساپ رقم): جلوگیری از javascript:/data:
+          if (v && k === 'whatsapp') { if (!/^\d{6,20}$/.test(v)) throw new HttpError(400, 'bad_request', `فیلد «${k}» باید شماره باشد`); }
+          else if (v && !/^https?:\/\//i.test(v)) throw new HttpError(400, 'bad_request', `لینک «${k}» باید با http:// یا https:// شروع شود`);
+          out.socials[k] = v;
+        }
       }
       if (patch.workingHours && Array.isArray(patch.workingHours)) {
         out.workingHours = patch.workingHours.slice(0, 7).map((h) => ({

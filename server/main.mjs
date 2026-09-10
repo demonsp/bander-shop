@@ -94,7 +94,7 @@ router.get('/api/system/status', async (ctx) => {
   const m = ctx.state.meta || {};
   sendJson(ctx.res, 200, {
     ok: true, sleeping: !!m.sleeping, since: m.sleepSince || null, by: m.sleepBy || '', build: BUILD,
-    svc: process.env.RENDER_SERVICE_NAME || 'local', tgWebhook: (tgWebhookState().ok ? 'on' : 'off'),
+    tgWebhook: (tgWebhookState().ok ? 'on' : 'off'),
     uptime: Math.round(process.uptime()), time: nowISO(),
   });
 });

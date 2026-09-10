@@ -108,6 +108,11 @@ export function fmtNum(n) {
   return s;
 }
 /** شمارهٔ تلفن: بدون گروه‌بندی هزارگان و با حفظ صفر اول */
+// فقط http/https مجاز: جلوگیری از javascript:/data: در لینک‌های تنظیم‌شده توسط ادمین
+export function safeHref(u) {
+  const s = String(u || '').trim();
+  return /^https?:\/\//i.test(s) ? s : '';
+}
 export function fmtTel(v) {
   const s = String(v ?? '').trim();
   if (!s) return '';

@@ -2,7 +2,7 @@
 //  صفحه‌های محتوایی: دربارهٔ ما، راهنمای خرید، خدمات، سؤالات متداول،
 //  قوانین، حریم خصوصی، بیمه، قوانین تیکت، گزارش باگ و تماس با ما
 // ─────────────────────────────────────────────────────────────
-import { html as h, raw, icon, esc, fmtNum, applyDyn, fmtTel } from '../lib/dom.mjs';
+import { html as h, raw, icon, esc, fmtNum, applyDyn, fmtTel, safeHref } from '../lib/dom.mjs';
 import { t, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S, feat, store } from '../state.mjs';
@@ -190,9 +190,9 @@ function contactHtml(page) {
   const st = store();
   const socials = st.socials || {};
   const socialList = [
-    { key: 'instagram', icon: 'camera', url: socials.instagram },
-    { key: 'telegram', icon: 'send', url: socials.telegram },
-    { key: 'eitaa', icon: 'message', url: socials.eitaa },
+    { key: 'instagram', icon: 'camera', url: safeHref(socials.instagram) },
+    { key: 'telegram', icon: 'send', url: safeHref(socials.telegram) },
+    { key: 'eitaa', icon: 'message', url: safeHref(socials.eitaa)},
     { key: 'whatsapp', icon: 'chat', url: st.whatsapp ? `https://wa.me/${String(st.whatsapp).replace(/\D/g, '')}` : '' },
   ].filter((x) => x.url);
 
@@ -239,14 +239,14 @@ function contactHtml(page) {
       </div>
 
       <aside class="col">
-        ${socials.telegram ? h`
+        ${safeHref(socials.telegram) ? h`
         <div class="card">
           <h2 class="page-h2">${icon('send')} ${t('contact.tgBotTitle')}</h2>
           <p class="muted small">${t('contact.tgBotText')}</p>
-          <a class="btn btn-primary btn-sm mt-s" href="${esc(socials.telegram)}" target="_blank" rel="noopener">${icon('send')} ${t('contact.tgBotBtn')}</a>
+          <a class="btn btn-primary btn-sm mt-s" href="${esc(safeHref(socials.telegram))}" target="_blank" rel="noopener">${icon('send')} ${t('contact.tgBotBtn')}</a>
         </div>` : ''}
 
-        <div class="card ${socials.telegram ? 'mt' : ''}">
+        <div class="card ${safeHref(socials.telegram) ? 'mt' : ''}">
           <h2 class="page-h2">${icon('map')} ${t('contact.mapTitle')}</h2>
           <div class="minimap" data-act="open-map" role="button" tabindex="0" aria-label="${t('contact.mapTitle')}">
             ${raw(minimapSvg())}

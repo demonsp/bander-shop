@@ -50,13 +50,17 @@ export async function tgBroadcast(text) {
   return { ok, fail, total: Object.keys(subs).length };
 }
 
+// پاسخ‌ها با parse_mode HTML فرستاده می‌شوند؛ پس هر_fragment_ ساخته‌شده از
+// ورودی کاربر باید escape شود وگرنه تلگرام send را با 400 رد می‌کند (= بی‌پاسخی)
+const escT = (x) => String(x ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 // پیگیری سفارش؛ بدون کد → راهنمای استفاده
 function answerStatus(code) {
   const c = String(code || '').trim();
   if (!c) return 'برای پیگیری سفارش، کد سفارش را همین‌جا بفرست.\nمثال: /status BM-123456\nکد سفارش را در «حساب من → سفارش‌ها» یا پیامک تأیید سفارش پیدا می‌کنی.';
   const st = db.raw;
   const o = (st.orders || []).find((x) => x.code === c || x.code === `BM-${c}` || x.code === c.replace(/^bm-/i, '').toUpperCase());
-  if (!o) return `سفارشی با کد «${c}» پیدا نشد. 😕\nکد صحیح شبیه BM-123456 است؛ آن را از «حساب من → سفارش‌ها» کپی کن و دوباره بفرست:\n/status BM-123456`;
+  if (!o) return `سفارشی با کد «${escT(c)}» پیدا نشد. 😕\nکد صحیح شبیه BM-123456 است؛ آن را از «حساب من → سفارش‌ها» کپی کن و دوباره بفرست:\n/status BM-123456`;
   const fa = { pending_payment: 'در انتظار پرداخت', paid: 'پرداخت‌شده', processing: 'در حال آماده‌سازی', sent: 'ارسال‌شده', delivered: 'تحویل‌شده', cancelled: 'لغوشده', refunded: 'مرجوع‌شده' };
   const next = {
     pending_payment: 'هنوز پرداخت نشده؛ از «حساب من → سفارش‌ها» می‌توانی پرداختش کنی.',
@@ -77,8 +81,8 @@ function answerProducts(q) {
   const s = String(q || '').trim().toLowerCase();
   const all = (st.products || []).filter((p) => p.active !== false);
   const items = all.filter((p) => (!s || `${p.name} ${p.nameEn || ''} ${p.brandName || ''} ${p.brandNameEn || ''} ${(p.tags || []).join(' ')}`.toLowerCase().includes(s))).slice(0, 5);
-  if (!items.length) return `کالایی مطابق «${q}» پیدا نشد. 🙁\nعبارت کوتاه‌تر یا نام برند را امتحان کن؛ مثال:\n/products baseus\nلیست چند کالا: /products`;
-  const head = s ? `🔍 نتیجهٔ جستجوی «${q}»:` : '🛍 چند کالای موجود فروشگاه:';
+  if (!items.length) return `کالایی مطابق «${escT(q)}» پیدا نشد. 🙁\nعبارت کوتاه‌تر یا نام برند را امتحان کن؛ مثال:\n/products baseus\nلیست چند کالا: /products`;
+  const head = s ? `🔍 نتیجه جستجوی «${escT(q)}»:` : '🛍 چند کالای موجود فروشگاه:';
   const tail = '\n\nبرای جستجوی دقیق‌تر: /products عبارت\nمثال: /products کابل';
   return `${head}\n${items.map((p) => `• ${p.name} — ${Number(p.price).toLocaleString('fa-IR')} تومان`).join('\n')}${s ? '' : tail}`;
 }
@@ -106,7 +110,7 @@ export async function handleUpdate(up) {
     reply = `📞 تلفن: ${s.phone || ''}\n📱 موبایل/واتساپ: ${s.phone2 || ''}\n📍 آدرس: ${s.address || ''}\n🕘 ساعت کاری: ${(s.workingHours || []).map((w) => `${w.fa || w.day} ${w.time || ''}`).join(' · ')}`;
   } else if (text.startsWith('/')) {
     // دستور ناشناخته → به‌جای سکوت، راهنمایی کن
-    reply = `دستور «${text.split(/\s/)[0]}» را نمی‌شناسم. 🤖\nنگران نباش؛ این‌ها را دارم:\n/status کدسفارش — پیگیری سفارش\n/products عبارت — جستجوی کالا\n/contact — راه‌های تماس\n/help — راهنمای کامل`;
+    reply = `دستور «${escT(text.split(/\s/)[0])}» را نمی‌شناسم. 🤖\nنگران نباش؛ این‌ها را دارم:\n/status کدسفارش — پیگیری سفارش\n/products عبارت — جستجوی کالا\n/contact — راه‌های تماس\n/help — راهنمای کامل`;
   } else if (text) {
     st.telegramInbox = st.telegramInbox || [];
     st.telegramInbox.unshift({ id: `tg${up.update_id}`, chatId, name, text, at: new Date().toISOString(), replied: false });
