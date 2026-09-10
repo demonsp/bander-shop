@@ -895,11 +895,10 @@ export function paymentMethods(state, total) {
   if (s.gatewayEnabled !== false) list.push({ id: 'gateway', fa: 'درگاه بانکی', en: 'Bank gateway', note: s.gatewayMode === 'demo' ? 'حالت آزمایشی (بدون کسر واقعی)' : 'پرداخت امن بانکی' });
   
   // Installment integrations (mocked)
-  if (total >= 1000000) { // minimum 1M toman for installments
-    list.push({ id: 'snapppay', fa: 'اسنپ‌پی', en: 'SnappPay', note: 'خرید اقساطی ۴ ماهه بدون کارمزد' });
-    list.push({ id: 'azki', fa: 'ازکی‌وام', en: 'AzkiVam', note: 'خرید اقساطی تا ۲۴ ماه' });
-    list.push({ id: 'digipay', fa: 'دیجی‌پی', en: 'DigiPay', note: 'پرداخت اقساطی سریع' });
-  }
+  const isEligible = total >= 1000000;
+  list.push({ id: 'snapppay', fa: 'اسنپ‌پی', en: 'SnappPay', note: isEligible ? 'خرید اقساطی ۴ ماهه بدون کارمزد' : 'ویژه خریدهای بالای ۱ میلیون تومان', disabled: !isEligible });
+  list.push({ id: 'azki', fa: 'ازکی‌وام', en: 'AzkiVam', note: isEligible ? 'خرید اقساطی تا ۲۴ ماه' : 'ویژه خریدهای بالای ۱ میلیون تومان', disabled: !isEligible });
+  list.push({ id: 'digipay', fa: 'دیجی‌پی', en: 'DigiPay', note: isEligible ? 'پرداخت اقساطی سریع' : 'ویژه خریدهای بالای ۱ میلیون تومان', disabled: !isEligible });
   
   if (s.codEnabled !== false) list.push({ id: 'cod', fa: 'پرداخت در محل', en: 'Cash on delivery', note: 'فقط ارسال پستی تا سقف ۲۰٬۰۰۰٬۰۰۰ تومان' });
   return list;
