@@ -100,7 +100,8 @@ async function pollOnce(token) {
 export function startTelegramBot() {
   setInterval(async () => {
     const tg = db.raw.settings?.telegram;
-    const want = !!(tg?.enabled && tg?.token);
+    // BM_TG=off → بات غیرفعال (برای اجرای لوکالی هم‌زمان با نسخهٔ زنده تا پاسخ دوبله نشود)
+    const want = !!(tg?.enabled && tg?.token) && process.env.BM_TG !== 'off';
     if (!want) { polling = false; currentToken = ''; return; }
     if (polling && currentToken === tg.token) return;
     polling = true; currentToken = tg.token;
