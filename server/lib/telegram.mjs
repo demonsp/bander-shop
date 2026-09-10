@@ -166,7 +166,7 @@ export function startTelegramBot() {
     // BM_TG=off → بات غیرفعال (برای اجرای لوکالی هم‌زمان با نسخهٔ زنده تا پاسخ دوبله نشود)
     // سرویس «-legacy» هرگز poll نمی‌کند: دو poller روی یک توکن = 409 تلگرام و سکوت بات
     const svc = String(process.env.RENDER_SERVICE_NAME || '');
-    const want = !!(tg?.enabled && tg?.token) && process.env.BM_TG !== 'off' && !/-legacy$/i.test(svc);
+    const want = !!(tg?.enabled && tg?.token) && process.env.BM_TG !== 'off' && !/-legacy$/i.test(svc) && !/^bander-mobile$/i.test(svc);
     if (!want) { polling = false; currentToken = ''; activeLoop++; /* حلقهٔ قبلی می‌میرد */ return; }
     // اولویت با وب‌هوک است؛ فقط اگر ثبت وب‌هوک شکست خورد به polling برمی‌گردیم
     const wok = await ensureWebhook(tg.token).catch(() => false);
