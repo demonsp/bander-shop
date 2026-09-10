@@ -240,6 +240,12 @@ const server = http.createServer(async (req, res) => {
   const proto = xff === 'https' ? 'https' : 'http';
   const host = String(req.headers.host || `localhost:${PORT}`).slice(0, 200);
 
+  // لینک قدیمی (bander-mobile.onrender.com) برای همیشه به لینک جدید هدایت می‌شود
+  if (/^bander-mobile\./i.test(host)) {
+    res.writeHead(301, { Location: `https://greenapple-shop.onrender.com${url}`, 'Cache-Control': 'public, max-age=86400' });
+    return res.end();
+  }
+
   // هدرهای امنیتی روی همهٔ پاسخ‌ها
   for (const [k, v] of Object.entries(securityHeaders(req))) res.setHeader(k, v);
   if (proto === 'https') res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
