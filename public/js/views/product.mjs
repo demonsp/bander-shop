@@ -233,6 +233,31 @@ export function mount(root, ctx) {
   wireTabs(root);
 
   // بندانگشتی‌ها
+  // سوئیپ گالری در موبایل
+  const gal = root.querySelector('.gal-main');
+  if (gal) {
+    let sx = null;
+    let swiped = false;
+    gal.addEventListener('click', (e) => {
+      if (!swiped) return;
+      swiped = false;
+      e.stopPropagation();
+      e.preventDefault();
+    }, true);
+    gal.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'touch') return; sx = e.clientX; }, { passive: true });
+    gal.addEventListener('pointerup', (e) => {
+      if (sx == null || e.pointerType !== 'touch') return;
+      const dx = e.clientX - sx; sx = null;
+      if (Math.abs(dx) < 48) return;
+      swiped = true;
+      const items = JSON.parse(root.querySelector('[data-imgs]')?.dataset.imgs || '[]');
+      if (items.length < 2) return;
+      let i = Number(root.querySelector('[data-imgs]').dataset.i || 0);
+      i = (i + (dx < 0 ? 1 : -1) + items.length) % items.length;
+      root.querySelector(`[data-thumb="${i}"]`)?.click();
+    }, { passive: true });
+  }
+
   root.querySelectorAll('[data-thumb]').forEach((b) => b.addEventListener('click', () => {
     const i = Number(b.dataset.thumb);
     const items = JSON.parse(root.querySelector('[data-imgs]').dataset.imgs || '[]');

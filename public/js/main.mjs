@@ -271,7 +271,14 @@ function wireStaticControls() {
     refresh(true);
   });
   qs('#btnMenu')?.addEventListener('click', () => openMobileMenu());
-  qs('#fabTop')?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  const fabTop = qs('#fabTop');
+  fabTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  let fabTick = false;
+  addEventListener('scroll', () => {
+    if (fabTick || !fabTop) return;
+    fabTick = true;
+    requestAnimationFrame(() => { fabTop.hidden = scrollY < 600; fabTick = false; });
+  }, { passive: true });
   qs('#btnInstallApp')?.addEventListener('click', async () => {
     if (S.installPrompt) { const ok = await promptInstall(); if (!ok) installHintModal(); }
     else installHintModal();

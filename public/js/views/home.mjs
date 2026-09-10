@@ -228,11 +228,17 @@ export function mount() {
   };
   ensureCopies();
   addEventListener('resize', ensureCopies, { passive: true });
-  const wrap = () => { const hw = half(); if (pos <= -hw) pos += hw; if (pos > 0) pos -= hw; };
+  // جهت حرکت وابسته به جهت صفحه: RTL → محتوا از چپ وارد می‌شود (pos مثبت)
+  const sign = () => (getComputedStyle(track).direction === 'rtl' ? 1 : -1);
+  const wrap = () => {
+    const hw = half();
+    if (sign() > 0) { if (pos >= hw) pos -= hw; if (pos < 0) pos += hw; }
+    else { if (pos <= -hw) pos += hw; if (pos > 0) pos -= hw; }
+  };
   const tick = (now) => {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (!dragging && !document.documentElement.classList.contains('eco')) pos -= speed * dt;
+    if (!dragging && !document.documentElement.classList.contains('eco')) pos += sign() * speed * dt;
     wrap();
     track.style.transform = `translateX(${pos.toFixed(1)}px)`;
     raf = requestAnimationFrame(tick);
