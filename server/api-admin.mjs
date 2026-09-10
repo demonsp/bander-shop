@@ -973,7 +973,7 @@ export function registerAdmin(router) {
   });
 
   A('PATCH', '/api/admin/settings/:section', 'settings.edit', async (ctx) => {
-    const section = V.oneOf(ctx.params.section, ['store', 'theme', 'ui', 'features', 'shipping', 'plus', 'orders', 'seo', 'currency', 'auth', 'contact', 'partners'], 'section');
+    const section = V.oneOf(ctx.params.section, ['store', 'theme', 'ui', 'features', 'shipping', 'plus', 'orders', 'seo', 'currency', 'auth', 'contact', 'partners', 'security'], 'section');
     if (['theme', 'ui'].includes(section)) ctx.requirePerm('theme.edit');
     const patch = ctx.body?.value && typeof ctx.body.value === 'object' ? ctx.body.value : ctx.body;
     const out = await db.tx((st) => {
@@ -1059,13 +1059,14 @@ export function registerAdmin(router) {
     const type = V.oneOf(ctx.body?.type, ['ip', 'phone', 'email', 'username'], 'type');
     const value = V.str(ctx.body?.value, { min: 3, max: 120, field: 'مقدار' }).trim().toLowerCase();
     const reason = V.optStr(ctx.body?.reason, { max: 200, field: 'دلیل' });
-    const exists = await db.read((st) => (st.bans || []).some((b) => b.type === type && b.value === value));
+    const minutes = V.int(ctx.body?.minutes, { min: 0, max: 525600, field: 'دقیقه', def: 0 });
+    const exists = await db.read((st) => (st.bans || []).some((b) => b.type === type && b.value === value && (!b.until || new Date(b.until).getTime() > Date.now())));
     if (exists) throw conflict('exists', 'این مقدار قبلاً مسدود شده است.');
     const rec = await db.tx((st) => {
-      const b = { id: uid('ban'), type, value, reason, at: nowISO(), by: ctx.user.username };
+      const b = { id: uid('ban'), type, value, reason, at: nowISO(), by: ctx.user.username, until: minutes > 0 ? new Date(Date.now() + minutes * 60000).toISOString() : null };
       st.bans = st.bans || [];
       st.bans.unshift(b);
-      logAudit(ctx.user, 'ban.add', `${type}:${value}`, { reason });
+      logAudit(ctx.user, 'ban.add', `${type}:${value}`, { reason, minutes });
       return b;
     });
     sendJson(ctx.res, 200, { ok: true, ban: rec });
@@ -1501,6 +1502,11 @@ function sanitizeSection(section, patch, current) {
       break;
     case 'contact':
       s('supportNote', 0, 200); s('supportNoteEn', 0, 200);
+      break;
+    case 'security':
+      b('queueEnabled', true);
+      i('maxConcurrent', 5, 5000); i('triggerRps', 5, 2000); i('passTtlMin', 5, 240); i('pollSec', 2, 20);
+      i('floodBanPerMin', 500, 100000); i('floodBanMin', 1, 1440);
       break;
     default:
       break;

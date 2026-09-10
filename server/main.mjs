@@ -13,6 +13,10 @@ import {
 import {  HttpError, makeRateLimiter, randomToken, uid, nowISO, BUILD, V  } from './lib/util.mjs';
 import { findSession, touchSession, checkCsrf, hasPerm, requirePerm, issueCsrf, destroySession } from './lib/auth.mjs';
 import { heartbeatAll, publicStats, pushNotification } from './lib/helpers.mjs';
+import {
+  reqEnter, reqLeave, sweepQueue, loadSnapshot, secOf, isOverloaded, issuePass, checkPass,
+  joinQueue, queuePos, tryAdmit, waitingSize, ipPerMin, queuePageHtml, removeFromQueue,
+} from './lib/queue.mjs';
 import { registerCatalog } from './api-catalog.mjs';
 import { registerAuth, mePayload, SESSION_COOKIE, CSRF_COOKIE } from './api-auth.mjs';
 import { registerShop } from './api-shop.mjs';
@@ -26,6 +30,8 @@ const HOST = process.env.HOST || '0.0.0.0';
 const limiter = makeRateLimiter();
 // ضریب محدودسازی نرخ (برای محیط تست قابل افزایش است)
 const RATE_SCALE = Math.max(0.1, Number(process.env.BM_RATE_SCALE || 1));
+// در محیط تست می‌توان اتاق انتظار را خاموش کرد: BM_QUEUE=off
+const QUEUE_OFF = process.env.BM_QUEUE === 'off';
 
 const router = new Router();
 registerCatalog(router);
@@ -94,6 +100,9 @@ router.post('/api/system/wake', async (ctx) => {
     st.meta = { ...(st.meta || {}), sleeping: false, sleepSince: null, autoWakeAt: null, wokeAt: nowISO(), wokeBy: ctx.user.username };
     logAudit(ctx.user, 'system.wake', '', {});
   });
+  pushNotification(ctx.state, { type: 'system', level: 'success', title: 'فروشگاه روشن شد', body: 'خرید دوباره فعال است.', link: '#/' });
+  sendJson(ctx.res, 200, { ok: true, sleeping: false });
+});
 
 // ── کنسول سامانه: ریستارت و ریست بخش‌ها (فقط مدیر) ──
 router.post('/api/admin/system/restart', async (ctx) => {
@@ -114,8 +123,40 @@ router.post('/api/admin/system/reset', async (ctx) => {
   logAudit(ctx.user, 'system.reset', what, {});
   sendJson(ctx.res, 200, { ok: true, what });
 });
-  pushNotification(ctx.state, { type: 'system', level: 'success', title: 'فروشگاه روشن شد', body: 'خرید دوباره فعال است.', link: '#/' });
-  sendJson(ctx.res, 200, { ok: true, sleeping: false });
+
+// ── اتاق انتظار: وضعیت صف (همان کوکی‌های بازدیدکننده) ──
+router.get('/api/queue/status', async (ctx) => {
+  const sec = secOf(ctx.state);
+  const rl = limiter.hit(`queuepoll:${ctx.ip}`, 40, 60 * 1000);
+  if (!rl.ok) { ctx.res.setHeader('Retry-After', String(rl.retryAfter)); return sendJson(ctx.res, 429, { ok: false, code: 'too_many_requests', message: 'کمی صبر کن.' }); }
+  const cookieOpts = { httpOnly: true, sameSite: 'Lax', secure: ctx.secure, path: '/' };
+  const tok0 = ctx.cookies['bm_q'] || '';
+  const grantPass = () => {
+    if (tok0) removeFromQueue(tok0);
+    setCookie(ctx.res, 'bm_pass', issuePass(sec.passTtlMin), { ...cookieOpts, maxAge: sec.passTtlMin * 60 });
+    clearCookie(ctx.res, 'bm_q', cookieOpts);
+    sendJson(ctx.res, 200, { ok: true, state: 'pass' });
+  };
+  if (!isOverloaded(sec)) return grantPass();          // سایت خلوت شد → همه داخل
+  let tok = tok0;
+  if (!tok || !queuePos(tok)) {                          // هنوز در صف نیست → ثبت
+    tok = joinQueue(ctx.ip, tok0);
+    setCookie(ctx.res, 'bm_q', tok, cookieOpts);
+    return sendJson(ctx.res, 200, { ok: true, state: 'queued', pos: queuePos(tok), waiting: waitingSize(), pollSec: sec.pollSec });
+  }
+  const adm = tryAdmit(tok, sec);                        // پذیرش دانه‌دانه
+  if (adm.admitted) return grantPass();
+  sendJson(ctx.res, 200, { ok: true, state: 'queued', pos: adm.pos, waiting: waitingSize(), pollSec: sec.pollSec });
+});
+
+// ── بار زندهٔ سرور (برای پنل مدیر) ──
+router.get('/api/admin/system/load', async (ctx) => {
+  ctx.requireUser(); ctx.requirePerm('users.view');
+  const st = ctx.state;
+  const snap = loadSnapshot();
+  const sec = secOf(st);
+  const autoBans = (st.bans || []).filter((b) => b.auto && (!b.until || new Date(b.until) > new Date()));
+  sendJson(ctx.res, 200, { ok: true, ...snap, sec, autoBans: autoBans.slice(0, 30), onlineNow: publicStats(st).onlineNow ?? null });
 });
 
 router.get('/robots.txt', async (ctx) => {
@@ -181,14 +222,20 @@ const server = http.createServer(async (req, res) => {
   const ip = clientIp(req);
   const ua = String(req.headers['user-agent'] || '').slice(0, 200);
   const cookies = parseCookie(req.headers.cookie || '');
-  // مسدودسازی IP: قبل از هر چیز بررسی می‌شود
-  const ipBan = (db.raw.bans || []).find((b) => b.type === 'ip' && b.value === ip);
+  // مسدودسازی IP: قبل از هر چیز بررسی می‌شود (بان‌های زمانیِ منقضی‌شده نادیده گرفته می‌شوند)
+  const ipBan = (db.raw.bans || []).find((b) => b.type === 'ip' && b.value === ip && (!b.until || new Date(b.until).getTime() > Date.now()));
   if (ipBan) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.writeHead(403);
-    res.end(JSON.stringify({ ok: false, code: 'banned', message: 'دسترسی شما مسدود شده است. با پشتیبانی تماس بگیرید.' }));
+    res.end(JSON.stringify({ ok: false, code: 'banned', message: ipBan.until ? `دسترسی شما تا ${new Date(ipBan.until).toLocaleString('fa-IR')} مسدود شده است.` : 'دسترسی شما مسدود شده است. با پشتیبانی تماس بگیرید.' }));
     return;
   }
+  const isStaticReq = pathname.startsWith('/assets/') || pathname.startsWith('/js/') || pathname.startsWith('/css/') ||
+    pathname === '/sw.js' || pathname === '/manifest.webmanifest' ||
+    /\.(png|jpe?g|webp|gif|svg|ico|woff2?|mp3|css|js|mjs)$/i.test(pathname);
+  // نظرسنجی صف و healthz نباید خودشان بار شمرده شوند (وگرنه صف هرگز خلوت نمی‌شود)
+  const heavyReq = !isStaticReq && pathname !== '/api/queue/status' && pathname !== '/healthz';
+  reqEnter(ip, heavyReq);
   const xff = String(req.headers['x-forwarded-proto'] || '').toLowerCase();
   const proto = xff === 'https' ? 'https' : 'http';
   const host = String(req.headers.host || `localhost:${PORT}`).slice(0, 200);
@@ -209,6 +256,23 @@ const server = http.createServer(async (req, res) => {
     }
     if (method === 'OPTIONS') { res.writeHead(204, { Allow: 'GET,POST,PATCH,DELETE,OPTIONS' }); return res.end(); }
     if (/\.\./.test(pathname) || /[\x00-\x1f]/.test(pathname)) return respond(400, 'bad_path', 'مسیر نامعتبر است.');
+
+    // ضد-DDoS: سیلابِ فراتر از حدِ یک IP → مسدودسازی خودکار و موقت
+    {
+      const sec0 = secOf(db.raw);
+      if (sec0.floodBanPerMin && !QUEUE_OFF && ipPerMin(ip) > sec0.floodBanPerMin) {
+        const until = new Date(Date.now() + sec0.floodBanMin * 60000).toISOString();
+        await db.tx((st) => {
+          st.bans = st.bans || [];
+          if (!st.bans.some((b) => b.type === 'ip' && b.value === ip && (!b.until || new Date(b.until).getTime() > Date.now()))) {
+            st.bans.unshift({ id: uid('ban'), type: 'ip', value: ip, reason: `مسدودسازی خودکار سیلاب درخواست (${sec0.floodBanMin} دقیقه)`, at: nowISO(), until, by: 'سامانه', auto: true });
+            logAudit(null, 'security.autoban', ip, { until });
+          }
+        });
+        res.setHeader('Retry-After', String(sec0.floodBanMin * 60));
+        return respond(403, 'banned', 'دسترسی شما به‌دلیل سیلاب غیرعادی درخواست‌ها به‌طور موقت مسدود شد.');
+      }
+    }
 
     // محدودسازی نرخ کلی — فایل‌های استاتیک شمرده نمی‌شوند (موج نصب سرویس‌ورکر)
     const isStatic = pathname.startsWith('/assets/') || pathname.startsWith('/js/') || pathname.startsWith('/css/') || pathname === '/sw.js' || pathname === '/manifest.webmanifest';
@@ -238,6 +302,28 @@ const server = http.createServer(async (req, res) => {
       db.tx((st) => destroySession(st, token));
     }
     const activeUser = user && user.status !== 'blocked' && user.status !== 'deleted' ? user : null;
+
+    // ── اتاق انتظار: وقتی بار از حد گذشت، بازدیدکنندگان ناشناس دانه‌دانه وارد می‌شوند ──
+    // کاربران واردشده (نشست معتبر) و مسیرهای حیاتی هرگز صف نمی‌شوند.
+    {
+      const sec = secOf(state);
+      const exempt = isStatic || pathname === '/api/queue/status' || pathname === '/healthz' || pathname === '/api/system/status' || pathname === '/robots.txt';
+      if (sec.queueEnabled && !QUEUE_OFF && !exempt && !(session && activeUser) && isOverloaded(sec) && !checkPass(cookies['bm_pass'])) {
+        const tok = joinQueue(ip, cookies['bm_q'] || '');
+        setCookie(res, 'bm_q', tok, { httpOnly: true, sameSite: 'Lax', secure: proto === 'https', path: '/' });
+        if (isApi) {
+          res.setHeader('Retry-After', String(sec.pollSec));
+          return respond(503, 'queued', 'سایت شلوغ است و در صف ورود هستی. لطفاً چند لحظه صبر کن.', { pos: queuePos(tok), waiting: waitingSize(), pollSec: sec.pollSec });
+        }
+        const langPref = String(req.headers['accept-language'] || '').toLowerCase().startsWith('en') ? 'en' : 'fa';
+        const html = queuePageHtml({ pos: queuePos(tok), waiting: waitingSize(), pollSec: sec.pollSec, storeName: state.settings?.store?.name, lang: langPref });
+        res.setHeader('Content-Security-Policy', "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; img-src data:");
+        res.setHeader('Cache-Control', 'no-store');
+        res.setHeader('Retry-After', String(sec.pollSec));
+        res.writeHead(503, { 'Content-Type': 'text/html; charset=utf-8' });
+        return res.end(method === 'HEAD' ? undefined : html);
+      }
+    }
 
     const ctx = {
       req, res, method, path: pathname, query: getQuery(url), cookies, ip, ua, host, proto,
@@ -346,6 +432,7 @@ const server = http.createServer(async (req, res) => {
     }
     respond(status, err?.code || 'server_error', status >= 500 ? 'خطای داخلی سرور. لطفاً دوباره تلاش کن.' : err.message, err?.details);
   } finally {
+    reqLeave();
     const ms = Number(process.hrtime.bigint() - started) / 1e6;
     if (ms > 1200 && !pathname.startsWith('/api/events')) console.warn(`[slow] ${method} ${pathname} ${ms.toFixed(0)}ms`);
   }
@@ -357,6 +444,7 @@ server.keepAliveTimeout = 15_000;
 
 // ── کارهای پس‌زمینه ────────────────────────────────────────
 setInterval(() => limiter.sweep(), 5 * 60 * 1000).unref?.();
+setInterval(() => { sweepQueue(); }, 30 * 1000).unref?.();
 setInterval(() => { heartbeatAll(); }, 25_000).unref?.();
 
 // لغو خودکار سفارش‌های پرداخت‌نشده + آزادسازی موجودی
@@ -391,6 +479,7 @@ setInterval(async () => {
       st.audit = st.audit.filter((l) => new Date(l.at).getTime() > cutoff);
       st.sessions = st.sessions.filter((s) => new Date(s.expiresAt).getTime() > Date.now());
       st.otps = (st.otps || []).filter((o) => new Date(o.expiresAt).getTime() > Date.now() - 86400000);
+      st.bans = (st.bans || []).filter((b) => !b.until || new Date(b.until).getTime() > Date.now());   // بان‌های زمانیِ منقضی
       if (st.outbox && st.outbox.length > 200) st.outbox.length = 200;
     });
   } catch (err) { console.error('[job] cleanup failed:', err.message); }

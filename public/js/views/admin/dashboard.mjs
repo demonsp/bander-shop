@@ -7,7 +7,7 @@ import { t, isFa } from '../../i18n.mjs';
 import { api } from '../../lib/api.mjs';
 import { act } from '../../actions.mjs';
 import { can } from '../../state.mjs';
-import { kpiCard, barChart, tableHtml, productImage, statusBadge } from '../../components.mjs';
+import { kpiCard, barChart, tableHtml, productImage, statusBadge, field, switchField } from '../../components.mjs';
 import { errorState, confirmDialog, toastSuccess, toastApiError, withBusy } from '../../ui.mjs';
 
 export async function render() {
@@ -15,6 +15,7 @@ export async function render() {
   try { d = await api.get('/api/admin/overview'); } catch (err) { return errorState({ title: err?.message || t('err.generic') }); }
   const s = d.stats || {};
   const chart = (d.chart || []).map((c) => ({ label: c.date, short: c.date.slice(8), value: c.visits || 0 }));
+  if (can('users.view')) startSecPoll();
 
   return h`
     <div class="kpi-grid">
@@ -73,6 +74,43 @@ export async function render() {
       </div>
     </div>
 
+    ${can('users.view') || can('settings.edit') ? h`
+    <div class="acc-grid mt">
+      ${can('users.view') ? h`
+      <div class="card" id="secLiveCard">
+        <div class="row row-between">
+          <strong>${icon('shield')} ${t('adm.secTitle')}</strong>
+          <span class="badge-pill bp-success tiny" id="secState">…</span>
+        </div>
+        <div class="kpi-grid mt-s" id="secKpis"></div>
+        <div class="mt-s" id="secTop"></div>
+        ${can('settings.edit') ? h`
+        <form class="form-grid mt" id="secForm" data-act="adm-sec-save">
+          ${switchField({ label: t('adm.secQueueEnabled'), desc: t('adm.secQueueDesc'), name: 'queueEnabled', checked: true })}
+          ${field({ label: t('adm.secMaxConc'), name: 'maxConcurrent', type: 'number', value: '80', attrs: 'min="5" max="5000" inputmode="numeric"' })}
+          ${field({ label: t('adm.secTriggerRps'), name: 'triggerRps', type: 'number', value: '40', attrs: 'min="5" max="2000" inputmode="numeric"' })}
+          ${field({ label: t('adm.secPassTtl'), name: 'passTtlMin', type: 'number', value: '30', attrs: 'min="5" max="240" inputmode="numeric"' })}
+          ${field({ label: t('adm.secPoll'), name: 'pollSec', type: 'number', value: '4', attrs: 'min="2" max="20" inputmode="numeric"' })}
+          ${field({ label: t('adm.secFloodBan'), name: 'floodBanPerMin', type: 'number', value: '2500', attrs: 'min="500" max="100000" inputmode="numeric"' })}
+          ${field({ label: t('adm.secFloodMin'), name: 'floodBanMin', type: 'number', value: '15', attrs: 'min="1" max="1440" inputmode="numeric"' })}
+          <button class="btn btn-primary btn-sm span-2" type="submit">${icon('save')} ${t('common.save')}</button>
+        </form>` : ''}
+      </div>` : ''}
+      ${can('settings.edit') ? h`
+      <div class="card">
+        <strong>${icon('terminal')} ${t('adm.console')}</strong>
+        <p class="muted small mt-s">${t('adm.consoleHint')}</p>
+        <button class="btn btn-danger btn-sm mt-s" data-act="adm-sys-restart">${icon('zap')} ${t('adm.sysRestart')}</button>
+        <p class="muted small mt">${t('adm.sysResetLabel')}</p>
+        <div class="row row-wrap mt-s">
+          <button class="btn btn-ghost btn-xs" data-act="adm-sys-reset" data-what="audit">${t('adm.sysReset.audit')}</button>
+          <button class="btn btn-ghost btn-xs" data-act="adm-sys-reset" data-what="carts">${t('adm.sysReset.carts')}</button>
+          <button class="btn btn-ghost btn-xs" data-act="adm-sys-reset" data-what="visits">${t('adm.sysReset.visits')}</button>
+          <button class="btn btn-ghost btn-xs" data-act="adm-sys-reset" data-what="visitors">${t('adm.sysReset.visitors')}</button>
+        </div>
+      </div>` : ''}
+    </div>` : ''}
+
     ${can('audit.view') ? h`
     <div class="card mt">
       <div class="row row-between">
@@ -100,6 +138,73 @@ function awaitCard(ic, label, count, href) {
       <div class="v">${fmtNum(count || 0)}</div>
     </a>`;
 }
+
+// ── پدافند و صف: نظرسنجی زنده ───────────────────────────────
+let secTimer = 0;
+let secMisses = 0;
+async function refreshSec() {
+  const card = document.getElementById('secLiveCard');
+  if (!card) { if (++secMisses >= 3 && secTimer) { clearInterval(secTimer); secTimer = 0; } return; }
+  secMisses = 0;
+  let d;
+  try { d = await api.get('/api/admin/system/load'); } catch { return; }
+  const kpis = document.getElementById('secKpis');
+  if (kpis) kpis.innerHTML = [
+    `<div class="kpi"><div class="l">${t('adm.secInflight')}</div><div class="v">${fmtNum(d.inflight)}</div></div>`,
+    `<div class="kpi"><div class="l">${t('adm.secRps')}</div><div class="v">${fmtNum(d.rps)}</div></div>`,
+    `<div class="kpi"><div class="l">${t('adm.secQueued')}</div><div class="v ${d.queued > 0 ? 'hot' : ''}">${fmtNum(d.queued)}</div></div>`,
+    `<div class="kpi"><div class="l">${t('adm.secAutoBans')}</div><div class="v">${fmtNum((d.autoBans || []).length)}</div></div>`,
+  ].join('');
+  const top = document.getElementById('secTop');
+  if (top) {
+    top.innerHTML = (d.top || []).length
+      ? `<div class="muted tiny">${t('adm.secTop')}</div><div class="table-wrap"><table class="table"><thead><tr><th>IP</th><th class="num">${t('adm.secPerMin')}</th></tr></thead><tbody>${d.top.map((x) => `<tr><td class="mono tiny">${esc(x.ip)}</td><td class="num tiny">${fmtNum(x.perMin)}</td></tr>`).join('')}</tbody></table></div>`
+      : `<p class="muted tiny">${t('adm.secTopEmpty')}</p>`;
+  }
+  const st = document.getElementById('secState');
+  if (st) {
+    const busy = d.queued > 0 || d.inflight > (d.sec?.maxConcurrent || 80) || d.rps > (d.sec?.triggerRps || 40);
+    st.textContent = busy ? t('adm.secBusy') : t('adm.secNormal');
+    st.className = `badge-pill tiny ${busy ? 'bp-warn' : 'bp-success'}`;
+  }
+  const form = document.getElementById('secForm');
+  if (form && !form.dataset.filled) {
+    form.dataset.filled = '1';
+    for (const k of ['maxConcurrent', 'triggerRps', 'passTtlMin', 'pollSec', 'floodBanPerMin', 'floodBanMin']) {
+      const inp = form.elements[k];
+      if (inp && d.sec?.[k] != null) inp.value = d.sec[k];
+    }
+    const sw = form.elements['queueEnabled'];
+    if (sw) sw.checked = !!d.sec?.queueEnabled;
+  }
+}
+function startSecPoll() {
+  if (secTimer) clearInterval(secTimer);
+  secMisses = 0;
+  setTimeout(refreshSec, 400);
+  secTimer = setInterval(refreshSec, 5000);
+}
+
+act('adm-sec-save', async (e, form) => {
+  e.preventDefault();
+  const value = {
+    queueEnabled: form.elements['queueEnabled']?.checked ?? true,
+    maxConcurrent: Number(form.elements['maxConcurrent']?.value) || 80,
+    triggerRps: Number(form.elements['triggerRps']?.value) || 40,
+    passTtlMin: Number(form.elements['passTtlMin']?.value) || 30,
+    pollSec: Number(form.elements['pollSec']?.value) || 4,
+    floodBanPerMin: Number(form.elements['floodBanPerMin']?.value) || 2500,
+    floodBanMin: Number(form.elements['floodBanMin']?.value) || 15,
+  };
+  await withBusy(form.querySelector('button[type=submit]'), async () => {
+    try {
+      await api.patch('/api/admin/settings/security', { value });
+      toastSuccess(t('adm.secSaved'));
+      const f = document.getElementById('secForm'); if (f) delete f.dataset.filled;
+      refreshSec();
+    } catch (err) { toastApiError(err); }
+  });
+});
 
 export function mount() { return null; }
 

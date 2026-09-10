@@ -1,5 +1,5 @@
 /* سرویس‌ورکر گرین اپل — پوستهٔ آفلاین + کش هوشمند */
-const VERSION = 'bm-v27';
+const VERSION = 'bm-v28';
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 const DATA = `${VERSION}-data`;

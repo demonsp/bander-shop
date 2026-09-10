@@ -305,12 +305,13 @@ async function bansPanel() {
         ${selectField({ label: t('adm.banType'), name: 'type', options: [{ value: 'ip', label: 'IP' }, { value: 'phone', label: t('contact.mobile') }, { value: 'email', label: t('common.email') }, { value: 'username', label: t('common.username') }] })}
         ${field({ label: t('adm.banValue'), name: 'value', required: true })}
         ${field({ label: t('adm.banReason'), name: 'reason' })}
+        ${field({ label: t('adm.banMinutes'), name: 'minutes', type: 'number', value: '0', attrs: 'min="0" max="525600" inputmode="numeric"' })}
         <button class="btn btn-danger" type="submit">${icon('lock')} ${t('adm.ban')}</button>
       </form>
       ${r.items?.length ? h`<div class="table-wrap mt-s"><table class="table">
         <thead><tr><th>${t('adm.banType')}</th><th>${t('adm.banValue')}</th><th>${t('adm.banReason')}</th><th>${t('common.date')}</th><th></th></tr></thead>
         <tbody>${r.items.map((b) => h`<tr>
-          <td class="tiny">${b.type}</td><td class="mono tiny">${esc(b.value)}</td><td class="tiny muted">${esc(b.reason || '')}</td><td class="tiny">${fmtDate(b.at)}</td>
+          <td class="tiny">${b.type}${b.auto ? h` <span class="badge-pill bp-warn tiny">${t('adm.banAuto')}</span>` : ''}</td><td class="mono tiny">${esc(b.value)}</td><td class="tiny muted">${esc(b.reason || '')}</td><td class="tiny">${fmtDate(b.at)}${b.until ? h`<br><span class="muted">${t('adm.banUntil')}: ${fmtDate(b.until)}</span>` : ''}</td>
           <td><button class="btn btn-success btn-xs" data-act="adm-ban-del" data-id="${b.id}">${icon('check')} ${t('adm.unban')}</button></td>
         </tr>`)}</tbody></table></div>` : h`<p class="muted small mt-s">${t('adm.bansEmpty')}</p>`}
     </div>`;
@@ -319,7 +320,7 @@ async function bansPanel() {
 act('adm-ban-add', async (e, form) => {
   e.preventDefault();
   try {
-    await api.post('/api/admin/bans', { type: form.type.value, value: form.value.value, reason: form.reason?.value || '' });
+    await api.post('/api/admin/bans', { type: form.type.value, value: form.value.value, reason: form.reason?.value || '', minutes: Number(form.minutes?.value) || 0 });
     toastSuccess(t('adm.banDone')); refresh(true);
   } catch (err) { toastApiError(err); }
 });

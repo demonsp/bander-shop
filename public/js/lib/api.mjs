@@ -46,7 +46,48 @@ const EN_MESSAGES = {
   cannot_cancel: 'This order cannot be cancelled in its current state.',
   account_blocked: 'This account is blocked. Please contact support.',
   disabled: 'This feature is currently disabled.',
+  queued: 'The site is busy. You are in the entry queue…',
+  banned: 'Access is blocked. Please contact support.',
 };
+
+// ── اتاق انتظار: روکش صف + نظرسنجی تا رسیدن نوبت ──────────
+let qEl = null;
+let qWaiting = null;
+function showQueueOverlay(pos) {
+  if (!qEl) {
+    qEl = document.createElement('div');
+    qEl.className = 'bm-queue-overlay';
+    qEl.setAttribute('role', 'status');
+    qEl.innerHTML = '<div class="bm-q-card"><div class="bm-q-logo">🍏</div><b class="bm-q-title"></b><p class="bm-q-pos"></p><div class="bm-q-bar"><i></i></div><span class="bm-q-note"></span></div>';
+    document.documentElement.appendChild(qEl);
+  }
+  const en = document.documentElement.lang === 'en';
+  qEl.querySelector('.bm-q-title').textContent = en ? 'Site is busy — you are in the queue' : 'سایت شلوغ است — در صف ورود هستی';
+  qEl.querySelector('.bm-q-pos').textContent = en ? `Your turn: ${pos > 0 ? pos : '…'}` : `نوبت شما: ${pos > 0 ? pos : '…'}`;
+  qEl.querySelector('.bm-q-note').textContent = en ? 'Continues automatically when it is your turn…' : 'به‌محض رسیدن نوبت، خودکار ادامه پیدا می‌کند…';
+}
+function hideQueueOverlay() { if (qEl) { qEl.remove(); qEl = null; } }
+
+async function waitForQueuePass(info = {}) {
+  if (!qWaiting) {
+    qWaiting = (async () => {
+      showQueueOverlay(Number(info.pos) || 0);
+      const poll = Math.max(2, Math.min(20, Number(info.pollSec) || 4)) * 1000;
+      for (let i = 0; i < 60; i++) {                    // حداکثر ~۴ دقیقه
+        await new Promise((r) => setTimeout(r, poll));
+        try {
+          const res = await fetch('/api/queue/status', { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+          const d = await res.json();
+          if (d?.state === 'pass') { hideQueueOverlay(); return true; }
+          if (d?.state === 'queued') showQueueOverlay(Number(d.pos) || 0);
+        } catch { /* قطع شبکه → دوباره تلاش می‌کنیم */ }
+      }
+      hideQueueOverlay();
+      return false;
+    })().finally(() => { qWaiting = null; });
+  }
+  return qWaiting;
+}
 
 let busy = 0;
 const listeners = new Set();
@@ -81,6 +122,11 @@ async function request(method, path, body, opts = {}) {
       // دریافت توکن تازه و یک بار تلاش مجدد
       await fetch('/api/bootstrap', { credentials: 'same-origin' }).catch(() => {});
       return request(method, path, body, { ...opts, _retried: true });
+    }
+    if (res.status === 503 && data?.code === 'queued' && !opts._queueRetried) {
+      // سایت شلوغ است: صف → رسیدن نوبت → تکرار خودکار همان درخواست
+      const passed = await waitForQueuePass(data?.details || {});
+      if (passed) return request(method, path, body, { ...opts, _queueRetried: true });
     }
     if (!res.ok || data?.ok === false) {
       const code = data?.code || 'error';

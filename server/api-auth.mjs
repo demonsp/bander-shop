@@ -115,12 +115,14 @@ function startSession(ctx, user, remember = true) {
   return session;
 }
 
-/** بررسی مسدودسازی: موبایل/ایمیل/نام کاربری */
+/** بررسی مسدودسازی: موبایل/ایمیل/نام کاربری (بان‌های زمانیِ منقضی نادیده گرفته می‌شوند) */
 function banHit(state, vals) {
   const list = state.bans || [];
   if (!list.length) return null;
   const norm = (x) => String(x == null ? '' : x).trim().toLowerCase();
+  const nowT = Date.now();
   for (const b of list) {
+    if (b.until && new Date(b.until).getTime() <= nowT) continue;
     const bv = norm(b.value);
     if (!bv) continue;
     for (const v of vals) if (norm(v) === bv) return b;
