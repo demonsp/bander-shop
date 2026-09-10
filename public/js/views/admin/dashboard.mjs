@@ -43,7 +43,7 @@ export async function render() {
       ${chart.length ? barChart(chart, { height: 140 }) : h`<p class="muted small">${t('common.noData')}</p>`}
     </div>
 
-    <div class="acc-grid mt">
+    <div class="acc-grid acc-grid-eq mt">
       <div class="card">
         <strong>${icon('star')} ${t('adm.topSelling')}</strong>
         ${tableHtml(
@@ -75,7 +75,7 @@ export async function render() {
     </div>
 
     ${can('users.view') || can('settings.edit') ? h`
-    <div class="acc-grid mt">
+    <div class="acc-grid acc-grid-eq mt">
       ${can('users.view') ? h`
       <div class="card" id="secLiveCard">
         <div class="row row-between">

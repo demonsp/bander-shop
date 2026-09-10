@@ -7,7 +7,7 @@ import { join, relative, dirname } from 'node:path';
 
 const ROOT = '/home/user';
 const JS = join(ROOT, 'public/js');
-const OUT = join(ROOT, 'bander-mobile-offline.html');
+const OUT = join(ROOT, 'greenapple-offline.html');
 
 // ── فهرست ماژول‌ها ───────────────────────────────────────────
 function walk(dir, out = []) {

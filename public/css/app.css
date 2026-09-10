@@ -299,7 +299,7 @@ html[data-port="off"] .port-deco{display:none !important}
 .err .ic{width:14px;height:14px}
 .input.invalid,.textarea.invalid,.select.invalid{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-soft)}
 .form-grid{display:grid;gap:0 14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
-.form-grid .span-2{grid-column:span 2}
+.form-grid .span-2{grid-column:1/-1}
 fieldset{border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin:0 0 14px}
 legend{font-size:13px;font-weight:700;padding-inline:8px;color:var(--accent)}
 
@@ -579,6 +579,14 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--bord
 /* ── حساب کاربری ─────────────────────────────────────────── */
 .acc-grid{display:grid;gap:calc(var(--gap) * var(--space));grid-template-columns:minmax(0,1fr)}
 @media(min-width:940px){.acc-grid{grid-template-columns:250px minmax(0,1fr)}}
+/* ۱۴۰۴/۰۶/۱۹ — راند ۲۵: باگ روی‌هم‌افتادن کارت پدافند در داشبورد.
+   .acc-grid ستون اول ۲۵۰px است (مخصوص نقشهٔ تماس/حساب) و کارت‌های پهن ادمین
+   (فرم+جدول) را له می‌کرد؛ برای محتوای پهن از .acc-grid-eq با دو ستون مساوی
+   استفاده می‌شود. min-width:0 جلوی سرریز بچه‌های گرید را می‌گیرد و span-2 به
+   جای «دو ریل ثابت» تمام ریل‌ها را می‌گیرد تا در فرم تک‌ستونه بیرون نزند. */
+.acc-grid>*{min-width:0}
+.acc-grid-eq{grid-template-columns:minmax(0,1fr)}
+@media(min-width:1100px){.acc-grid-eq{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .acc-side{align-self:start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px;position:sticky;top:calc(var(--header-h) + var(--nav-h) + 12px)}
 .acc-user{display:flex;align-items:center;gap:11px;padding:8px 8px 13px;border-bottom:1px solid var(--border);margin-bottom:9px}
 .acc-user .av{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:var(--accent-ink);font-weight:800;font-size:17px;flex:none}

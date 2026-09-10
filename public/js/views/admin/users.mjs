@@ -168,7 +168,7 @@ async function detail(id) {
       </div>
     </form>
 
-    <div class="acc-grid mt">
+    <div class="acc-grid acc-grid-eq mt">
       ${can('wallet.manage') ? h`
       <form class="card" data-act="adm-u-wallet" data-id="${u.id}">
         <strong>${icon('wallet')} ${t('adm.uWalletAdjust')}</strong>
