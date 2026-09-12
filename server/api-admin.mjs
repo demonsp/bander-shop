@@ -419,7 +419,7 @@ export function registerAdmin(router) {
   });
   A('PATCH', '/api/admin/categories/:id', 'categories.manage', async (ctx) => {
     const id = V.id(ctx.params.id, 'شناسه');
-    const out = await db.tx((st) => {
+    const out = await db.tx(async (st) => {
       const c = st.categories.find((x) => x.id === id);
       if (!c) throw notFound('not_found', 'دسته یافت نشد.');
       if (ctx.body.name !== undefined) c.name = V.str(ctx.body.name, { min: 1, max: 40, field: 'نام دسته' });
@@ -513,7 +513,7 @@ export function registerAdmin(router) {
     const status = ctx.body?.status ? V.oneOf(ctx.body.status, ORDER_STATUSES.map((s) => s.id), 'status') : null;
     const note = V.optStr(ctx.body?.note, { max: 400, field: 'یادداشت' });
     const tracking = V.optStr(ctx.body?.tracking, { max: 60, field: 'کد رهگیری' });
-    const out = await db.tx((st) => {
+    const out = await db.tx(async (st) => {
       const o = st.orders.find((x) => x.id === id);
       if (!o) throw notFound('order_not_found', 'سفارش یافت نشد.');
       if (tracking) { o.payment.tracking = tracking; o.tracking = tracking; }

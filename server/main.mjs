@@ -78,7 +78,7 @@ router.post('/api/track', async (ctx) => {
     path: V.optStr(b.path, { max: 120, field: 'path' }),
     userId: ctx.user?.id || null,
   };
-  await db.tx((st) => {
+  await db.tx(async (st) => {
     st.visitors = st.visitors || [];
     st.visitors.unshift(rec);
     if (st.visitors.length > 6000) st.visitors.length = 6000;
@@ -551,7 +551,7 @@ setInterval(() => { heartbeatAll(); }, 25_000).unref?.();
 // لغو خودکار سفارش‌های پرداخت‌نشده + آزادسازی موجودی
 setInterval(async () => {
   try {
-    await db.tx((st) => {
+    await db.tx(async (st) => {
       const hours = Number(st.settings.orders?.autoCancelHours || 72);
       const cutoff = Date.now() - hours * 3600_000;
       let n = 0;
