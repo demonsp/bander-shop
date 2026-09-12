@@ -213,7 +213,31 @@ export function throttle(fn, ms = 200) {
 export function fileToDataURL(file) {
   return new Promise((resolve, reject) => {
     const r = new FileReader();
-    r.onload = () => resolve(String(r.result));
+    r.onload = () => {
+      // Auto-compress and convert images to webp to save bandwidth and storage
+      if (file.type && file.type.startsWith('image/') && file.type !== 'image/svg+xml') {
+        const img = new Image();
+        img.onload = () => {
+          // Max dimension 1600px
+          let w = img.width;
+          let h = img.height;
+          const maxDim = 1600;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+            else { w = Math.round((w * maxDim) / h); h = maxDim; }
+          }
+          const cvs = document.createElement('canvas');
+          cvs.width = w; cvs.height = h;
+          const ctx = cvs.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(cvs.toDataURL('image/webp', 0.85));
+        };
+        img.onerror = () => resolve(String(r.result)); // fallback
+        img.src = String(r.result);
+      } else {
+        resolve(String(r.result)); // fallback for PDF/SVG etc
+      }
+    };
     r.onerror = () => reject(new Error('read-failed'));
     r.readAsDataURL(file);
   });
