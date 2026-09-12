@@ -530,24 +530,13 @@ export function registerAdmin(router) {
         o.updatedAt = nowISO();
         o.timeline.push({ status, at: nowISO(), note: note || statusInfoText(status), by: ctx.user.name });
         if (['cancelled', 'refunded', 'returned'].includes(status)) {
-          restoreStock(st, o);
-          const back = (o.walletUsed || 0) + (o.payment?.status === 'paid' ? Math.max(0, o.total - (o.walletUsed || 0)) : 0);
-          const u = st.users.find((x) => x.id === o.userId);
-          if (u && back > 0) {
-            u.wallet = u.wallet || { balance: 0, transactions: [] };
-            u.wallet.balance += back;
-            u.wallet.transactions.unshift({ id: uid('tx'), at: nowISO(), type: 'refund', amount: back, status: 'done', note: `بازگشت وجه سفارش ${o.code}`, ref: '' });
-            o.refund = { amount: back, method: 'wallet', at: nowISO() };
-          }
-          if (o.payment) o.payment.status = status === 'cancelled' && o.payment.status !== 'paid' ? 'cancelled' : 'refunded';
-          
-          if (u) {
-            const pts = Math.floor(o.total / 100000);
-            if (pts > 0) u.points = Math.max(0, (u.points || 0) - pts);
-          }
-          if (o.couponCode) {
-            const c = st.coupons.find((x) => x.code === o.couponCode);
-            if (c) c.used = Math.max(0, (c.used || 1) - 1);
+          if (status === 'cancelled' || status === 'refunded') {
+            import('./api-shop.mjs').then(m => m.safeCancelOrder(st, o, note || statusInfoText(status), ctx.user.name));
+          } else {
+             // Returned logic
+             import('./api-shop.mjs').then(m => m.safeCancelOrder(st, o, note || statusInfoText(status), ctx.user.name));
+             o.status = 'returned';
+             o.timeline[o.timeline.length - 1].status = 'returned';
           }
           invalidateSearchIndex();
         }

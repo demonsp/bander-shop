@@ -555,13 +555,7 @@ setInterval(async () => {
       for (const o of st.orders) {
         if (o.status !== 'pending_payment') continue;
         if (new Date(o.createdAt).getTime() > cutoff) continue;
-        o.status = 'cancelled';
-        o.updatedAt = nowISO();
-        o.timeline.push({ status: 'cancelled', at: nowISO(), note: `لغو خودکار به دلیل عدم پرداخت پس از ${hours} ساعت`, by: 'سامانه' });
-        for (const it of o.items || []) {
-          const p = st.products.find((x) => x.id === it.productId);
-          if (p) { p.stock = (p.stock || 0) + it.qty; p.sold = Math.max(0, (p.sold || 0) - it.qty); }
-        }
+        import('./api-shop.mjs').then(m => m.safeCancelOrder(st, o, `لغو خودکار به دلیل عدم پرداخت پس از ${hours} ساعت`, 'سامانه'));
         n++;
       }
       if (n) logAudit(null, 'job.autocancel', `${n} orders`, {});

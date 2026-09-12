@@ -713,6 +713,7 @@ export function registerAuth(router) {
       st.priceAlerts = st.priceAlerts || [];
       const i = st.priceAlerts.findIndex((a) => a.userId === ctx.user.id && a.productId === pid);
       if (i >= 0) { st.priceAlerts.splice(i, 1); return { subscribed: false }; }
+      if (st.priceAlerts.filter(a => a.userId === ctx.user.id).length >= 50) throw badRequest('limit', 'حداکثر ۵۰ کالا را می‌توانی در لیست «خبرم کن» داشته باشی.');
       st.priceAlerts.push({ id: uid('al'), userId: ctx.user.id, productId: pid, createdAt: nowISO() });
       logAudit(ctx.user, 'user.alert.subscribe', pid, {});
       return { subscribed: true };

@@ -223,7 +223,10 @@ export function registerShop(router) {
           : 'این کالا فعلاً ناموجود است. می‌توانی «خبرم کن» را فعال کنی.');
       }
       if (line) line.qty += qty;
-      else c.items.push({ productId, qty, addedAt: nowISO() });
+      else {
+        if (c.items.length >= 50) throw new HttpError(400, 'cart_full', 'سبد خرید شما پر شده است. (حداکثر ۵۰ قلم متفاوت)');
+        c.items.push({ productId, qty, addedAt: nowISO() });
+      }
       c.updatedAt = nowISO();
       logAudit(ctx.user, 'cart.add', `${productId} x${qty}`, {});
       return c;
@@ -488,10 +491,8 @@ export function registerShop(router) {
       if (!owner && !isStaff && !guestOwner) throw forbidden('forbidden', 'دسترسی ندارید.');
       if (o.payment.status === 'paid') return { order: o, already: true };
       if (!success) {
-        o.status = 'cancelled';
-        o.payment.status = 'failed';
-        restoreStock(st, o);
-        o.timeline.push({ status: 'cancelled', at: nowISO(), note: 'پرداخت ناموفق / انصراف از پرداخت', by: 'سامانه' });
+        safeCancelOrder(st, o, 'پرداخت ناموفق / انصراف از پرداخت', 'سامانه');
+        if (o.payment) o.payment.status = 'failed';
         return { order: o, already: false };
       }
       const remaining = Math.max(0, o.total - (o.walletUsed || 0));
@@ -545,33 +546,8 @@ export function registerShop(router) {
       if (['shipped', 'delivered', 'cancelled', 'refunded', 'returned'].includes(o.status)) {
         throw badRequest('cannot_cancel', 'این سفارش در وضعیت فعلی قابل لغو نیست. برای مرجوعی، تیکت بزن.');
       }
-      o.status = 'cancelled';
-      o.updatedAt = nowISO();
-      o.timeline.push({ status: 'cancelled', at: nowISO(), note: `لغو توسط مشتری${reason ? ` — ${reason}` : ''}`, by: ctx.user.name });
-      restoreStock(st, o);
-      // بازگشت وجه
-      let refundNote = '';
-      if (o.payment?.status === 'paid' || (o.walletUsed || 0) > 0) {
-        const u = st.users.find((x) => x.id === o.userId);
-        const amount = (o.walletUsed || 0) + (o.payment?.status === 'paid' ? Math.max(0, o.total - (o.walletUsed || 0)) : 0);
-        if (u && amount > 0) {
-          u.wallet = u.wallet || { balance: 0, transactions: [] };
-          u.wallet.balance += amount;
-          u.wallet.transactions.unshift({ id: uid('tx'), at: nowISO(), type: 'refund', amount, status: 'done', note: `بازگشت وجه سفارش ${o.code}`, ref: o.payment?.ref || '' });
-          refundNote = `${amount} تومان به کیف پول بازگشت داده شد.`;
-          o.refund = { amount, method: 'wallet', at: nowISO() };
-        }
-        o.payment.status = 'refunded';
-      }
-      const pts = Math.floor(o.total / 100000);
-      const userRec = st.users.find(x => x.id === o.userId);
-      if (userRec && pts > 0) {
-        userRec.points = Math.max(0, (userRec.points || 0) - pts);
-      }
-      if (o.couponCode) {
-        const c = st.coupons.find((x) => x.code === o.couponCode);
-        if (c) c.used = Math.max(0, (c.used || 1) - 1);
-      }
+      const res = safeCancelOrder(st, o, `لغو توسط مشتری${reason ? ` — ${reason}` : ''}`, ctx.user.name);
+      let refundNote = res && res.refunded > 0 ? `${res.refunded} تومان به کیف پول بازگشت داده شد.` : '';
       logAudit(ctx.user, 'order.cancel', o.code, { reason });
       pushNotification(st, { userId: o.userId, type: 'order', level: 'warning', title: `سفارش ${o.code} لغو شد`, body: refundNote || 'سفارش لغو شد و موجودی کالا آزاد شد.', link: `#/account/orders/${o.id}` });
       pushNotification(st, { userId: null, type: 'admin_alert', level: 'warning', title: 'لغو سفارش توسط مشتری', body: `سفارش ${o.code} توسط ${ctx.user.name} لغو شد.`, link: '#/admin/orders' });
@@ -928,4 +904,51 @@ export function paymentMethods(state, total) {
   
   if (s.codEnabled !== false) list.push({ id: 'cod', fa: 'پرداخت در محل', en: 'Cash on delivery', note: 'فقط ارسال پستی تا سقف ۲۰٬۰۰۰٬۰۰۰ تومان' });
   return list;
+}
+
+export function safeCancelOrder(st, o, note, by) {
+  if (['cancelled', 'refunded', 'returned'].includes(o.status)) return false;
+  o.status = 'cancelled';
+  o.updatedAt = new Date().toISOString();
+  o.timeline.push({ status: 'cancelled', at: o.updatedAt, note, by });
+  
+  // 1. Restore Stock
+  for (const it of o.items || []) {
+    const p = st.products.find(x => x.id === it.productId);
+    if (p) { p.stock = (p.stock || 0) + it.qty; p.sold = Math.max(0, (p.sold || 0) - it.qty); }
+  }
+
+  // 2. Refund wallet and paid amounts
+  let refundAmount = 0;
+  if (o.payment?.status === 'paid' || (o.walletUsed || 0) > 0) {
+    refundAmount = (o.walletUsed || 0) + (o.payment?.status === 'paid' ? Math.max(0, o.total - (o.walletUsed || 0)) : 0);
+  }
+  const u = st.users.find(x => x.id === o.userId);
+  if (u && refundAmount > 0) {
+    u.wallet = u.wallet || { balance: 0, transactions: [] };
+    u.wallet.balance += refundAmount;
+    u.wallet.transactions.unshift({
+      id: 'tx_' + Date.now().toString(36),
+      at: o.updatedAt, type: 'refund', amount: refundAmount, status: 'done',
+      note: `بازگشت وجه سفارش ${o.code}`, ref: o.payment?.ref || ''
+    });
+    o.refund = { amount: refundAmount, method: 'wallet', at: o.updatedAt };
+  }
+  if (o.payment) {
+    o.payment.status = (o.payment.status !== 'paid' && o.payment.status !== 'failed') ? 'cancelled' : 'refunded';
+  }
+
+  // 3. Retract loyalty points
+  if (u) {
+    const pts = Math.floor(o.total / 100000);
+    if (pts > 0) u.points = Math.max(0, (u.points || 0) - pts);
+  }
+
+  // 4. Restore Coupon usage limit
+  if (o.couponCode) {
+    const c = st.coupons.find(x => x.code === o.couponCode);
+    if (c) c.used = Math.max(0, (c.used || 1) - 1);
+  }
+  
+  return { refunded: refundAmount };
 }
