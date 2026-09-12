@@ -173,24 +173,8 @@ export function mount(root, ctx) {
   const box = root.querySelector('#filtersBox');
   if (window.innerWidth >= 980) box.hidden = false;
 
+  // Remove this from here, we will handle it via act() below
   const go = (href) => { location.hash = href.replace(/^#/, ''); };
-
-  root.querySelector('[data-act="choose-sort"]')?.addEventListener('click', () => {
-    const { sheet } = ui;
-    const s = sheet({
-      title: t('common.sort'),
-      body: h`<div class="col" style="gap:4px; padding-bottom: 20px;">
-        ${SORTS.map((st) => h`<button class="btn ${st === sort ? 'active' : ''}" style="justify-content: flex-start; padding: 14px 16px; background: var(--surface-2); border-radius: 12px; font-size: 15px;" data-v="${st}">${t(`catalog.sort.${st}`)}</button>`).join('')}
-      </div>`
-    });
-    s.panel.querySelectorAll('button[data-v]').forEach(b => {
-      b.addEventListener('click', () => {
-        const val = b.dataset.v;
-        s.close();
-        go(withQuery(ctx, { sort: val === 'relevant' ? null : val }));
-      });
-    });
-  });
 
   root.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => {
     setPref('view', b.dataset.view, { sync: false });
@@ -252,6 +236,28 @@ act('cat-filters', (e, el) => {
   el.textContent = box.hidden ? t('catalog.showFilters') : t('catalog.hideFilters');
   if (!box.hidden) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
+
+act('choose-sort', (e, el) => {
+  const currentSort = new URLSearchParams(location.hash.split('?')[1] || '').get('sort') || 'relevant';
+  const { sheet } = ui;
+  const s = sheet({
+    title: t('common.sort'),
+    body: h`<div class="col" style="gap:4px; padding-bottom: 20px;">
+      ${SORTS.map((st) => h`<button class="btn ${st === currentSort ? 'active' : ''}" style="justify-content: flex-start; padding: 14px 16px; background: var(--surface-2); border-radius: 12px; font-size: 15px;" data-v="${st}">${t(`catalog.sort.${st}`)}</button>`).join('')}
+    </div>`
+  });
+  s.panel.querySelectorAll('button[data-v]').forEach(b => {
+    b.addEventListener('click', () => {
+      const val = b.dataset.v;
+      s.close();
+      const p = new URLSearchParams(location.hash.split('?')[1] || '');
+      if (val === 'relevant') p.delete('sort'); else p.set('sort', val);
+      p.delete('page');
+      location.hash = `${location.hash.split('?')[0]}${p.toString() ? '?' + p.toString() : ''}`;
+    });
+  });
+});
+
 act('cat-clear', () => {
   const path = location.hash.includes('/category/') ? '#/products' : location.hash.split('?')[0];
   location.hash = path;
