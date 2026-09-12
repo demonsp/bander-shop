@@ -539,8 +539,14 @@ export function registerAdmin(router) {
           invalidateSearchIndex();
         }
         if (status === 'delivered') {
-          st.stats.ordersTotal = (st.stats.ordersTotal || 0);
-          st.stats.revenueTotal = (st.stats.revenueTotal || 0);
+          // If the order wasn't paid via simulated gateway or wallet at checkout, 
+          // (like COD), and it's delivered, we can count it as revenue.
+          if (o.payment?.status !== 'paid') {
+            o.payment.status = 'paid';
+            o.payment.paidAt = nowISO();
+            st.stats.ordersTotal = (st.stats.ordersTotal || 0) + 1;
+            st.stats.revenueTotal = (st.stats.revenueTotal || 0) + o.total;
+          }
         }
         logAudit(ctx.user, 'order.status', o.code, { from: o.timeline[o.timeline.length - 2]?.status, to: status });
         pushNotification(st, {
@@ -590,7 +596,8 @@ export function registerAdmin(router) {
         r.status = status;
         r.moderatedAt = nowISO();
         r.moderatedBy = ctx.user.name;
-        if (status === 'approved') recalcRating(st, r.productId);
+        // Recalculate rating whether it was approved or un-approved
+        recalcRating(st, r.productId);
         pushNotification(st, {
           userId: r.userId, type: 'review', level: status === 'approved' ? 'success' : 'warning',
           title: status === 'approved' ? 'نظر شما منتشر شد' : (status === 'rejected' ? 'نظر شما تأیید نشد' : 'نظر شما در حال بررسی است'),
