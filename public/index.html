@@ -18,6 +18,22 @@
 <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
 <link rel="stylesheet" href="/css/app.css?v=bm-v45">
 <title>گرین اپل | فروشگاه لوازم جانبی موبایل و گجت</title>
+  <script id="error-catcher">
+    window.addEventListener('error', function(e) {
+      var ws = document.getElementById('welcomeScreen');
+      if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.remove(); }, 500); }
+      var bs = document.getElementById('bootSplash');
+      if (bs) bs.innerHTML = '<div class="empty" style="color:#ef4444"><h4>خطا در اجرای برنامه</h4><p class="muted small" style="direction:ltr;text-align:left;font-family:monospace;margin:10px 0;background:#1e1e1e;padding:10px;border-radius:6px;max-height:150px;overflow:auto;">' + (e.message || 'Unknown error') + '<br>' + (e.filename || '') + ':' + (e.lineno || '') + '</p><button class="btn btn-primary mt" onclick="window.location.reload(true)">تلاش مجدد</button><br><button class="btn btn-ghost mt-s" onclick="navigator.serviceWorker.getRegistrations().then(function(regs){for(var r of regs)r.unregister();window.location.reload(true);})">حذف کش و تلاش مجدد</button></div>';
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      var ws = document.getElementById('welcomeScreen');
+      if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.remove(); }, 500); }
+      var bs = document.getElementById('bootSplash');
+      if (bs && bs.innerHTML.indexOf('button') === -1) {
+         bs.innerHTML = '<div class="empty" style="color:#ef4444"><h4>خطای شبکه یا سرور</h4><p class="muted small" style="direction:ltr;text-align:left;font-family:monospace;margin:10px 0;background:#1e1e1e;padding:10px;border-radius:6px;max-height:150px;overflow:auto;">' + (e.reason ? (e.reason.message || e.reason) : 'Unknown promise rejection') + '</p><button class="btn btn-primary mt" onclick="window.location.reload(true)">تلاش مجدد</button></div>';
+      }
+    });
+  </script>
 </head>
 <body>
 <!-- ── صفحه خوش‌آمد: تا آماده‌شدن کامل سایت نمایش داده می‌شود، سپس محو می‌شود ── -->
@@ -370,7 +386,7 @@
           if (bs && bs.innerHTML.indexOf('button') === -1) {
              bs.innerHTML = '<div class="empty"><h4>خطا در بارگذاری</h4><p class="muted small">لطفاً اتصال اینترنت خود را بررسی کنید و یا کش مرورگر را پاک کنید.</p><button class="btn btn-primary mt" onclick="window.location.reload(true)">تلاش مجدد</button></div>';
           }
-        }, 8000);
+        }, 4000);
       </script>
 </body>
 </html>
