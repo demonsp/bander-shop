@@ -217,7 +217,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // فایل‌های استاتیک: کش اول + به‌روزرسانی در پس‌زمینه
-  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/css/') || url.pathname.startsWith('/js/') || url.pathname === '/manifest.webmanifest') {
+  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/css/') || url.pathname.startsWith('/js/') || url.pathname.startsWith('/out/') || url.pathname === '/manifest.webmanifest') {
     event.respondWith((async () => {
       const cache = await caches.open(RUNTIME);
       const hit = await cache.match(req);

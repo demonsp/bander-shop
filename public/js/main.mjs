@@ -25,11 +25,12 @@ import { initRouter, navigate, refresh, parseHash } from './router.mjs';
 import { initChat, openChat } from './chat.mjs';
 import './map.mjs';
 import { catName, brandName, prodName, BUILD } from './state.mjs';
+setTimeout(hideWelcome, 10000); // Top-level failsafe
 import { bannerHtml, minimapSvg } from './components.mjs';
 
 // ── راه‌اندازی ──────────────────────────────────────────────
 async function init() {
-  setTimeout(hideWelcome, 10000); // Failsafe
+  
   installDelegation();
   wireStaticControls();
   await boot();
