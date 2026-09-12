@@ -402,18 +402,20 @@ function wireStaticControls() {
 
 function openMobileMenu() {
   drawer({
-      title: t('nav.menu'),
-      body: h`
-        <div class="col">
-          <a class="nav-link" href="#/">${icon('home')} ${t('nav.home')}</a>
-          <a class="nav-link" href="#/products">${icon('grid')} ${t('nav.products')}</a>
-          ${S.categories.filter((c) => !c.parentId).map((c) => h`<a class="nav-link" href="#/category/${c.id}">${icon(catIcon(c.glyph))} ${catName(c)}</a>`)}
-          <div class="divider"></div>
-          <a class="nav-link" href="#/pages/installments">${icon('card')} خرید اقساطی</a>
-          <a class="nav-link" href="#/pages/about">${icon('store')} ${t('nav.about')}</a>
-          <a class="nav-link" href="#/pages/contact">${icon('map')} ${t('nav.contact')}</a>
-          ${S.me ? '' : h`<a class="btn btn-primary btn-block mt-s" href="#/auth">${icon('user')} ${t('nav.login')}</a>`}
-        </div>`,
+    title: h`<div style="display:flex;align-items:center;gap:12px;font-size:16px;font-weight:700">
+      ${icon('menu')} ${t('nav.menu')}
+    </div>`,
+    body: h`
+      <div class="col" style="gap: 8px">
+        <a class="nav-link" href="#/" style="padding: 12px; font-size: 15px; border-bottom: 1px solid var(--border)">${icon('home')} ${t('nav.home')}</a>
+        <a class="nav-link" href="#/products" style="padding: 12px; font-size: 15px; border-bottom: 1px solid var(--border)">${icon('grid')} ${t('nav.products')}</a>
+        ${S.categories.filter((c) => !c.parentId).map((c) => h`<a class="nav-link" href="#/category/${c.id}" style="padding: 12px; font-size: 15px; border-bottom: 1px solid var(--border)">${icon(catIcon(c.glyph))} ${catName(c)}</a>`).join('')}
+        <div class="divider" style="margin: 4px 0"></div>
+        <a class="nav-link" href="#/pages/installments" style="padding: 12px; font-size: 15px; border-bottom: 1px solid var(--border)">${icon('card')} خرید اقساطی</a>
+        <a class="nav-link" href="#/pages/about" style="padding: 12px; font-size: 15px; border-bottom: 1px solid var(--border)">${icon('store')} ${t('nav.about')}</a>
+        <a class="nav-link" href="#/pages/contact" style="padding: 12px; font-size: 15px; border-bottom: 1px solid var(--border)">${icon('map')} ${t('nav.contact')}</a>
+        ${S.me ? '' : h`<a class="btn btn-primary btn-block mt-s" href="#/auth" style="margin-top: 16px">${icon('user')} ${t('nav.login')}</a>`}
+      </div>`,
     });
 }
 

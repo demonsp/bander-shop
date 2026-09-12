@@ -77,13 +77,14 @@ export async function render(ctx) {
                 <span class="grow" style="width:100%">
                 <label class="field">
                   <span class="label">نحوه آشنایی (اختیاری)</span>
-                  <div class="row row-wrap gap-2">
-                    <label class="chip"><input type="radio" name="hearAboutUs" value="" checked hidden><span>انتخاب نشده</span></label>
-                    <label class="chip"><input type="radio" name="hearAboutUs" value="google" hidden><span>جستجوی گوگل</span></label>
-                    <label class="chip"><input type="radio" name="hearAboutUs" value="instagram" hidden><span>اینستاگرام</span></label>
-                    <label class="chip"><input type="radio" name="hearAboutUs" value="telegram" hidden><span>تلگرام</span></label>
-                    <label class="chip"><input type="radio" name="hearAboutUs" value="friend" hidden><span>معرفی دوستان</span></label>
-                  </div>
+                  <select name="hearAboutUs" class="select">
+                    <option value="">(انتخاب کنید)</option>
+                    <option value="google">جستجوی گوگل</option>
+                    <option value="instagram">اینستاگرام</option>
+                    <option value="telegram">تلگرام</option>
+                    <option value="friend">معرفی دوستان</option>
+                    <option value="other">سایر</option>
+                  </select>
                 </label>
               </span>
               </span>
