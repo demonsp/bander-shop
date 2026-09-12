@@ -261,10 +261,17 @@ act('open-select', (e, btn) => {
 });
 
 export function installDelegation() {
+  let lastActionMs = 0;
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-act]');
     if (!el) return;
-    if (el.tagName === 'FORM') return; // فرم‌ها فقط با رویداد submit اجرا می‌شوند، نه کلیک روی فیلدها
+    if (el.disabled || el.classList.contains('busy')) return;
+    if (el.tagName === 'FORM') return;
+
+    // تاخیر کوتاه سراسری برای جلوگیری از تداخل (دابل‌کلیک‌های ناخواسته)
+    const now = Date.now();
+    if (now - lastActionMs < 150) { e.preventDefault(); return; }
+    lastActionMs = now; // فرم‌ها فقط با رویداد submit اجرا می‌شوند، نه کلیک روی فیلدها
     if (el.tagName === 'A') e.preventDefault();
     const name = el.dataset.act;
     const fn = registry.get(name);
@@ -280,6 +287,13 @@ export function installDelegation() {
 
   document.addEventListener('submit', (e) => {
     const form = e.target;
+    if (form.classList.contains('busy') || form.querySelector('button.busy')) { e.preventDefault(); return; }
+    
+    // تاخیر سراسری برای فرم‌ها
+    const now = Date.now();
+    if (now - lastActionMs < 300) { e.preventDefault(); return; }
+    lastActionMs = now;
+
     const name = form?.dataset?.act;
     if (!name) return;
     e.preventDefault();
