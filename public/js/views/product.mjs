@@ -40,6 +40,7 @@ export async function render(ctx) {
     <div class="pdp">
       <div class="gallery">
         <div class="gal-main" data-act="lightbox" data-imgs='${esc(JSON.stringify(media))}' data-i="0" role="button" tabindex="0" aria-label="${t('pdp.zoomHint')}">
+        <div class="watermark-overlay"><div class="watermark-text">${S.settings?.store?.nameEn || S.settings?.store?.name || ''}</div></div>
           ${media[0]?.kind === 'video'
             ? h`<video src="${media[0].url}" poster="${media[0].poster}" controls playsinline preload="metadata" class="gal-video"></video>`
             : (images[0] ? h`<img src="${images[0]}" alt="${prodName(p)}" data-glyph="${p.glyph}">` : raw(`<svg class="ic"><use href="#i-${p.glyph || 'box'}"/></svg>`))}

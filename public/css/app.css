@@ -1585,3 +1585,29 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
   0% { transform: translateY(0) rotate(0deg) rotateX(0deg); opacity: 1; }
   100% { transform: translateY(110vh) rotate(720deg) rotateX(720deg); opacity: 0; }
 }
+
+/* ── واتر مارک (کپی رایت) ── */
+.watermark-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+}
+.watermark-text {
+  font-size: clamp(24px, 5vw, 48px);
+  font-weight: 900;
+  color: rgba(150, 150, 150, 0.15);
+  transform: rotate(-35deg);
+  user-select: none;
+  white-space: nowrap;
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.1), -1px -1px 0 rgba(0,0,0,0.1);
+  mix-blend-mode: overlay;
+}
+[data-theme="dark"] .watermark-text, [data-mode="dark"] .watermark-text {
+  color: rgba(255, 255, 255, 0.08);
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+}

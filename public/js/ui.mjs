@@ -248,7 +248,8 @@ export function lightbox(images, startIndex = 0, title = '') {
     const it = list[i];
     const media = it.kind === 'video'
       ? `<video class="lb-img lb-video" src="${it.url}" controls playsinline autoplay preload="metadata"></video>`
-      : `<img class="lb-img" src="${it.url}" alt="${title || t('img.alt')}" decoding="async" draggable="false">`;
+      : `<img class="lb-img" src="${it.url}" alt="${title || t('img.alt')}" decoding="async" draggable="false">
+       <div class="watermark-overlay"><div class="watermark-text">${document.querySelector('b.ws-name')?.textContent || 'Yassaei'}</div></div>`;
     return h`
     <figure class="lb-figure">
       ${raw(media)}
