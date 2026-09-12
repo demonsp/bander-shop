@@ -129,6 +129,22 @@ html[data-port="off"] .port-deco{display:none !important}
 .port-deco{color:var(--accent);position:fixed;inset-inline:0;bottom:0;height:min(38vh,320px);z-index:-1;pointer-events:none;opacity:.5}
 .port-deco svg{width:100%;height:100%}
 [data-mode="light"] .port-deco{opacity:.42}
+.deco-waves, .deco-tehran, .deco-mountain, .deco-bazaar { display: none; transition: opacity 0.5s ease; }
+
+html[data-theme="default"] .deco-waves,
+html[data-theme="chitgar"] .deco-waves { display: block; }
+
+html[data-theme="tehran-nights"] .deco-tehran,
+html[data-theme="milad"] .deco-tehran,
+html[data-theme="azadi"] .deco-tehran,
+html[data-theme="valiasr"] .deco-tehran { display: block; }
+
+html[data-theme="tochal"] .deco-mountain,
+html[data-theme="darband"] .deco-mountain,
+html[data-theme="tajrish"] .deco-mountain { display: block; }
+
+html[data-theme="bazaar"] .deco-bazaar,
+html[data-theme="lalehzar"] .deco-bazaar { display: block; }
 
 /* ── چیدمان ──────────────────────────────────────────────── */
 .wrap{width:100%;max-width:var(--container);margin-inline:auto;padding-inline:16px}

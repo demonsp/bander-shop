@@ -218,7 +218,6 @@ act('captcha-check', async (e, input) => {
       st.textContent = err?.message || t('captcha.hint');
       st.style.color = 'var(--danger)';
     }
-    input.value = '';
     await loadCaptcha(box);
   } finally {
     delete box.dataset.verifying;
@@ -240,7 +239,7 @@ act('open-select', (e, btn) => {
 
   const s = adaptive({
     title,
-    body: h`<div class="col" style="gap:4px; padding-bottom: 20px;">
+    body: h`<div class="col" style="gap:4px; padding-bottom: 20px; max-height: 60vh; overflow-y: auto;">
       ${opts.map(o => h`<button class="btn" style="justify-content: flex-start; padding: 14px 16px; background: ${String(o.value) === String(val) ? 'var(--primary)' : 'var(--surface-2)'}; color: ${String(o.value) === String(val) ? '#fff' : 'inherit'}; border-radius: 12px; font-size: 15px;" data-v="${o.value}">${o.label}</button>`).join('')}
     </div>`
   });
