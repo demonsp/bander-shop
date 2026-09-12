@@ -353,6 +353,7 @@ function openMobileMenu() {
           <a class="nav-link" href="#/products">${icon('grid')} ${t('nav.products')}</a>
           ${S.categories.filter((c) => !c.parentId).map((c) => h`<a class="nav-link" href="#/category/${c.id}">${icon(catIcon(c.glyph))} ${catName(c)}</a>`)}
           <div class="divider"></div>
+          <a class="nav-link" href="#/pages/installments">${icon('card')} خرید اقساطی</a>
           <a class="nav-link" href="#/pages/about">${icon('store')} ${t('nav.about')}</a>
           <a class="nav-link" href="#/pages/contact">${icon('map')} ${t('nav.contact')}</a>
           ${S.me ? '' : h`<a class="btn btn-primary btn-block mt-s" href="#/auth">${icon('user')} ${t('nav.login')}</a>`}

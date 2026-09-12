@@ -369,8 +369,16 @@ export function registerCatalog(router) {
   });
 
   router.get('/api/pages/:key', async (ctx) => {
-    const key = V.oneOf(ctx.params.key, ['about', 'guide', 'service', 'faq', 'terms', 'privacy', 'insurance', 'ticketRules', 'bugReport', 'contact'], 'key');
-    const page = ctx.state.pages?.[key];
+    const key = V.oneOf(ctx.params.key, ['about', 'guide', 'service', 'faq', 'terms', 'privacy', 'insurance', 'ticketRules', 'bugReport', 'contact', 'installments'], 'key');
+    let page = ctx.state.pages?.[key];
+    if (!page && key === 'installments') {
+      page = {
+        title: 'راهنمای خرید اقساطی',
+        body: '<h3>شرایط خرید اقساطی</h3><p>در این فروشگاه می‌توانید از طریق درگاه‌های <strong>اسنپ‌پی، ازکی‌وام و دیجی‌پی</strong> خرید اقساطی انجام دهید.</p><ul><li>حداقل مبلغ خرید برای ثبت سفارش اقساطی ۱ میلیون تومان است.</li><li>تأیید احراز هویت (KYC) از پنل کاربری الزامی است.</li></ul>',
+        titleEn: 'Installments Guide',
+        bodyEn: '<p>You can purchase via SnappPay, AzkiVam, or DigiPay.</p>'
+      };
+    }
     if (!page) throw notFound('page_not_found', 'صفحه یافت نشد.');
     sendJson(ctx.res, 200, { ok: true, key, page, settings: { store: ctx.state.settings.store, shipping: publicShipping(ctx.state.settings.shipping), plus: publicPlus(ctx.state.settings.plus, ctx.state.settings.features) } });
   });

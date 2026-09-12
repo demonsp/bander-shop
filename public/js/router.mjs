@@ -164,7 +164,7 @@ export async function render(ctx) {
   loadingBar(false);
   document.dispatchEvent(new CustomEvent('view:rendered', { detail: ctx }));
   markActiveNav(ctx.path);
-  if (!ctx.keepScroll) window.scrollTo(0, 0);
+  if (!ctx.keepScroll) { window.scrollTo(0, 0); setTimeout(() => window.scrollTo(0, 0), 50); }
   try { view.closest('#view')?.focus({ preventScroll: true }); } catch { /* noop */ }
 }
 
