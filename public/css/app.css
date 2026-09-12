@@ -1513,5 +1513,5 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
 
 /* Hide desktop nav and mega menu on mobile */
 @media (max-width: 900px) {
-  .mainnav { display: none !important; }
+  .nav-more { display: none !important; }
 }

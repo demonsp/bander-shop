@@ -77,14 +77,11 @@ export async function render(ctx) {
                 <span class="grow" style="width:100%">
                 <label class="field">
                   <span class="label">نحوه آشنایی (اختیاری)</span>
-                  <select name="hearAboutUs" class="select">
-                    <option value="">(انتخاب کنید)</option>
-                    <option value="google">جستجوی گوگل</option>
-                    <option value="instagram">اینستاگرام</option>
-                    <option value="telegram">تلگرام</option>
-                    <option value="friend">معرفی دوستان</option>
-                    <option value="other">سایر</option>
-                  </select>
+                  <input type="hidden" name="hearAboutUs" value="">
+                  <button type="button" class="select" data-act="choose-hear" style="text-align: right; display: flex; justify-content: space-between; align-items: center;">
+                    <span data-txt>(انتخاب کنید)</span>
+                    ${icon('chevron-down')}
+                  </button>
                 </label>
               </span>
               </span>
@@ -185,6 +182,30 @@ export function mount(root, ctx) {
   });
 
   // ── اکشن‌ها ──
+  act('choose-hear', (e, btn) => {
+    const opts = [
+      { v: '', l: '(انتخاب کنید)' },
+      { v: 'google', l: 'جستجوی گوگل' },
+      { v: 'instagram', l: 'اینستاگرام' },
+      { v: 'telegram', l: 'تلگرام' },
+      { v: 'friend', l: 'معرفی دوستان' },
+      { v: 'other', l: 'سایر' },
+    ];
+    const s = sheet({
+      title: 'نحوه آشنایی (اختیاری)',
+      body: h`<div class="col" style="gap:4px; padding-bottom: 20px;">
+        ${opts.map(o => h`<button class="btn" style="justify-content: flex-start; padding: 14px 16px; background: var(--surface-2); border-radius: 12px; font-size: 15px;" data-v="${o.v}">${o.l}</button>`).join('')}
+      </div>`
+    });
+    s.panel.querySelectorAll('button[data-v]').forEach(b => {
+      b.addEventListener('click', () => {
+        btn.parentElement.querySelector('input[type="hidden"]').value = b.dataset.v;
+        btn.querySelector('[data-txt]').textContent = b.textContent;
+        s.close();
+      });
+    });
+  });
+
   act('login-pass', async (e, form) => {
     e.preventDefault();
     clearInvalid(form);
