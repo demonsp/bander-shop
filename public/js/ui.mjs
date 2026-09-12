@@ -285,6 +285,9 @@ export function lightbox(images, startIndex = 0, title = '') {
       const wireFig = () => {
         const f = fig(); if (!f) return;
         const media = f.querySelector('.lb-img');
+        f.querySelector('[data-zin]')?.addEventListener('click', () => zoomBy(1.5));
+        f.querySelector('[data-zout]')?.addEventListener('click', () => zoomBy(1/1.5));
+        f.querySelector('[data-zreset]')?.addEventListener('click', () => { reset(); apply(f); });
         f.addEventListener('wheel', (e) => {
           if (list[i].kind === 'video') return;
           e.preventDefault();

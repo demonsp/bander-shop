@@ -19,7 +19,7 @@ function withQuery(ctx, patch) {
     if (v === null || v === '' || v === undefined) p.delete(k);
     else p.set(k, v);
   }
-  p.delete('page');
+  if (!('page' in patch)) p.delete('page');
   const path = ctx.params.id ? `/category/${ctx.params.id}` : '/products';
   return `#${path}${p.toString() ? `?${p}` : ''}`;
 }

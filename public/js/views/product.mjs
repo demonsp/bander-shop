@@ -63,9 +63,9 @@ export async function render(ctx) {
         <h1 class="buy-title">${prodName(p)}</h1>
         ${!isFa() && p.name ? h`<div class="buy-title-en">${p.name}</div>` : ''}
         <div class="row row-wrap mt-s">
-          <span class="badge-pill bp-accent">${icon(catIconSafe(p.glyph))} ${catName(chain[chain.length - 1])}</span>
-          <span class="badge-pill ${p.authenticity === 'original' ? 'bp-success' : p.authenticity === 'highcopy' ? 'bp-warn' : 'bp-muted'}">${t(`auth.${p.authenticity || 'generic'}`)}</span>
-          ${p.featured ? h`<span class="badge-pill bp-violet">${icon('star')} ${t('home.featured')}</span>` : ''}
+          <a href="#/products?cat=${p.categoryId}" class="badge-pill bp-accent">${icon(catIconSafe(p.glyph))} ${catName(chain[chain.length - 1])}</a>
+          <a href="#/products?authenticity=${p.authenticity || 'generic'}" class="badge-pill ${p.authenticity === 'original' ? 'bp-success' : p.authenticity === 'highcopy' ? 'bp-warn' : 'bp-muted'}">${t(`auth.${p.authenticity || 'generic'}`)}</a>
+          ${p.featured ? h`<a href="#/products?sort=popular" class="badge-pill bp-violet">${icon('star')} ${t('home.featured')}</a>` : ''}
         </div>
         <div class="pc-rate mt-s">${stars(p.ratingAvg)} <span class="muted small">${fmtNum(rstats.avg || p.ratingAvg)} · ${fmtNum(rstats.count || p.ratingCount)} ${t('common.reviews')}</span></div>
 
