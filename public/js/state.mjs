@@ -188,6 +188,14 @@ export function applyPrefs() {
   if (tb) tb.hidden = u.showTicker === false && !S.ticker.length;
 
   emit('theme', { mode, loc });
+
+  setTimeout(() => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      const bg = getComputedStyle(root).getPropertyValue('--bg').trim();
+      if (bg) meta.setAttribute('content', bg);
+    }
+  }, 50);
 }
 
 function clampInt(v, dflt, min, max) {

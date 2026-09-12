@@ -63,8 +63,13 @@ export function toastApiError(err, fallbackKey = 'err.generic') {
 // ── لایه‌ها (مودال / کشو / شیت) ──────────────────────────────
 const layerStack = [];
 function lockScroll(on) {
-  if (on) document.body.classList.add('locked');
-  else if (!layerStack.length) document.body.classList.remove('locked');
+  if (on) {
+    document.body.classList.add('locked');
+    document.documentElement.classList.add('locked');
+  } else if (!layerStack.length) {
+    document.body.classList.remove('locked');
+    document.documentElement.classList.remove('locked');
+  }
 }
 
 /**

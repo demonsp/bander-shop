@@ -175,7 +175,7 @@ function markActiveNav(path) {
   document.querySelectorAll('.mobile-nav a[data-mn]').forEach((a) => {
     const key = a.dataset.mn;
     const on = (key === 'home' && path === '/')
-      || (key === 'products' && (path.startsWith('/products') || path.startsWith('/category') || path.startsWith('/product')))
+      || (key === 'cats' && (path.startsWith('/products') || path.startsWith('/category') || path.startsWith('/product')))
       || (key === 'search' && path.startsWith('/search'))
       || (key === 'cart' && path.startsWith('/cart'))
       || (key === 'me' && (path.startsWith('/account') || path.startsWith('/auth')));

@@ -70,7 +70,7 @@
 }
 
 /* ── ریست ────────────────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
 body{
@@ -712,7 +712,7 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--bord
 .notice-danger .ic{color:var(--danger)}
 .notice-success{background:var(--success-soft);border-color:rgba(34,197,94,.3)}
 .notice-success .ic{color:var(--success)}
-.empty{padding:44px 18px;text-align:center;color:var(--muted)}
+.empty{padding:44px 18px;text-align:center;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40vh}
 .empty .ic{width:52px;height:52px;opacity:.35;margin:0 auto 12px}
 .empty h4{font-size:16px;color:var(--text);margin-bottom:6px}
 .empty p{font-size:13.4px;max-width:400px;margin-inline:auto;line-height:1.9}
@@ -877,7 +877,7 @@ kbd{background:var(--surface-3);border:1px solid var(--border);border-bottom-wid
 }
 
 /* ── ابزارهای لایهٔ رابط (مودال، توست، اسکلت) ─────────────── */
-body.locked{overflow:hidden}
+body.locked,html.locked{overflow:hidden !important;touch-action:none}
 .layer-x{position:absolute;top:10px;inset-inline-end:10px;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);z-index:3;transition:all var(--dur)}
 .layer-x:hover{color:var(--danger);border-color:var(--danger)}
 .layer-x .ic{width:17px;height:17px}
