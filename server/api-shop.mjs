@@ -562,6 +562,11 @@ export function registerShop(router) {
         }
         o.payment.status = 'refunded';
       }
+      const pts = Math.floor(o.total / 100000);
+      const userRec = st.users.find(x => x.id === o.userId);
+      if (userRec && pts > 0) {
+        userRec.points = Math.max(0, (userRec.points || 0) - pts);
+      }
       if (o.couponCode) {
         const c = st.coupons.find((x) => x.code === o.couponCode);
         if (c) c.used = Math.max(0, (c.used || 1) - 1);

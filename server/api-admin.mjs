@@ -536,6 +536,15 @@ export function registerAdmin(router) {
             o.refund = { amount: back, method: 'wallet', at: nowISO() };
           }
           if (o.payment) o.payment.status = status === 'cancelled' && o.payment.status !== 'paid' ? 'cancelled' : 'refunded';
+          
+          if (u) {
+            const pts = Math.floor(o.total / 100000);
+            if (pts > 0) u.points = Math.max(0, (u.points || 0) - pts);
+          }
+          if (o.couponCode) {
+            const c = st.coupons.find((x) => x.code === o.couponCode);
+            if (c) c.used = Math.max(0, (c.used || 1) - 1);
+          }
           invalidateSearchIndex();
         }
         if (status === 'delivered') {
@@ -1193,10 +1202,13 @@ export function registerAdmin(router) {
       const pool = lotteryEntries(st, l);
       if (!pool.length) throw badRequest('no_entries', 'شرکت‌کننده‌ای وجود ندارد.');
       const winners = [];
-      const copy = [...pool];
-      for (let i = 0; i < Math.min(l.winnersCount, copy.length); i++) {
+      let copy = [...pool];
+      for (let i = 0; i < l.winnersCount && copy.length > 0; i++) {
         const idx = Math.floor(Math.random() * copy.length);
-        winners.push(copy.splice(idx, 1)[0]);
+        const winnerId = copy[idx];
+        winners.push(winnerId);
+        // Remove all entries of the same winner so they don't win multiple times
+        copy = copy.filter(id => id !== winnerId);
       }
       l.winners = winners.map((uidv) => ({ userId: uidv, name: st.users.find((u) => u.id === uidv)?.name || uidv, at: nowISO() }));
       l.status = 'drawn';
