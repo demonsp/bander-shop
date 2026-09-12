@@ -23,6 +23,7 @@ const PAGES = [
   { key: 'ticketRules', icon: 'ticket', blocks: ['hero', 'rules'] },
   { key: 'bugReport', icon: 'bug', blocks: ['hero', 'body', 'hints'] },
   { key: 'contact', icon: 'phone', blocks: ['hero'] },
+  { key: 'installments', icon: 'card', blocks: ['hero', 'body', 'rules', 'sections'] },
 ];
 
 let DATA = {};
@@ -54,6 +55,7 @@ function pageLabel(key) {
     about: t('footer.about'), guide: t('footer.guide'), service: t('footer.service'), faq: t('footer.faq'),
     terms: t('footer.terms'), privacy: t('footer.privacy'), insurance: t('footer.insurance'),
     ticketRules: t('acc.ticketRules'), bugReport: t('feedback.bug'), contact: t('footer.contact'),
+    installments: L('خرید اقساطی', 'Installments')
   };
   return map[key] || key;
 }

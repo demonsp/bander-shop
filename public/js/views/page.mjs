@@ -30,7 +30,7 @@ function sectionCards(sections) {
   return sections.map((s) => h`
     <div class="card mt">
       <h2 class="page-h2">${esc(fa(s, 'title'))}</h2>
-      ${s.body || s.bodyEn ? h`<div class="page-body"><p>${esc(fa(s, 'body'))}</p></div>` : ''}
+      ${s.body || s.bodyEn ? h`<div class="page-body">${raw(fa(s, 'body'))}</div>` : ''}
       ${bullets(list(s, 'list').length ? list(s, 'list') : (s.list || []))}
     </div>`).join('');
 }
@@ -134,7 +134,7 @@ function textHtml(page) {
   return h`
     ${hero(page)}
     ${page.intro || page.introEn ? h`<p class="page-lead">${esc(isFa() ? page.intro : (page.introEn || page.intro))}</p>` : ''}
-    ${page.body || page.bodyEn ? h`<div class="card"><div class="page-body"><p>${esc(isFa() ? page.body : (page.bodyEn || page.body))}</p></div></div>` : ''}
+    ${page.body || page.bodyEn ? h`<div class="card"><div class="page-body">${raw(isFa() ? page.body : (page.bodyEn || page.body))}</div></div>` : ''}
     ${page.rules?.length || page.rulesEn?.length ? h`
       <div class="card mt">
         <h2 class="page-h2">${icon('check')} ${t('page.rulesTitle')}</h2>

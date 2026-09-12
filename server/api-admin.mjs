@@ -1005,7 +1005,7 @@ export function registerAdmin(router) {
 
   A('GET', '/api/admin/pages', 'pages.edit', async (ctx) => sendJson(ctx.res, 200, { ok: true, pages: ctx.state.pages }));
   A('PATCH', '/api/admin/pages/:key', 'pages.edit', async (ctx) => {
-    const key = V.oneOf(ctx.params.key, ['about', 'guide', 'service', 'faq', 'terms', 'privacy', 'insurance', 'ticketRules', 'bugReport', 'contact'], 'key');
+    const key = V.oneOf(ctx.params.key, ['about', 'guide', 'service', 'faq', 'terms', 'privacy', 'insurance', 'ticketRules', 'bugReport', 'contact', 'installments'], 'key');
     const out = await db.tx((st) => {
       const patch = ctx.body?.value && typeof ctx.body.value === 'object' ? ctx.body.value : {};
       if (Array.isArray(st.pages[key]) || key === 'faq') {
@@ -1051,18 +1051,18 @@ export function registerAdmin(router) {
     const buf = Buffer.from(JSON.stringify(snap, null, 2), 'utf8');
     ctx.res.writeHead(200, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Content-Disposition': `attachment; filename="greenapple-backup-${String(ctx.params.id).replace(/[^a-zA-Z0-9-]/g, '')}.json"`,
+      'Content-Disposition': `attachment; filename="yassaei-backup-${String(ctx.params.id).replace(/[^a-zA-Z0-9-]/g, '')}.json"`,
       'Content-Length': String(buf.length),
     });
     ctx.res.end(buf);
   });
   A('GET', '/api/admin/dump', 'settings.edit', async (ctx) => {
     const st = db.raw;
-    const payload = { exportedAt: nowISO(), store: st.settings?.store?.name || 'Green Apple', db: st };
+    const payload = { exportedAt: nowISO(), store: st.settings?.store?.name || 'Yassaei Electronics', db: st };
     const buf = Buffer.from(JSON.stringify(payload, null, 2), 'utf8');
     ctx.res.writeHead(200, {
       'Content-Type': 'application/json; charset=utf-8',
-      'Content-Disposition': 'attachment; filename="greenapple-full-dump.json"',
+      'Content-Disposition': 'attachment; filename="yassaei-full-dump.json"',
       'Content-Length': String(buf.length),
     });
     ctx.res.end(buf);

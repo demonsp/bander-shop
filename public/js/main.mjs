@@ -200,7 +200,7 @@ function renderNav() {
     { key: '/pages/stats', href: '#/stats', icon: 'chart', label: t('nav.stats'), show: feat('publicStats') },
     { key: '/price-check', href: '#/price-check', icon: 'barcode', label: t('priceCheck.title'), show: feat('priceCheckDevice') },
     { key: '/lottery', href: '#/lottery', icon: 'gift2', label: t('lot.nav'), show: true },
-    { key: '/pages/installments', href: '#/pages/installments', icon: 'credit-card', label: isFa() ? 'خرید اقساطی' : 'Installments', show: true },
+    { key: '/pages/installments', href: '#/pages/installments', icon: 'card', label: isFa() ? 'خرید اقساطی' : 'Installments', show: true },
     { key: '/pages/about', href: '#/pages/about', icon: 'store', label: t('nav.about'), show: true },
     { key: '/pages/contact', href: '#/pages/contact', icon: 'map', label: t('nav.contact'), show: true },
   ].filter((x) => x.show);
