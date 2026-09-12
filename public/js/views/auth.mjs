@@ -7,7 +7,7 @@ import { api } from '../lib/api.mjs';
 import { S, refreshBootstrap, mergeGuestData, loadCart, feat } from '../state.mjs';
 import { field, checkField, captchaField } from '../components.mjs';
 import { toast, toastSuccess, toastApiError, withBusy, clearInvalid, markInvalid, sheet } from '../ui.mjs';
-import { act, loadCaptcha, refreshCaptchaIn } from '../actions.mjs';
+import { act, loadCaptcha, refreshCaptchaIn, getAct } from '../actions.mjs';
 import { navigate } from '../router.mjs';
 
 
@@ -15,6 +15,13 @@ import { navigate } from '../router.mjs';
 async function gateCaptcha(form) {
   const box = form?.querySelector?.('[data-captcha]');
   if (!box || box.hidden) return true;
+  
+  const input = box.querySelector('[name=captchaAnswer]');
+  if (input && String(input.value).trim() && !box.dataset.verifying && !box.querySelector('[data-ctok]')?.value) {
+    const fn = getAct('captcha-check');
+    if (fn) await fn(new Event('change'), input);
+  }
+
   // اگر تأیید در جریان است (تایپ تازه تمام شده) تا ۲٫۵ ثانیه صبر کن
   if (box.dataset.verifying) {
     await new Promise((r) => {

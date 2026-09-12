@@ -212,10 +212,16 @@ act('captcha-check', async (e, input) => {
     const cb = box.querySelector('[name=captchaBox]');
     if (cb) { cb.checked = true; cb.disabled = true; }
     input.disabled = true;
-    if (st) st.textContent = t('captcha.solved');
+    if (st) { st.textContent = t('captcha.solved'); st.style.color = ''; }
   } catch (err) {
-    if (st) st.textContent = err?.message || t('captcha.hint');
-    await loadCaptcha(box);
+    if (st) {
+      st.textContent = err?.message || t('captcha.hint');
+      st.style.color = 'var(--danger)';
+    }
+    input.value = '';
+    if (err?.code === 'captcha_expired') {
+      await loadCaptcha(box);
+    }
   } finally {
     delete box.dataset.verifying;
   }
@@ -279,7 +285,7 @@ export function installDelegation() {
     const el = e.target;
     if (!el.matches?.('[data-act=captcha-check]')) return;
     clearTimeout(capDebounce);
-    capDebounce = setTimeout(() => { const fn = registry.get('captcha-check'); if (fn && !el.disabled) fn(new Event('change'), el); }, 450);
+    capDebounce = setTimeout(() => { const fn = registry.get('captcha-check'); if (fn && !el.disabled) fn(new Event('change'), el); }, 1200);
   });
 
   // کلیک روی دکمه‌های شمارنده
