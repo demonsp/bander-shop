@@ -246,14 +246,17 @@ function contactHtml(page) {
       </div>
 
       <aside class="col">
-        ${safeHref(socials.telegram) ? h`
+        ${safeHref(socials.instagram) || safeHref(socials.telegram) ? h`
         <div class="card">
-          <h2 class="page-h2">${icon('send')} ${t('contact.tgBotTitle')}</h2>
-          <p class="muted small">${t('contact.tgBotText')}</p>
-          <a class="btn btn-primary btn-sm mt-s" href="${esc(safeHref(socials.telegram))}" target="_blank" rel="noopener">${icon('send')} ${t('contact.tgBotBtn')}</a>
+          <h2 class="page-h2">${icon('globe')} ${t('contact.socials')}</h2>
+          <p class="muted small">${t('contact.socialsDesc', { default: 'ما را در شبکه‌های اجتماعی دنبال کنید.' })}</p>
+          <div class="row row-wrap mt-s" style="gap: 12px;">
+            ${safeHref(socials.instagram) ? h`<a class="btn btn-outline btn-sm" href="${esc(safeHref(socials.instagram))}" target="_blank" rel="noopener">${icon('camera')} ${t('social.instagram')}</a>` : ''}
+            ${safeHref(socials.telegram) ? h`<a class="btn btn-primary btn-sm" href="${esc(safeHref(socials.telegram))}" target="_blank" rel="noopener">${icon('send')} ${t('contact.tgBotBtn')}</a>` : ''}
+          </div>
         </div>` : ''}
 
-        <div class="card ${safeHref(socials.telegram) ? 'mt' : ''}">
+        <div class="card ${safeHref(socials.telegram) || safeHref(socials.instagram) ? 'mt' : ''}">
           <h2 class="page-h2">${icon('map')} ${t('contact.mapTitle')}</h2>
           <div class="minimap" data-act="open-map" role="button" tabindex="0" aria-label="${t('contact.mapTitle')}">
             ${raw(minimapSvg())}
