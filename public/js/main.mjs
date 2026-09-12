@@ -222,7 +222,7 @@ function renderNav() {
       const brands = S.brands.slice(0, 10);
       
       let html = `<a href="#/category/${catId}" class="mega-see-all">${t('nav.allCategories')} ${catName(S.categories.find(c => c.id === catId) || {})} ${icon('chevron-left')}</a>`;
-      html += '<div class="mega-sub-grid">';
+      html += '<div class="mega-sub-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">';
       
       if (subCats.length) {
         html += '<div class="mega-sub-col"><h3>دسته‌بندی‌های زیرمجموعه</h3>';
@@ -232,11 +232,11 @@ function renderNav() {
         html += '</div>';
       }
       
-      html += '<div class="mega-sub-col"><h3>برندهای پرطرفدار این دسته</h3>';
+      html += `<div class="mega-sub-col" style="${!subCats.length ? 'grid-column: 1 / -1;' : ''}"><h3>برندهای پرطرفدار این دسته</h3><div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
       brands.forEach(b => {
-        html += `<a href="#/products?cat=${catId}&brand=${b.id}">${brandName(b)}</a>`;
+        html += `<a href="#/products?cat=${catId}&brand=${b.id}" class="chip" style="margin-bottom: 0;">${brandName(b)}</a>`;
       });
-      html += '</div></div>';
+      html += '</div></div></div>';
       
       megaContent.innerHTML = html;
     };

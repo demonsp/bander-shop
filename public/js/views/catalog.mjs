@@ -136,10 +136,10 @@ export async function render(ctx) {
         <div class="toolbar">
           <span class="muted small">${fmtNum(data.total || 0)} ${t('catalog.count')}</span>
           <span class="grow"></span>
-          <label class="row" >
-            <span class="muted small nowrap">${t('common.sort')}</span>
-            <button type="button" class="input" data-act="choose-sort" style="text-align: right; display: flex; justify-content: space-between; align-items: center; min-width: 140px; padding-block: 8px; cursor: pointer; gap: 8px;">
-              <span data-txt>${t(`catalog.sort.${sort}`)}</span>
+          <label class="row" style="flex-wrap: nowrap;" >
+            <span class="muted small nowrap" style="flex-shrink: 0;">${t('common.sort')}</span>
+            <button type="button" class="btn" data-act="choose-sort" style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 11px; padding: 7px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 140px; font-size: 14px; font-weight: 500; color: var(--text); flex-shrink: 0;">
+              <span data-txt style="white-space: nowrap;">${t(`catalog.sort.${sort}`)}</span>
               ${icon('chevron-down')}
             </button>
           </label>
