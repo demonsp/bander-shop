@@ -57,6 +57,19 @@ const FIELDS = {
     ] },
   ],
   theme: [
+    { k: 'theme', label: () => L('قالب ظاهری (تم)', 'Design Theme'), type: 'select', options: () => [
+      ['default', L('پیش‌فرض (یاسایی/گرین اپل)', 'Default')],
+      ['tehran-nights', L('شب‌های تهران', 'Tehran Nights')],
+      ['milad', L('برج میلاد', 'Milad Tower')],
+      ['azadi', L('میدان آزادی', 'Azadi Square')],
+      ['lalehzar', L('لاله‌زار', 'Lalehzar')],
+      ['tochal', L('توچال', 'Tochal')],
+      ['valiasr', L('ولیعصر', 'Valiasr')],
+      ['bazaar', L('بازار بزرگ', 'Grand Bazaar')],
+      ['chitgar', L('چیتگر', 'Chitgar')],
+      ['tajrish', L('تجریش', 'Tajrish')],
+      ['darband', L('دربند', 'Darband')]
+    ] },
     { k: 'accent', label: () => t('adm.tAccent'), type: 'color' },
     { k: 'mode', label: () => t('adm.tMode'), type: 'select', options: () => [['dark', t('theme.dark')], ['light', t('theme.light')]] },
     { k: 'bgStyle', label: () => t('adm.tBg'), type: 'select', options: () => [['waves', L('موج و بندر', 'Waves & port')], ['grid', L('شبکه‌ای', 'Grid')], ['plain', L('ساده', 'Plain')]] },

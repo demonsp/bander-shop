@@ -171,12 +171,16 @@ export async function render(ctx) {
 function markActiveNav(ctx) {
   const path = ctx.path;
   const isDeals = path === '/products' && ctx.query.get('discount') === '1';
+  const isNew = path === '/products' && ctx.query.get('sort') === 'newest';
+  
   document.querySelectorAll('.nav-link[data-nav-key]').forEach((a) => {
     let active = false;
     if (a.dataset.navKey === '/deals') {
       active = isDeals;
+    } else if (a.dataset.navKey === '/new') {
+      active = isNew;
     } else if (a.dataset.navKey === '/products') {
-      active = path === '/products' && !isDeals;
+      active = path === '/products' && !isDeals && !isNew;
     } else {
       active = a.dataset.navKey === path || (a.dataset.navKey !== '/' && path.startsWith(a.dataset.navKey));
     }

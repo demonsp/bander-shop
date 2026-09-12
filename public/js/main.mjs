@@ -197,7 +197,7 @@ function renderNav() {
   const extra = [
     { key: '/deals', href: '#/products?discount=1', icon: 'percent', label: t('nav.deals'), show: feat('coupons') },
     { key: '/new', href: '#/products?sort=newest', icon: 'sparkles', label: t('nav.new'), show: true },
-    { key: '/pages/stats', href: '#/stats', icon: 'chart', label: t('nav.stats'), show: feat('publicStats') },
+    { key: '/stats', href: '#/stats', icon: 'chart', label: t('nav.stats'), show: feat('publicStats') },
     { key: '/price-check', href: '#/price-check', icon: 'barcode', label: t('priceCheck.title'), show: feat('priceCheckDevice') },
     { key: '/lottery', href: '#/lottery', icon: 'gift2', label: t('lot.nav'), show: true },
     { key: '/pages/installments', href: '#/pages/installments', icon: 'card', label: isFa() ? 'خرید اقساطی' : 'Installments', show: true },
