@@ -52,7 +52,7 @@ function lotteryEntries(st, l) {
 export function registerAdmin(router) {
   const A = (m, p, perm, h, opts) => router.add(m, p, async (ctx) => {
     ctx.requireUser();
-    ctx.requirePerm(perm);
+    if (perm) ctx.requirePerm(perm);
     return h(ctx);
   }, opts);
 
@@ -231,11 +231,15 @@ export function registerAdmin(router) {
     sendJson(ctx.res, 200, { ok: true, product: adminProduct(created) });
   });
 
-  A('PATCH', '/api/admin/products/:id', 'products.edit', async (ctx) => {
+  A('PATCH', '/api/admin/products/:id', null, async (ctx) => {
     const id = V.id(ctx.params.id, 'شناسه');
     const priceOnly = Object.keys(ctx.body).every((k) => ['price', 'oldPrice', 'stock', 'active', 'featured'].includes(k));
-    if (priceOnly && (ctx.body.price !== undefined || ctx.body.oldPrice !== undefined)) ctx.requirePerm('products.price');
-    if (priceOnly && ctx.body.stock !== undefined) ctx.requirePerm('products.stock');
+    if (priceOnly) {
+      if (ctx.body.price !== undefined || ctx.body.oldPrice !== undefined) ctx.requirePerm('products.price');
+      if (ctx.body.stock !== undefined) ctx.requirePerm('products.stock');
+    } else {
+      ctx.requirePerm('products.edit');
+    }
     const payload = readProductPayload(ctx.body, true);
     const updated = await db.tx((st) => {
       const p = st.products.find((x) => x.id === id);
@@ -593,9 +597,10 @@ export function registerAdmin(router) {
     });
   });
 
-  A('PATCH', '/api/admin/reviews/:id', 'reviews.moderate', async (ctx) => {
+  A('PATCH', '/api/admin/reviews/:id', null, async (ctx) => {
     const id = V.id(ctx.params.id, 'شناسه');
     const status = ctx.body?.status ? V.oneOf(ctx.body.status, ['pending', 'approved', 'rejected'], 'status') : null;
+    if (status) ctx.requirePerm('reviews.moderate');
     const reply = ctx.body?.reply !== undefined ? V.optStr(ctx.body.reply, { max: 1200, field: 'پاسخ' }) : undefined;
     if (reply !== undefined) ctx.requirePerm('reviews.reply');
     const out = await db.tx((st) => {
@@ -799,8 +804,12 @@ export function registerAdmin(router) {
     });
   });
 
-  A('PATCH', '/api/admin/users/:id', 'users.manage', async (ctx) => {
+  A('PATCH', '/api/admin/users/:id', null, async (ctx) => {
     const id = V.id(ctx.params.id, 'شناسهٔ کاربر');
+    // If not adjusting wallet, plus, or permissions, require users.manage
+    if (ctx.body?.status !== undefined || ctx.body?.resetPassword !== undefined || ctx.body?.kycStatus !== undefined) {
+      ctx.requirePerm('users.manage');
+    }
     const out = await db.tx((st) => {
       const u = st.users.find((x) => x.id === id);
       if (!u) throw notFound('not_found', 'کاربر یافت نشد.');
