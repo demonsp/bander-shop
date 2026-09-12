@@ -221,7 +221,8 @@ html[data-port="off"] .port-deco{display:none !important}
 .nav-link.active{background:var(--accent-soft);color:var(--accent);font-weight:700}
 [data-nav="underline"] .nav-link{border-radius:0;border-bottom:2px solid transparent;padding-block:11px}
 [data-nav="underline"] .nav-link.active{background:none;border-bottom-color:var(--accent)}
-.nav-more{position:relative}
+/* .nav-more was relative, removed to allow mega-menu to escape overflow:auto of .nav-inner */
+.nav-more{}
 .nav-dd{position:absolute;top:calc(100% + 6px);inset-inline-start:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);min-width:220px;padding:6px;z-index:70}
 .nav-dd a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;font-size:13.5px}
 .nav-dd a:hover{background:var(--surface-2)}
