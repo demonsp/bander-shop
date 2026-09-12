@@ -1100,7 +1100,7 @@ const fa = {
 //   'hdr.refresh': 'Refresh page',
 //   'adm.errTitle': 'Live client errors',
 //   'adm.errEmpty': 'No client errors recorded — the site is healthy.',
-'adm.tPort': 'پوستهٔ موج و دریا (مناسب فروشگاه ساحلی — برای یاسایی خاموش است)',
+'adm.tPort': 'نمایش دورنمای گرافیکی (منظره، شهر، طبیعت متناسب با تم)',
   'adm.tPortHint': 'برای پس‌زمینه‌ی ساده و خنثی، خاموشش کن.',
   'adm.tMode': 'پوسته‌ی پیش‌فرض',
   'adm.tRadius': 'گردی گوشه‌ها',

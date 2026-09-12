@@ -16,7 +16,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/img/icon-192.png">
-<link rel="stylesheet" href="/css/app.css?v=bm-v83">
+<link rel="stylesheet" href="/css/app.css?v=bm-v84">
 <title>گرین اپل | فروشگاه لوازم جانبی موبایل و گجت</title>
   <script id="error-catcher">
     window.addEventListener('error', function(e) {
@@ -64,8 +64,8 @@
 <div class="port-deco" aria-hidden="true">
   <svg viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice" focusable="false">
     
-    <!-- گروه موج و دریا (پیش‌فرض / بندر) -->
-    <g class="deco-waves">
+    <!-- 1. Default (موج و لنج بندر) -->
+    <g class="deco-default">
       <g fill="none" stroke="currentColor" stroke-opacity=".28" stroke-width="2">
         <path d="M0 250c90-16 150 14 240 0s150-30 240-14 150 30 240 14 150-30 240-14 150 30 240 14 90-10 240 0"/>
         <path d="M0 274c90-14 150 12 240 0s150-26 240-12 150 26 240 12 150-26 240-12 150 26 240 12 90-8 240 0"/>
@@ -73,58 +73,89 @@
       <g fill="currentColor" fill-opacity=".16">
         <path d="M0 296c120-18 240 10 360 0s240-24 360-12 240 26 360 14 240-20 360-8v50H0z"/>
       </g>
-      <!-- لنج -->
       <g transform="translate(178 196)" stroke="currentColor" stroke-opacity=".45" stroke-width="2.4" fill="none">
         <path d="M0 44c16 12 74 12 92 0l-8-22H8z" fill="currentColor" fill-opacity=".14"/>
         <path d="M46 22V-34M46-34c22 8 34 26 36 46H46M46-24c-16 6-26 20-28 36h28"/>
         <path d="M-6 44h104"/>
       </g>
-      <!-- نخل -->
       <g transform="translate(1214 150)" stroke="currentColor" stroke-opacity=".4" stroke-width="2.6" fill="none">
         <path d="M18 146c-6-46-4-84 6-112"/>
         <path d="M24 34c-18-12-38-12-52-2 14-14 34-18 52-10M24 34c18-12 38-12 52-2-14-14-34-18-52-10M24 34c-8-20-2-40 10-52-4 18-2 36 4 50M24 34c10-18 28-26 44-22-16 4-30 14-38 28"/>
       </g>
-      <g transform="translate(1300 186)" stroke="currentColor" stroke-opacity=".3" stroke-width="2.2" fill="none">
-        <path d="M14 110c-4-34-3-62 4-82"/>
-        <path d="M18 28c-13-9-28-9-38-2 10-10 25-13 38-7M18 28c13-9 28-9 38-2-10-10-25-13-38-7"/>
+    </g>
+
+    <!-- 2. Tehran Nights (آسمان‌خراش، ستاره و هلال ماه) -->
+    <g class="deco-tehran-nights">
+      <path d="M1200 80A40 40 0 1 0 1150 40 50 50 0 1 1 1200 80Z" fill="currentColor" fill-opacity="0.3"/>
+      <circle cx="200" cy="50" r="2" fill="currentColor" fill-opacity="0.5"/>
+      <circle cx="450" cy="120" r="1.5" fill="currentColor" fill-opacity="0.4"/>
+      <circle cx="800" cy="70" r="2.5" fill="currentColor" fill-opacity="0.6"/>
+      <path d="M0 320V200h30v-40h40v40h20v-80h50v80h20v-30h60v30h40v-60h50v60h100v-90h40v90h30v-50h60v50h120v-120h40v120h60v-40h50v40h40v-70h50v70h100v-40h50v40h40v-90h60v90h80v-30h50v30h50V320z" fill="currentColor" fill-opacity="0.1"/>
+      <!-- نور پنجره‌ها -->
+      <g fill="currentColor" fill-opacity="0.3">
+        <rect x="40" y="180" width="10" height="10"/><rect x="40" y="210" width="10" height="10"/>
+        <rect x="160" y="160" width="10" height="10"/><rect x="180" y="200" width="10" height="10"/>
+        <rect x="520" y="110" width="10" height="10"/><rect x="540" y="150" width="10" height="10"/>
+        <rect x="1100" y="180" width="10" height="10"/><rect x="1120" y="220" width="10" height="10"/>
       </g>
     </g>
 
-    <!-- گروه تهران مدرن (برج میلاد، برج آزادی، شهر) -->
-    <g class="deco-tehran">
-      <!-- پس زمینه شهر -->
-      <path d="M0 320V260h40v-20h30v40h20v-50h60v50h20v-30h40v40h50v-60h30v80H0z M1100 320V250h40v-30h30v60h20v-40h50v60h20v-30h40v50H1100z" fill="currentColor" fill-opacity="0.08"/>
-      <!-- برج آزادی -->
-      <g transform="translate(250 160)" fill="none" stroke="currentColor" stroke-opacity="0.3" stroke-width="2.5">
-        <path d="M40 160L55 40h50l15 120H90l-5-50H75l-5 50H40z" fill="currentColor" fill-opacity="0.12"/>
-        <path d="M50 160q30-70 60 0" stroke-width="3"/>
-        <path d="M55 40L80 20L105 40" />
-      </g>
-      <!-- برج میلاد -->
-      <g transform="translate(850 50)" fill="currentColor" fill-opacity="0.15">
-        <path d="M48 270L40 90h20l-8 180z"/>
-        <path d="M30 90l10-30 10 30z M50 90l-10-30-10 30z"/>
-        <rect x="49" y="10" width="2" height="50" fill-opacity="0.3"/>
-        <path d="M25 90h50l-10 40h-30z" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity="0.2"/>
-      </g>
-      <!-- جرثقیل‌های تهران -->
-      <g stroke="currentColor" stroke-opacity=".2" stroke-width="2.2" fill="none" transform="translate(100 0)">
-        <path d="M1010 296V150h84v146M1010 168h120M1094 150l36-26h30"/>
-        <path d="M1052 296v-42h44v42"/>
+    <!-- 3. Milad (برج میلاد بسیار بزرگ و نزدیک) -->
+    <g class="deco-milad">
+      <path d="M0 320V260h40v-20h30v40h20v-50h60v50h20v-30h40v40h50v-60h30v80H0z M1100 320V250h40v-30h30v60h20v-40h50v60h20v-30h40v50H1100z" fill="currentColor" fill-opacity="0.06"/>
+      <g transform="translate(620 -50)" fill="currentColor" fill-opacity="0.15">
+        <path d="M80 370L70 180h60l-10 190z"/>
+        <path d="M50 180l20-60 30 0 20 60z"/>
+        <path d="M70 120l10-40h40l10 40z"/>
+        <path d="M98 80h4v-70h-4z"/>
+        <rect x="99" y="10" width="2" height="70" fill-opacity="0.4"/>
+        <path d="M60 180h80l-20 60h-40z" fill="none" stroke="currentColor" stroke-width="3" stroke-opacity="0.2"/>
+        <path d="M85 370l-30 0l20-130 M115 370l30 0l-20-130" stroke="currentColor" stroke-width="2" stroke-opacity="0.1" fill="none"/>
       </g>
     </g>
 
-    <!-- گروه کوهستان و طبیعت (دربند، توچال، تجریش) -->
-    <g class="deco-mountain">
+    <!-- 4. Azadi (برج آزادی در مرکز با خطوط خیابان) -->
+    <g class="deco-azadi">
+      <path d="M0 320L400 280h640L1440 320" fill="none" stroke="currentColor" stroke-width="4" stroke-opacity="0.05"/>
+      <path d="M0 310L400 270h640L1440 310" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="10 15" stroke-opacity="0.1"/>
+      <g transform="translate(620 120)" fill="none" stroke="currentColor" stroke-opacity="0.3" stroke-width="3">
+        <path d="M60 200L80 40h40l20 160h-40l-10-80h-20l-10 80H60z" fill="currentColor" fill-opacity="0.12"/>
+        <path d="M80 200q20-100 40 0" stroke-width="4"/>
+        <path d="M80 40L100 20L120 40" stroke-width="3"/>
+        <path d="M60 190h80 M70 170h60" stroke-opacity="0.15"/>
+      </g>
+    </g>
+
+    <!-- 5. Lalehzar (چراغ‌خواب‌های کلاسیک، تابلوی سینما) -->
+    <g class="deco-lalehzar">
+      <path d="M0 320v-50h1440v50z" fill="currentColor" fill-opacity="0.04"/>
+      <!-- تابلوی سینما -->
+      <g transform="translate(300 150)" fill="none" stroke="currentColor" stroke-width="3" stroke-opacity="0.3">
+        <rect x="0" y="0" width="180" height="60" rx="4" fill="currentColor" fill-opacity="0.08"/>
+        <path d="M10 10h160v40H10z" stroke-width="1"/>
+        <circle cx="15" cy="15" r="2"/><circle cx="30" cy="15" r="2"/><circle cx="45" cy="15" r="2"/>
+        <circle cx="165" cy="15" r="2"/><circle cx="150" cy="15" r="2"/><circle cx="135" cy="15" r="2"/>
+        <circle cx="15" cy="45" r="2"/><circle cx="30" cy="45" r="2"/><circle cx="45" cy="45" r="2"/>
+        <circle cx="165" cy="45" r="2"/><circle cx="150" cy="45" r="2"/><circle cx="135" cy="45" r="2"/>
+        <path d="M60 30h60M60 40h40" stroke-width="4" stroke-opacity="0.4"/>
+      </g>
+      <!-- چراغ‌های خیابانی کلاسیک -->
+      <g stroke="currentColor" stroke-width="3" stroke-opacity="0.3" fill="none">
+        <path d="M150 320V120 M140 120q10-20 20 0z M145 105v15 M155 105v15"/>
+        <path d="M800 320V100 M790 100q10-20 20 0z M795 85v15 M805 85v15"/>
+        <path d="M1200 320V140 M1190 140q10-20 20 0z M1195 125v15 M1205 125v15"/>
+      </g>
+    </g>
+
+    <!-- 6. Tochal (کوهستان و تله‌کابین - قبلی حفظ و اصلاح شد) -->
+    <g class="deco-tochal">
       <path d="M0 320L200 150l100 80L550 90l180 140 250-110 220 180 240-50v170H0z" fill="currentColor" fill-opacity="0.08"/>
       <path d="M0 320L220 180l80 60L520 120l200 160 220-130 200 160 200-70v130H0z" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity="0.25"/>
-      <!-- درخت کاج/سرو -->
       <g stroke="currentColor" stroke-opacity=".4" stroke-width="2" fill="none">
         <path d="M150 320v-50M140 290l10-15 10 15M140 275l10-15 10 15M145 260l5-15 5 15"/>
         <path d="M180 320v-60M168 285l12-18 12 18M170 268l10-18 10 18M173 250l7-15 7 15"/>
         <path d="M1250 320v-50M1240 290l10-15 10 15M1240 275l10-15 10 15M1245 260l5-15 5 15"/>
       </g>
-      <!-- تله کابین توچال -->
       <g transform="translate(800 120)" stroke="currentColor" stroke-width="2" stroke-opacity="0.4" fill="none">
         <path d="M-200 20 L200 -80" stroke-dasharray="8 4"/>
         <rect x="0" y="-30" width="30" height="20" rx="4" fill="currentColor" fill-opacity="0.2"/>
@@ -132,9 +163,28 @@
       </g>
     </g>
 
-    <!-- گروه بازار سنتی (لاله‌زار، بازار بزرگ) -->
+    <!-- 7. Valiasr (درختان چنار بلند متوالی) -->
+    <g class="deco-valiasr">
+      <path d="M0 320h1440v-20H0z" fill="currentColor" fill-opacity="0.05"/>
+      <!-- ردیف درختان -->
+      <g stroke="currentColor" stroke-opacity="0.3" stroke-width="3" fill="currentColor" fill-opacity="0.1">
+        <!-- درخت ۱ -->
+        <path d="M100 320v-120 M70 200q30-100 60 0q-30 20-60 0"/>
+        <path d="M250 320v-160 M210 160q40-120 80 0q-40 20-80 0"/>
+        <path d="M400 320v-130 M370 190q30-100 60 0q-30 20-60 0"/>
+        <path d="M550 320v-180 M510 140q40-130 80 0q-40 20-80 0"/>
+        <path d="M700 320v-150 M660 170q40-110 80 0q-40 20-80 0"/>
+        <path d="M850 320v-170 M810 150q40-120 80 0q-40 20-80 0"/>
+        <path d="M1000 320v-120 M970 200q30-100 60 0q-30 20-60 0"/>
+        <path d="M1150 320v-160 M1110 160q40-120 80 0q-40 20-80 0"/>
+        <path d="M1300 320v-140 M1270 180q30-100 60 0q-30 20-60 0"/>
+      </g>
+      <!-- جوی آب -->
+      <path d="M0 310h1440 M0 315h1440" stroke="currentColor" stroke-opacity="0.1" stroke-width="2"/>
+    </g>
+
+    <!-- 8. Bazaar (طاق‌های بازاری، گنبد) -->
     <g class="deco-bazaar">
-      <!-- طاق‌ها -->
       <g fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-width="2" stroke-opacity="0.2">
         <path d="M50 320V200q75-100 150 0v120z"/>
         <path d="M350 320V180q85-120 170 0v140z"/>
@@ -142,11 +192,57 @@
         <path d="M900 320V150q100-140 200 0v170z"/>
         <path d="M1200 320V240q50-70 100 0v80z"/>
       </g>
-      <!-- لوستر سنتی / چراغ لاله‌زار -->
+      <!-- گنبد -->
+      <path d="M435 180 q85-100 170 0" fill="none" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
+      <path d="M950 150 q50-80 100 0" fill="none" stroke="currentColor" stroke-width="3" stroke-opacity="0.25"/>
       <g stroke="currentColor" stroke-width="2" stroke-opacity="0.4" fill="none">
         <path d="M125 0v80 M115 80h20l-10 20z"/>
         <path d="M435 0v60 M425 60h20l-10 20z"/>
         <path d="M1000 0v100 M985 100h30l-15 30z"/>
+      </g>
+    </g>
+
+    <!-- 9. Chitgar (دریاچه چیتگر، چرخ و فلک و درخت) -->
+    <g class="deco-chitgar">
+      <!-- چرخ و فلک -->
+      <g transform="translate(250 140)" stroke="currentColor" stroke-width="2" stroke-opacity="0.3" fill="none">
+        <circle cx="60" cy="60" r="50"/>
+        <circle cx="60" cy="60" r="40"/>
+        <path d="M60 10v100 M10 60h100 M25 25l70 70 M25 95l70-70"/>
+        <path d="M60 60L40 180h40z" fill="currentColor" fill-opacity="0.1"/>
+      </g>
+      <!-- موج دریاچه -->
+      <path d="M0 300q50-20 100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0" fill="none" stroke="currentColor" stroke-opacity="0.2" stroke-width="2"/>
+      <path d="M0 315q50-20 100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0t100 0" fill="none" stroke="currentColor" stroke-opacity="0.15" stroke-width="2"/>
+      <!-- درختان دور -->
+      <path d="M800 300v-40 M790 260q10-30 20 0 M900 300v-50 M890 250q10-40 20 0 M1100 300v-30 M1090 270q10-20 20 0 M1250 300v-60 M1240 240q10-40 20 0" stroke="currentColor" stroke-opacity="0.3" stroke-width="2" fill="currentColor" fill-opacity="0.1"/>
+    </g>
+
+    <!-- 10. Tajrish (گنبد امامزاده، سقف بازار، کوه در پس‌زمینه) -->
+    <g class="deco-tajrish">
+      <path d="M0 320L300 200l200 120L900 150l300 170" fill="none" stroke="currentColor" stroke-opacity="0.1" stroke-width="2"/>
+      <g fill="currentColor" fill-opacity="0.1" stroke="currentColor" stroke-opacity="0.2" stroke-width="2">
+        <path d="M400 320v-80 q40-60 80 0 v80z"/> <!-- گنبد -->
+        <path d="M370 320v-100h20v100 M490 320v-100h20v100"/> <!-- گلدسته‌ها -->
+      </g>
+      <path d="M700 320v-60l40-30l40 30v60z M800 320v-50l30-20l30 20v50z" fill="currentColor" fill-opacity="0.08" stroke="currentColor" stroke-opacity="0.15" stroke-width="2"/>
+      <g stroke="currentColor" stroke-opacity="0.3" stroke-width="2" fill="none">
+        <path d="M150 320v-80 M130 240q20-60 40 0" fill="currentColor" fill-opacity="0.05"/>
+        <path d="M1100 320v-100 M1070 220q30-80 60 0" fill="currentColor" fill-opacity="0.05"/>
+      </g>
+    </g>
+
+    <!-- 11. Darband (صخره‌ها، پله‌ها، چتر کافه‌ها) -->
+    <g class="deco-darband">
+      <path d="M0 320L100 150L250 320 M200 320l150-200l200 200 M500 320l200-250l250 250 M850 320l150-150l150 150" fill="none" stroke="currentColor" stroke-opacity="0.2" stroke-width="3"/>
+      <!-- پله‌ها -->
+      <path d="M300 320h20v-10h20v-10h20v-10h20v-10h20v-10h20v-10h20v-10" fill="none" stroke="currentColor" stroke-opacity="0.3" stroke-width="2"/>
+      <path d="M750 320h-20v-10h-20v-10h-20v-10h-20v-10" fill="none" stroke="currentColor" stroke-opacity="0.3" stroke-width="2"/>
+      <!-- چتر کافه‌ها -->
+      <g fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-opacity="0.3" stroke-width="2">
+        <path d="M380 260 q20-20 40 0z M400 260v20"/>
+        <path d="M450 230 q20-20 40 0z M470 230v20"/>
+        <path d="M700 270 q20-20 40 0z M720 270v20"/>
       </g>
     </g>
 
@@ -435,7 +531,7 @@
 </defs>
 </svg>
 
-<script type="module" src="/out/main.js?v=bm-v83"></script>
+<script type="module" src="/out/main.js?v=bm-v84"></script>
 <script id="failsafe-script">
         setTimeout(function(){
           var ws = document.getElementById('welcomeScreen');
