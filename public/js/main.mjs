@@ -76,7 +76,21 @@ function hideWelcome() {
 function wireRefresh() {
   const b = document.getElementById('btnRefresh');
   if (!b) return;
-  b.addEventListener('click', () => { location.reload(); });
+  b.addEventListener('click', async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for (let r of regs) await r.unregister();
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        for (let k of keys) await caches.delete(k);
+      }
+    } catch (e) {
+      console.warn('Cache clear failed', e);
+    }
+    location.href = location.pathname + '?_nocache=' + Date.now();
+  });
 }
 
 // ── تولتیپ سراسری: هر دکمه/لینکی که برچسب دارد ولی title نه ──
@@ -846,6 +860,21 @@ function registerSW() {
       const reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
       setInterval(() => { reg.update().catch(() => {}); }, 3600000);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              toast({
+                type: 'info',
+                title: isFa() ? 'نسخهٔ جدید آماده است' : 'Update Available',
+                timeout: 10000,
+                action: { label: isFa() ? 'بروزرسانی' : 'Update', onClick: () => { document.getElementById('btnRefresh')?.click(); } }
+              });
+            }
+          });
+        }
+      });
     } catch { /* محیط بدون SW */ }
   };
   // init پس از رویداد load اجرا می‌شود؛ پس اگر load گذشته، همین حالا ثبت کن

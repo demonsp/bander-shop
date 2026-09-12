@@ -1403,6 +1403,11 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
   button[data-act="cat-filters"] { display: none !important; }
 }
 
+@media (min-width: 900px) {
+  .nav-inner { overflow-x: visible !important; }
+  .nav-more { position: relative !important; }
+}
+
 /* Nav Hover for categories */
 .nav-more:hover .nav-dd { display: flex !important; flex-direction: column; }
 .nav-more:hover > a.nav-link { background: var(--surface-2); }
@@ -1420,10 +1425,9 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
   border-radius: 12px !important;
-  /* Ensure it doesn't overflow to the left or right */
-  left: 50%;
-  transform: translateX(-50%);
-  inset-inline-start: auto;
+  /* Open exactly underneath the button and flow outwards to the left in RTL */
+  inset-inline-start: 0;
+  top: calc(100% + 5px);
 }
 .hidden-default { display: none !important; }
 .nav-more:hover .hidden-default { display: flex !important; }
