@@ -78,13 +78,6 @@ export function registerAdmin(router) {
       const oCount = st.orders.filter((o) => o.createdAt.slice(0, 10) === d).length;
       const oSum = st.orders.filter((o) => o.createdAt.slice(0, 10) === d).reduce((a, b) => a + b.total, 0);
       last14.push({ date: d, visits: v.visits || 0, unique: v.unique || 0, orders: oCount || v.orders || 0, revenue: oSum });
-  A('GET', '/api/admin/reports/lower-price', 'feedback.manage', async (ctx) => {
-    const reports = ctx.state.lowerPriceReports || [];
-    sendJson(ctx.res, 200, { ok: true, items: reports.map(r => {
-      const p = ctx.state.products.find(x => x.id === r.productId);
-      return { ...r, productName: p ? p.name : '?' };
-    }).sort((a,b) => b.createdAt.localeCompare(a.createdAt)) });
-  });
     }
     const topSelling = [...st.products].sort((a, b) => (b.sold || 0) - (a.sold || 0)).slice(0, 6)
       .map((p) => ({ id: p.id, name: p.name, sold: p.sold || 0, stock: p.stock || 0, price: p.price, image: p.images?.[0] }));
@@ -98,6 +91,14 @@ export function registerAdmin(router) {
       recentAudit: st.audit.slice(0, 10),
       storage: { sizeKb: Math.round((fs.existsSync(path.join(ROOT, 'data', 'db.json')) ? fs.statSync(path.join(ROOT, 'data', 'db.json')).size : 0) / 1024) },
     });
+  });
+
+  A('GET', '/api/admin/reports/lower-price', 'feedback.manage', async (ctx) => {
+    const reports = ctx.state.lowerPriceReports || [];
+    sendJson(ctx.res, 200, { ok: true, items: reports.map(r => {
+      const p = ctx.state.products.find(x => x.id === r.productId);
+      return { ...r, productName: p ? p.name : '?' };
+    }).sort((a,b) => b.createdAt.localeCompare(a.createdAt)) });
   });
 
   // ── محصولات ─────────────────────────────────────────────
