@@ -170,11 +170,11 @@ html[data-theme="darband"] .deco-darband { display: block; }
 .mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 
 /* ── سربرگ ───────────────────────────────────────────────── */
-.topbar{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:#04222c;font-size:12.5px;font-weight:500;min-height:var(--topbar-h)}
+.topbar{background:linear-gradient(90deg,var(--accent-2),var(--accent));color:var(--accent-ink, #04222c);font-size:12.5px;font-weight:500;min-height:var(--topbar-h)}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:var(--topbar-h)}
 .topbar-meta{display:flex;align-items:center;gap:10px;white-space:nowrap}
 .tb-link{font-weight:700;display:inline-flex;align-items:center;gap:5px}
-.tb-sep{width:1px;height:14px;background:rgba(4,34,44,.28)}
+.tb-sep{width:1px;height:14px;background:color-mix(in srgb, var(--accent-ink, #04222c) 28%, transparent)}
 .ticker{overflow:hidden;flex:1;min-width:0;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
 .ticker-track{display:flex;gap:44px;width:max-content;animation:ticker var(--ticker-dur,34s) linear infinite}
 .ticker-track:hover{animation-play-state:paused}
@@ -1568,5 +1568,6 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
 
 [data-theme="darband"] .card { backdrop-filter: blur(10px); background: rgba(30,41,59,0.7); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); }
 [data-theme="darband"] .btn-primary { background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 15px var(--accent-soft); }
-[data-theme="darband"] .topbar { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+[data-theme="darband"] .topbar { background: transparent; border-bottom: 1px solid var(--border-strong); backdrop-filter: blur(10px); color: var(--text); }
+[data-theme="darband"] .topbar .tb-sep { background: var(--border-strong); }
 
