@@ -118,7 +118,7 @@ function renderChrome() {
   if (st.freeShipOver) fb.push(isFa() ? `ارسال رایگان سفارش‌های بالای ${fmtNum(st.freeShipOver)} تومان` : `Free shipping over ${fmtNum(st.freeShipOver)}`);
   fb.push(isFa() ? 'ضمانت اصالت کالا؛ مرجوع تا ۷ روز' : 'Authenticity guarantee; 7-day returns');
   if (st.phone) fb.push(isFa() ? `پشتیبانی هر روز ۹ تا ۲۱ — ${fmtTel(st.phone)}` : `Support 9–21 daily — ${fmtTel(st.phone)}`);
-  if (st.socials?.instagram) fb.push(isFa() ? 'تازه‌های گجت هر هفته در اینستاگرام گرین اپل' : 'New gadgets weekly on Instagram');
+  if (st.socials?.instagram) fb.push(isFa() ? 'تازه‌های گجت هر هفته در اینستاگرام یاسایی' : 'New gadgets weekly on Instagram');
   const tickerItems = S.ticker?.length ? S.ticker : fb;
   topbar.hidden = false;
   topbar.classList.toggle('no-ticker', u.showTicker === false);
@@ -129,7 +129,7 @@ function renderChrome() {
   tbPhone.innerHTML = h`${icon('phone')} ${fmtTel(st.phone || '')}`;
 
   // برند
-  qs('#brandName').textContent = isFa() ? (st.name || t('app.name')) : (st.nameEn || st.name || 'Green Apple');
+  qs('#brandName').textContent = isFa() ? (st.name || t('app.name')) : (st.nameEn || st.name || 'Yassaei Electronics');
   qs('#brandTag').textContent = isFa() ? (st.tagline || '') : (st.taglineEn || '');
   qs('#brandLink').setAttribute('aria-label', `${st.name || ''} — ${t('nav.home')}`);
 
@@ -159,10 +159,14 @@ function renderNav() {
 
   html += h`
     <div class="nav-more">
-      <button type="button" class="nav-link" data-dd aria-expanded="false" aria-haspopup="true">${icon('layers')} ${t('nav.allCategories')} ${icon('chevron-down')}</button>
-      <div class="nav-dd" data-ddbox hidden>
-        ${topCats.map((c) => h`<a href="#/category/${c.id}">${icon(catIcon(c.glyph))} ${catName(c)}</a>`)}
-        <a href="#/products">${icon('grid')} ${t('footer.allProducts')}</a>
+      <a href="#/products" class="nav-link">${icon('layers')} ${t('nav.allCategories')} ${icon('chevron-down')}</a>
+      <div class="nav-dd mega-menu hidden-default">
+        <div class="mega-side">
+          ${S.categories.filter((c) => !c.parentId).map((c) => h`<a href="#/category/${c.id}" class="mega-side-link" data-cat="${c.id}">${icon(catIcon(c.glyph))} ${catName(c)}</a>`)}
+        </div>
+        <div class="mega-content">
+          <div class="mega-empty muted small">${t('nav.allCategories')}</div>
+        </div>
       </div>
     </div>`;
 
@@ -172,7 +176,7 @@ function renderNav() {
     { key: '/pages/stats', href: '#/stats', icon: 'chart', label: t('nav.stats'), show: feat('publicStats') },
     { key: '/price-check', href: '#/price-check', icon: 'barcode', label: t('priceCheck.title'), show: feat('priceCheckDevice') },
     { key: '/lottery', href: '#/lottery', icon: 'gift2', label: t('lot.nav'), show: true },
-    { key: '/pages/installments', href: '#/pages/installments', icon: 'card', label: 'خرید اقساطی', show: true },
+    { key: '/pages/installments', href: '#/pages/installments', icon: 'credit-card', label: isFa() ? 'خرید اقساطی' : 'Installments', show: true },
     { key: '/pages/about', href: '#/pages/about', icon: 'store', label: t('nav.about'), show: true },
     { key: '/pages/contact', href: '#/pages/contact', icon: 'map', label: t('nav.contact'), show: true },
   ].filter((x) => x.show);
@@ -184,16 +188,45 @@ function renderNav() {
 
   nav.innerHTML = html;
 
-  const ddBtn = nav.querySelector('[data-dd]');
-  const ddBox = nav.querySelector('[data-ddbox]');
-  ddBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    ddBox.hidden = !ddBox.hidden;
-    ddBtn.setAttribute('aria-expanded', String(!ddBox.hidden));
-  });
-  document.addEventListener('click', (e) => {
-    if (!ddBox.hidden && !e.target.closest('.nav-more')) { ddBox.hidden = true; ddBtn.setAttribute('aria-expanded', 'false'); }
-  });
+  // Dropdown is handled by CSS hover now
+  const sideLinks = nav.querySelectorAll('.mega-side-link');
+  const megaContent = nav.querySelector('.mega-content');
+  if (sideLinks.length && megaContent) {
+    sideLinks.forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        sideLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        const catId = link.dataset.cat;
+        
+        // Find subcategories if any
+        const subCats = S.categories.filter(c => c.parentId === catId);
+        
+        // Also let's show top brands
+        const brands = S.brands.slice(0, 10);
+        
+        let html = '<div class="mega-sub-grid">';
+        
+        if (subCats.length) {
+          html += '<div class="mega-sub-col"><h3>دسته‌بندی‌های زیرمجموعه</h3>';
+          subCats.forEach(sc => {
+            html += `<a href="#/category/${sc.id}">${catName(sc)}</a>`;
+          });
+          html += '</div>';
+        }
+        
+        // Just show brands as an example column to fill the space
+        html += '<div class="mega-sub-col"><h3>برندهای پرطرفدار</h3>';
+        brands.forEach(b => {
+          html += `<a href="#/products?brand=${b.id}">${brandName(b)}</a>`;
+        });
+        html += '</div>';
+        
+        html += '</div>';
+        
+        megaContent.innerHTML = html;
+      });
+    });
+  }
 }
 
 function renderFooter() {
@@ -227,7 +260,8 @@ function renderFooter() {
     <li>${icon('chat')}<span>${t('contact.mobile')}: <a href="tel:${st.phone2 || st.phone}">${fmtTel(st.phone2 || '')}</a></span></li>
     <li>${icon('mail')}<span><a href="mailto:${st.email}">${st.email}</a></span></li>
     <li>${icon('pin')}<span>${isFa() ? (st.address || '') : (st.addressEn || st.address || '')}</span></li>
-    <li>${icon('clock')}<span>${t('footer.workingHours')}:<br> ${(st.workingHours || []).map((w) => `${isFa() ? w.fa : w.en} ${isFa() ? w.time : w.timeEn}`).join('<br>')}</span></li>`;
+    <li>${icon('clock')}<span>${t('footer.workingHours')}: ${(st.workingHours || []).map((w) => `<bdi>${isFa() ? w.fa : w.en} ${isFa() ? w.time : w.timeEn}</bdi>`).join(' · ')}</span></li>`;
+
   // کروکی نقشه در پانویس
   qs('#fMinimap').innerHTML = minimapSvg();
   qs('#fMinimap').setAttribute('title', t('contact.mapTitle'));
