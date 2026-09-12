@@ -29,6 +29,7 @@ import { bannerHtml, minimapSvg } from './components.mjs';
 
 // ── راه‌اندازی ──────────────────────────────────────────────
 async function init() {
+  setTimeout(hideWelcome, 10000); // Failsafe
   installDelegation();
   wireStaticControls();
   await boot();

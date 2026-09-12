@@ -2,7 +2,6 @@
 //  مسیریاب هش‌محور با بارگذاری تنبل نماها
 // ─────────────────────────────────────────────────────────────
 import { qs, scrollTop, applyDyn } from './lib/dom.mjs';
-import { maybeConsent } from './main.mjs';
 import { t } from './i18n.mjs';
 import { S } from './state.mjs';
 import { toastError, toast, loadingBar } from './ui.mjs';
@@ -144,7 +143,7 @@ export async function render(ctx) {
   if (my !== token) return;
   view.innerHTML = html;
   applyDyn(view);
-  setTimeout(maybeConsent, 300);
+  setTimeout(() => import('./main.mjs').then(m => m.maybeConsent && m.maybeConsent()), 300);
 
   // عنوان صفحه
   try {
