@@ -74,20 +74,18 @@ export async function render(ctx) {
             <div class="row row-between mt-s gap-2">
               <span class="grow">${field({ label: 'کد معرف (اختیاری)', name: 'referralCode', placeholder: 'مثلاً Z8A4X' })}</span>
               <span class="grow">
+                <span class="grow" style="width:100%">
                 <label class="field">
-                  <span class="label">نحوه آشنایی</span>
-                  <div class="custom-select-wrapper" style="position:relative">
-                    <select class="input" name="hearAboutUs" style="appearance:none; padding-left:30px; background:var(--surface)">
-                      <option value="">(انتخاب کنید)</option>
-                      <option value="google">جستجوی گوگل</option>
-                      <option value="instagram">اینستاگرام</option>
-                      <option value="telegram">تلگرام</option>
-                      <option value="friend">معرفی دوستان</option>
-                      <option value="other">سایر</option>
-                    </select>
-                    <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--muted)">▼</span>
+                  <span class="label">نحوه آشنایی (اختیاری)</span>
+                  <div class="row row-wrap gap-2">
+                    <label class="chip"><input type="radio" name="hearAboutUs" value="" checked hidden><span>انتخاب نشده</span></label>
+                    <label class="chip"><input type="radio" name="hearAboutUs" value="google" hidden><span>جستجوی گوگل</span></label>
+                    <label class="chip"><input type="radio" name="hearAboutUs" value="instagram" hidden><span>اینستاگرام</span></label>
+                    <label class="chip"><input type="radio" name="hearAboutUs" value="telegram" hidden><span>تلگرام</span></label>
+                    <label class="chip"><input type="radio" name="hearAboutUs" value="friend" hidden><span>معرفی دوستان</span></label>
                   </div>
                 </label>
+              </span>
               </span>
             </div>
             <div class="mb">${checkField({ label: h`${t('auth.acceptTerms')} <a class="section-link" href="#/pages/terms">${t('consent.readTerms')}</a>`, name: 'acceptTerms', checked: true })}</div>

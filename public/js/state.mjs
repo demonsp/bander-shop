@@ -41,7 +41,7 @@ export const S = {
   searches: [],
   prefs: { theme: 'dark', locale: 'fa', density: 'normal', reduceMotion: false, view: 'grid' },
   consent: null,
-  online: navigator.onLine,
+  online: typeof navigator !== 'undefined' ? navigator.onLine : true,
   installPrompt: null,
   installed: false,
 };
@@ -214,7 +214,7 @@ export async function boot() {
   S.consent = readLS(LS.consent, null);
   S.wishlist = readLS(LS.wish, []);
   S.compare = readLS(LS.cmp, []);
-  S.installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
+  S.installed = window.matchMedia?.('(display-mode: standalone)').matches || (typeof navigator !== 'undefined' && navigator.standalone === true);
 
   let data = null;
   const t0 = Date.now();

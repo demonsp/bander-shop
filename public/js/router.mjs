@@ -2,6 +2,7 @@
 //  مسیریاب هش‌محور با بارگذاری تنبل نماها
 // ─────────────────────────────────────────────────────────────
 import { qs, scrollTop, applyDyn } from './lib/dom.mjs';
+import { maybeConsent } from './main.mjs';
 import { t } from './i18n.mjs';
 import { S } from './state.mjs';
 import { toastError, toast, loadingBar } from './ui.mjs';

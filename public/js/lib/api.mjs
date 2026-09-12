@@ -98,7 +98,7 @@ function setLoading(v) {
 }
 
 async function request(method, path, body, opts = {}) {
-  if (!navigator.onLine && method !== 'GET') {
+  if (typeof navigator !== 'undefined' && !navigator.onLine && method !== 'GET') {
     throw new ApiError(0, 'offline', 'اتصال اینترنت برقرار نیست. لطفاً شبکه را بررسی کن.', 'You are offline.');
   }
   setLoading(true);

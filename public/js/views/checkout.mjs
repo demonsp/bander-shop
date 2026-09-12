@@ -41,7 +41,7 @@ export async function render(ctx) {
   try {
     const q = await api.post('/api/checkout/quote', { delivery: 'courier', zone: zones[0]?.id || 'country', express: false, insurance: false });
     quote = q.quote;
-    payMethods = (q.paymentMethods || []);
+    payMethods = (q.paymentMethods || []).filter((m) => (S.me ? true : m.id === 'cod' || m.id === 'gateway'));
     if (!payMethods.length) payMethods = [{ id: 'cod', fa: 'پرداخت در محل', en: 'Cash on delivery', note: '' }];
   } catch (e) { quote = null; }
 
@@ -123,9 +123,9 @@ export async function render(ctx) {
           <div class="col" data-paymethods>
             ${(payMethods.length ? payMethods : [{ id: 'gateway', fa: 'درگاه بانکی', en: 'Bank gateway', note: '' }]).map((m, i) => h`
               <label class="radio-card">
-                <input type="radio" name="paymentMethod" value="${m.id}" ${i === 0 ? 'checked' : ''} ${m.disabled || (['snapppay', 'azki', 'digipay'].includes(m.id) && (!S.me || S.me.kycStatus !== 'approved')) ? 'disabled' : ''}>
+                <input type="radio" name="paymentMethod" value="${m.id}" ${i === 0 ? 'checked' : ''} ${['snapppay', 'azki', 'digipay'].includes(m.id) && (!S.me || S.me.kycStatus !== 'approved') ? 'disabled' : ''}>
                 <span class="dot"></span>
-                <span><span class="b">${isFa() ? m.fa : m.en}</span><span class="hint">${esc(m.note || '')}${m.id === 'gateway' && ordersCfg().gatewayMode === 'demo' ? ` — ${t('checkout.gatewayDemo')}` : ''}${['snapppay', 'azki', 'digipay'].includes(m.id) && (!S.me || S.me.kycStatus !== 'approved') && !m.disabled ? ' <span style="color:var(--danger)">(نیازمند احراز هویت)</span>' : ''}</span></span>
+                <span><span class="b">${isFa() ? m.fa : m.en}</span><span class="hint">${esc(m.note || '')}${m.id === 'gateway' && ordersCfg().gatewayMode === 'demo' ? ` — ${t('checkout.gatewayDemo')}` : ''}${['snapppay', 'azki', 'digipay'].includes(m.id) && (!S.me || S.me.kycStatus !== 'approved') ? ' <span style="color:var(--danger)">(نیازمند احراز هویت)</span>' : ''}</span></span>
               </label>`)}
           </div>
           ${!S.me ? h`<p class="hint mt-s" data-guest-cod-note hidden>${t('checkout.guestCodPickup')}</p>` : ''}
