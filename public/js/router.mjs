@@ -118,6 +118,7 @@ export async function render(ctx) {
   if (!view) return;
   const my = ++token;
   if (currentCleanup) { try { currentCleanup(); } catch { /* noop */ } currentCleanup = null; }
+  import('./ui.mjs').then(m => m.closeAllLayers && m.closeAllLayers());
 
   loadingBar(true);
   view.innerHTML = ctx.skeleton || '<div class="sk sk-card"></div>';

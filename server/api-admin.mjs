@@ -1556,7 +1556,7 @@ function sanitizeSection(section, patch, current) {
       i('autoCancelHours', 1, 720); i('stockReserveMinutes', 0, 1440); b('refundToWallet', true);
       break;
     case 'seo':
-      s('title', 0, 120); s('description', 0, 300); s('keywords', 0, 300);
+      s('title', 0, 120); s('description', 0, 300); s('keywords', 0, 300); s('googleSiteVerification', 0, 120);
       break;
     case 'currency':
       s('code', 2, 8); s('label', 1, 12); s('labelEn', 1, 12);

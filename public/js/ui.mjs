@@ -157,6 +157,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+export function closeAllLayers() { [...layerStack].reverse().forEach(l => l.close(null)); }
 export const modal = (o) => makeLayer({ kind: 'modal', ...o });
 export const drawer = (o) => makeLayer({ kind: 'drawer', ...o });
 export const sheet = (o) => makeLayer({ kind: 'sheet', ...o });
