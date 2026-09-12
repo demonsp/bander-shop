@@ -88,7 +88,7 @@ export function registerAdmin(router) {
       totals: { orders: st.orders.length, revenue: revenue.reduce((a, b) => a + b.total, 0), users: st.users.filter((u) => u.role === 'user').length, products: st.products.length },
       awaiting, chart: last14, lowStock: lowStock.slice(0, 12).map((p) => publicProduct(p, { categories: st.categories, brands: st.brands })),
       topSelling,
-      recentAudit: st.audit.slice(0, 10),
+      recentAudit: (st.audit || []).slice(0, 10),
       storage: { sizeKb: Math.round((fs.existsSync(path.join(ROOT, 'data', 'db.json')) ? fs.statSync(path.join(ROOT, 'data', 'db.json')).size : 0) / 1024) },
     });
   });
@@ -1201,7 +1201,7 @@ export function registerAdmin(router) {
     const st = ctx.state;
     const q = normalizeText(ctx.query.get('q') || '');
     const action = ctx.query.get('action') || '';
-    let list = st.audit.slice();
+    let list = (st.audit || []).slice();
     if (action) list = list.filter((l) => l.action.startsWith(action));
     if (q) list = list.filter((l) => normalizeText(`${l.action} ${l.actorName} ${l.target} ${JSON.stringify(l.meta)}`).includes(q));
     const page = Math.max(1, Number(ctx.query.get('page')) || 1);
@@ -1344,7 +1344,7 @@ export function registerAdmin(router) {
       users: () => st.users.map((u) => ({ id: u.id, username: u.username, name: u.name, phone: u.phone, email: u.email, role: u.role, wallet: u.wallet?.balance || 0, plus: !!u.plus?.active, points: u.points, createdAt: u.createdAt, lastLoginAt: u.lastLoginAt })),
       reviews: () => st.reviews.map((r) => ({ id: r.id, product: r.productName, user: r.userName, type: r.type, rating: r.rating, title: r.title, body: r.body, status: r.status, createdAt: r.createdAt })),
       tickets: () => st.tickets.map((t) => ({ code: t.code, user: t.userName, subject: t.subject, category: t.category, priority: t.priority, status: t.status, messages: t.messages.length, createdAt: t.createdAt })),
-      audit: () => st.audit.slice(0, 2000),
+      audit: () => (st.audit || []).slice(0, 2000),
       all: () => ({ exportedAt: nowISO(), settings: st.settings, categories: st.categories, brands: st.brands, products: st.products, orders: st.orders, users: st.users.map(({ passwordHash, ...u }) => u), reviews: st.reviews, tickets: st.tickets, coupons: st.coupons, ads: st.ads, pages: st.pages, feedback: st.feedback, visits: st.visits }),
     };
     const payload = data[kind]();
@@ -1380,13 +1380,13 @@ export function registerAdmin(router) {
   A('POST', '/api/admin/maintenance/cleanup', 'settings.edit', async (ctx) => {
     const out = await db.tx((st) => {
       const cutoff = Date.now() - 90 * 86400000;
-      const before = st.audit.length;
-      st.audit = st.audit.filter((l) => new Date(l.at).getTime() > cutoff);
+      const before = (st.audit || []).length;
+      st.audit = (st.audit || []).filter((l) => new Date(l.at).getTime() > cutoff);
       st.otps = st.otps.filter((o) => new Date(o.expiresAt).getTime() > Date.now() - 86400000);
-      const sessBefore = st.sessions.length;
-      st.sessions = st.sessions.filter((s) => new Date(s.expiresAt).getTime() > Date.now());
-      logAudit(ctx.user, 'maintenance.cleanup', '', { audit: before - st.audit.length, sessions: sessBefore - st.sessions.length });
-      return { auditRemoved: before - st.audit.length, sessionsRemoved: sessBefore - st.sessions.length };
+      const sessBefore = (st.sessions || []).length;
+      st.sessions = (st.sessions || []).filter((s) => new Date(s.expiresAt).getTime() > Date.now());
+      logAudit(ctx.user, 'maintenance.cleanup', '', { audit: before - (st.audit || []).length, sessions: sessBefore - (st.sessions || []).length });
+      return { auditRemoved: before - (st.audit || []).length, sessionsRemoved: sessBefore - (st.sessions || []).length };
     });
     sendJson(ctx.res, 200, { ok: true, ...out });
   });
