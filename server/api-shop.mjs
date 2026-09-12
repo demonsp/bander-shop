@@ -56,6 +56,18 @@ function getCart(ctx, create = false) {
     cart = { id: uid('cart'), userId: ctx.user?.id || null, guestId: ctx.user ? null : guestId, items: [], coupon: null, updatedAt: nowISO() };
     state.carts.push(cart);
   }
+
+  // Auto-prune products that were deleted or deactivated by admin
+  if (cart && cart.items.length) {
+    const originalLength = cart.items.length;
+    cart.items = cart.items.filter(it => {
+      const prod = state.products.find(x => x.id === it.productId);
+      return prod && prod.active !== false;
+    });
+    if (cart.items.length !== originalLength) {
+      cart.updatedAt = nowISO();
+    }
+  }
   return cart;
 }
 
