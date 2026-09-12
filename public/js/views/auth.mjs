@@ -76,14 +76,17 @@ export async function render(ctx) {
               <span class="grow">
                 <label class="field">
                   <span class="label">نحوه آشنایی</span>
-                  <select class="input" name="hearAboutUs">
-                    <option value="">(انتخاب کنید)</option>
-                    <option value="google">جستجوی گوگل</option>
-                    <option value="instagram">اینستاگرام</option>
-                    <option value="telegram">تلگرام</option>
-                    <option value="friend">معرفی دوستان</option>
-                    <option value="other">سایر</option>
-                  </select>
+                  <div class="custom-select-wrapper" style="position:relative">
+                    <select class="input" name="hearAboutUs" style="appearance:none; padding-left:30px; background:var(--surface)">
+                      <option value="">(انتخاب کنید)</option>
+                      <option value="google">جستجوی گوگل</option>
+                      <option value="instagram">اینستاگرام</option>
+                      <option value="telegram">تلگرام</option>
+                      <option value="friend">معرفی دوستان</option>
+                      <option value="other">سایر</option>
+                    </select>
+                    <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--muted)">▼</span>
+                  </div>
                 </label>
               </span>
             </div>
