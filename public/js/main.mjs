@@ -872,17 +872,24 @@ function registerSW() {
       const reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
       setInterval(() => { reg.update().catch(() => {}); }, 3600000);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) reg.update().catch(() => {}); });
+      let initialInstall = !navigator.serviceWorker.controller;
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              toast(isFa() ? 'برای اعمال تغییرات روی دکمه زیر کلیک کنید.' : 'Click update to apply changes.', {
+            if (newWorker.state === 'installed') {
+              if (initialInstall) {
+                initialInstall = false;
+                return;
+              }
+              if (navigator.serviceWorker.controller) {
+                toast(isFa() ? 'برای اعمال تغییرات روی دکمه زیر کلیک کنید.' : 'Click update to apply changes.', {
                 type: 'info',
                 title: isFa() ? 'نسخهٔ جدید آماده است' : 'Update Available',
                 timeout: 15000,
                 action: { label: isFa() ? 'بروزرسانی' : 'Update', onClick: () => { document.getElementById('btnRefresh')?.click(); } }
-              });
+                });
+              }
             }
           });
         }
