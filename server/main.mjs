@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  گرین اپل · سرور اصلی
+//  یاسایی · سرور اصلی
 //  اجرای بدون هیچ وابستگی خارجی:  node server/main.mjs
 //
 //  نقشهٔ کد (برای ویرایش‌های آینده):
@@ -306,7 +306,7 @@ const server = http.createServer(async (req, res) => {
 
   // لینک قدیمی (bander-mobile.onrender.com) برای همیشه به لینک جدید هدایت می‌شود
   if (/^bander-mobile\./i.test(host)) {
-    res.writeHead(301, { Location: `https://greenapple-shop.onrender.com${url}`, 'Cache-Control': 'public, max-age=86400' });
+    res.writeHead(301, { Location: `https://yassaei-electronics.onrender.com${url}`, 'Cache-Control': 'public, max-age=86400' });
     return res.end();
   }
 
@@ -490,8 +490,17 @@ const server = http.createServer(async (req, res) => {
           ent = indexCache = { mtime: stat.mtimeMs, buf: fs.readFileSync(indexHtml), gz: null };
           ent.gz = zlib.gzipSync(ent.buf, { level: 6 });
         }
+        
+        const gscCode = db.raw.settings?.seo?.googleSiteVerification;
+        let buf = ent.buf;
+        if (gscCode) {
+          const content = buf.toString('utf8');
+          buf = Buffer.from(content.replace('</head>', `  <meta name="google-site-verification" content="${gscCode}">\n</head>`), 'utf8');
+        }
+        
         const useGz = /\bgzip\b/.test(req.headers['accept-encoding'] || '');
-        const out = useGz ? ent.gz : ent.buf;
+        const out = useGz ? zlib.gzipSync(buf, { level: 6 }) : buf;
+
         res.writeHead(200, {
           'Content-Type': 'text/html; charset=utf-8',
           'Content-Length': out.length,
@@ -582,6 +591,7 @@ setInterval(async () => {
   // خودترمیمی هنگام راه‌اندازی: مجموعه‌های مفقود بازسازی می‌شوند
   const repaired = repairState(db.raw);
   normalizeSettings(db.raw);
+  if (db.raw.settings?.socials?.telegram?.includes("greenapple_shop_bot")) { db.raw.settings.socials.telegram = "https://t.me/yassaei_electronics_shop_bot"; db.markDirty(); }
   if (repaired) {
     console.warn(`[selfheal] ${repaired} collection(s) rebuilt at boot`);
     try { logAudit(null, 'system.selfheal', `${repaired} collections`, {}); } catch { /* noop */ }
@@ -594,7 +604,7 @@ setInterval(async () => {
     const owner = st.users.find((u) => u.role === 'owner');
     console.log('');
     console.log('  ╭──────────────────────────────────────────────╮');
-    console.log('  │   گرین اپل · Green Apple Store           │');
+    console.log('  │   یاسایی · Yassaei Electronics           │');
     console.log('  ╰──────────────────────────────────────────────╯');
     console.log(`  ➜ آدرس:      http://${HOST === '0.0.0.0' ? 'localhost' : HOST}:${PORT}`);
     console.log(`  ➜ محصولات:   ${st.products.length}  ·  دسته‌ها: ${st.categories.length}  ·  برندها: ${st.brands.length}`);
@@ -603,7 +613,7 @@ setInterval(async () => {
       console.log('');
       console.log('  ورود مدیر:');
       console.log(`    نام کاربری : ${owner.username}`);
-      console.log(`    رمز عبور   : ${owner.mustChangePassword ? 'Bander@1404  (پس از ورود باید تغییر کند)' : '(تغییر یافته)'}`);
+      console.log(`    رمز عبور   : ${owner.mustChangePassword ? 'Yassaei@1404  (پس از ورود باید تغییر کند)' : '(تغییر یافته)'}`);
       if (st.users?.some((u) => u.username === 'staff')) console.log('  ورود کارمند: staff / Staff@1404');
       if (st.users?.some((u) => ['maryam','reza','sina'].includes(u.username))) console.log('  کاربران نمونه: maryam | reza | sina  — رمز: Demo@1404');
     }

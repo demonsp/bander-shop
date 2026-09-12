@@ -102,7 +102,7 @@ export function verifyTotp(secret, code, windowSteps = 1) {
   }
   return false;
 }
-export function otpauthUrl(secret, accountName, issuer = 'Green Apple') {
+export function otpauthUrl(secret, accountName, issuer = 'Yassaei Electronics') {
   const label = encodeURIComponent(`${issuer}:${accountName}`);
   const params = new URLSearchParams({ secret, issuer, algorithm: 'SHA1', digits: '6', period: '30' });
   return `otpauth://totp/${label}?${params.toString()}`;

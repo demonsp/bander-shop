@@ -171,7 +171,7 @@ const RAW = [
 
   ['گلس مات ضدبازتاب آیفون ۱۵ پرو', 'Matte Anti-Glare Glass iPhone 15 Pro', 'glass', 'spigen', 480000, 560000, 6, 'original', 1, 'glass',
     { 'سازگاری': 'iPhone 15 Pro', 'نوع': 'مات ضد اثر انگشت', 'سختی': '9H' },
-    'برای کسانی که زیر نور آفتاب بندر کار می‌کنند: بدون بازتاب و بدون اثر انگشت.',
+    'برای کسانی که زیر نور آفتاب تهران کار می‌کنند: بدون بازتاب و بدون اثر انگشت.',
     'For those working under strong sun: no glare, no fingerprints.',
     ['آیفون ۱۵', 'مات']],
 
@@ -506,7 +506,7 @@ const RAW = [
     ['کودک', 'سیم کارت', 'SOS']],
 ];
 
-// محصولات صفحهٔ اینستاگرام فروشگاه (@jam.greenapple)
+// محصولات صفحهٔ اینستاگرام فروشگاه (@jam.yassaei)
 IG_CATEGORIES.forEach((c) => { if (!CATEGORIES.some((x) => x.id === c.id)) CATEGORIES.push(c); });
 IG_BRANDS.forEach((b) => { if (!BRANDS.some((x) => x.id === b.id)) BRANDS.push(b); });
 RAW.push(...IG_RAW);
@@ -563,14 +563,14 @@ export function buildSeed(state) {
     {
       id: 'u_owner', username: 'admin', name: 'مدیر فروشگاه', nameEn: 'Store Owner',
       phone: '09120000000', email: 'admin@bander-mobile.ir',
-      passwordHash: hashPassword('Bander@1404'), mustChangePassword: true,
+      passwordHash: hashPassword('Yassaei@1404'), mustChangePassword: true,
       role: 'owner', permissions: allPerms,
       twoFA: { enabled: false, method: null, secret: generateTotpSecret(), backupCodes: [] },
       wallet: { ...mkWallet(), balance: 250000 },
       plus: { active: true, startedAt: t.toISOString(), until: new Date(t.getTime() + 30 * 86400000).toISOString() },
       addresses: [{
         id: uid('adr'), title: 'مغازه', receiver: 'مدیر فروشگاه', phone: '09120000000',
-        province: 'بوشهر', city: 'بوشهر', zone: 'city', street: 'خیابان ساحلی، پاساژ مروارید خلیج، همکف، پلاک ۱۲',
+        province: 'تهران', city: 'تهران', zone: 'city', street: 'خیابان ساحلی، پاساژ مروارید خلیج، همکف، پلاک ۱۲',
         postal: '7516812345', isDefault: true, note: '',
       }],
       wishlist: [], compare: [], prefs: { theme: 'dark', locale: 'fa', density: 'normal' },
@@ -602,7 +602,7 @@ export function buildSeed(state) {
   ];
 
   const demoCustomers = [
-    { id: 'u_demo1', username: 'maryam', name: 'مریم احمدی', phone: '09171234567', email: 'maryam@example.com', city: 'بوشهر' },
+    { id: 'u_demo1', username: 'maryam', name: 'مریم احمدی', phone: '09171234567', email: 'maryam@example.com', city: 'تهران' },
     { id: 'u_demo2', username: 'reza', name: 'رضا دریانورد', phone: '09173456789', email: 'reza@example.com', city: 'گناوه' },
     { id: 'u_demo3', username: 'sina', name: 'سینا مرادی', phone: '09127654321', email: 'sina@example.com', city: 'شیراز' },
   ];
@@ -617,7 +617,7 @@ export function buildSeed(state) {
       plus: { active: c.id === 'u_demo2', startedAt: t.toISOString(), until: new Date(t.getTime() + 21 * 86400000).toISOString() },
       addresses: [{
         id: uid('adr'), title: 'خانه', receiver: c.name, phone: c.phone,
-        province: 'بوشهر', city: c.city, zone: c.city === 'بوشهر' ? 'city' : 'province',
+        province: 'تهران', city: c.city, zone: c.city === 'تهران' ? 'city' : 'province',
         street: 'خیابان نمونه، کوچه‌ی شماره‌ی ۳، پلاک ۱۲', postal: '7512345678', isDefault: true, note: '',
       }],
       wishlist: [], compare: [], prefs: { theme: 'dark', locale: 'fa' },
@@ -720,7 +720,7 @@ export function buildSeed(state) {
   // کوپن تخفیف
   const coupons = [
     { id: 'cp_welcome', code: 'WELCOME10', type: 'percent', value: 10, maxDiscount: 200000, minOrder: 300000, usageLimit: 200, used: 12, perUser: 1, active: true, startAt: t.toISOString(), endAt: new Date(t.getTime() + 60 * 86400000).toISOString(), note: 'تخفیف خوش‌آمدگویی' },
-    { id: 'cp_port', code: 'BANDAR250', type: 'amount', value: 250000, maxDiscount: 250000, minOrder: 1500000, usageLimit: 50, used: 3, perUser: 1, active: true, startAt: t.toISOString(), endAt: new Date(t.getTime() + 30 * 86400000).toISOString(), note: 'جشنواره‌ی بندر' },
+    { id: 'cp_port', code: 'BANDAR250', type: 'amount', value: 250000, maxDiscount: 250000, minOrder: 1500000, usageLimit: 50, used: 3, perUser: 1, active: true, startAt: t.toISOString(), endAt: new Date(t.getTime() + 30 * 86400000).toISOString(), note: 'جشنواره‌ی تهران' },
   ];
 
   // تبلیغات
@@ -762,7 +762,7 @@ export function buildSeed(state) {
   ];
 
   const notifications = [
-    { id: uid('nt'), userId: null, type: 'announcement', title: 'به فروشگاه اینترنتی گرین اپل خوش آمدید', titleEn: 'Welcome to Green Apple Online Store', body: 'حالا می‌توانی همه‌ی اجناس مغازه را آنلاین ببینی، سفارش بدهی و حضوری یا با پیک تحویل بگیری.', bodyEn: 'Browse the whole shop online and get it delivered or pick it up in store.', link: '#/products', createdAt: t.toISOString(), level: 'info' },
+    { id: uid('nt'), userId: null, type: 'announcement', title: 'به فروشگاه اینترنتی یاسایی خوش آمدید', titleEn: 'Welcome to Yassaei Electronics Online Store', body: 'حالا می‌توانی همه‌ی اجناس مغازه را آنلاین ببینی، سفارش بدهی و حضوری یا با پیک تحویل بگیری.', bodyEn: 'Browse the whole shop online and get it delivered or pick it up in store.', link: '#/products', createdAt: t.toISOString(), level: 'info' },
   ];
 
   const feedback = [

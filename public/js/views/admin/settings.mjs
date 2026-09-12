@@ -58,7 +58,7 @@ const FIELDS = {
   ],
   theme: [
     { k: 'theme', label: () => L('قالب ظاهری (تم)', 'Design Theme'), type: 'select', options: () => [
-      ['default', L('پیش‌فرض (یاسایی/گرین اپل)', 'Default')],
+      ['default', L('پیش‌فرض (یاسایی/فروشگاه)', 'Default')],
       ['tehran-nights', L('شب‌های تهران', 'Tehran Nights')],
       ['milad', L('برج میلاد', 'Milad Tower')],
       ['azadi', L('میدان آزادی', 'Azadi Square')],
@@ -72,7 +72,7 @@ const FIELDS = {
     ] },
     { k: 'accent', label: () => t('adm.tAccent'), type: 'color' },
     { k: 'mode', label: () => t('adm.tMode'), type: 'select', options: () => [['dark', t('theme.dark')], ['light', t('theme.light')]] },
-    { k: 'bgStyle', label: () => t('adm.tBg'), type: 'select', options: () => [['waves', L('موج و بندر', 'Waves & port')], ['grid', L('شبکه‌ای', 'Grid')], ['plain', L('ساده', 'Plain')]] },
+    { k: 'bgStyle', label: () => t('adm.tBg'), type: 'select', options: () => [['waves', L('موج و تهران', 'Waves & port')], ['grid', L('شبکه‌ای', 'Grid')], ['plain', L('ساده', 'Plain')]] },
     { k: 'density', label: () => t('adm.tDensity'), type: 'select', options: () => [['compact', 'Compact'], ['normal', 'Normal'], ['comfy', 'Comfy']] },
     { k: 'contrast', label: () => t('adm.tContrast'), type: 'select', options: () => [['normal', 'Normal'], ['high', 'High']] },
     { k: 'radius', label: () => t('adm.tRadius'), type: 'number', min: 0, max: 32 },
@@ -139,6 +139,7 @@ const FIELDS = {
     { k: 'title', label: () => L('عنوان سایت', 'Site title'), type: 'text' },
     { k: 'description', label: () => L('توضیحات متا', 'Meta description'), type: 'textarea' },
     { k: 'keywords', label: () => L('کلیدواژه‌ها', 'Keywords'), type: 'text' },
+    { k: 'googleSiteVerification', label: () => L('کد تأیید سرچ کنسول گوگل', 'Google Site Verification Code'), type: 'text' },
   ],
   currency: [
     { k: 'code', label: () => L('کد ارز', 'Currency code'), type: 'text' },
@@ -238,8 +239,8 @@ function renderField(f, value) {
       return h`
         <label class="field"><span class="label">${label}</span>
           <span class="row color-row">
-            <input type="color" class="color-pick" name="${f.k}-pick" value="${esc(value || '#31afd4')}" data-color-for="${f.k}">
-            <input class="input mono" name="${f.k}" value="${esc(value || '#31afd4')}" maxlength="7" data-fkey="${f.k}">
+            <input type="color" class="color-pick" name="${f.k}-pick" value="${esc(value || '#f59e0b')}" data-color-for="${f.k}">
+            <input class="input mono" name="${f.k}" value="${esc(value || '#f59e0b')}" maxlength="7" data-fkey="${f.k}">
           </span>
         </label>`;
     case 'coords':

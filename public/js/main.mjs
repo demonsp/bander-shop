@@ -142,7 +142,7 @@ function renderChrome() {
   if (st.freeShipOver) fb.push(isFa() ? `ارسال رایگان سفارش‌های بالای ${fmtNum(st.freeShipOver)} تومان` : `Free shipping over ${fmtNum(st.freeShipOver)}`);
   fb.push(isFa() ? 'ضمانت اصالت کالا؛ مرجوع تا ۷ روز' : 'Authenticity guarantee; 7-day returns');
   if (st.phone) fb.push(isFa() ? `پشتیبانی هر روز ۹ تا ۲۱ — ${fmtTel(st.phone)}` : `Support 9–21 daily — ${fmtTel(st.phone)}`);
-  if (st.socials?.instagram || true) fb.push(isFa() ? 'تازه‌های گجت هر هفته در اینستاگرام گرین اپل' : 'New gadgets weekly on Instagram');
+  if (st.socials?.instagram || true) fb.push(isFa() ? 'تازه‌های گجت هر هفته در اینستاگرام یاسایی' : 'New gadgets weekly on Instagram');
   const tickerItems = S.ticker?.length ? S.ticker : fb;
   topbar.hidden = false;
   topbar.classList.toggle('no-ticker', u.showTicker === false);
@@ -270,7 +270,7 @@ function renderFooter() {
   // شبکه‌های اجتماعی
   const soc = st.socials || {};
   const socList = [
-    ['instagram', safeHref(soc.instagram || 'https://instagram.com/greenapple.shop'), 'camera'],
+    ['instagram', safeHref(soc.instagram || 'https://instagram.com/jam.yassaei'), 'camera'],
     ['telegram', safeHref(soc.telegram), 'send'],
     ['whatsapp', soc.whatsapp ? `https://wa.me/${String(soc.whatsapp).replace(/\D/g, '')}` : '', 'chat'],
     ['eitaa', safeHref(soc.eitaa), 'globe'],

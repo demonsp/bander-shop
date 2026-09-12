@@ -50,7 +50,7 @@ function svgMath(a, b, mul) {
     const y = op ? 40 : 38 + Math.round(rnd(5) - 2);
     const rot = op ? 0 : (rnd(12) - 6).toFixed(1);
     const size = op ? 26 : 21;
-    const fill = op ? '#31afd4' : 'currentColor';
+    const fill = op ? '#f59e0b' : 'currentColor';
     return `<text x="${x}" y="${y}" transform="rotate(${rot} ${x} ${y})" font-size="${size}" font-weight="800" fill="${fill}" opacity="${op ? 1 : (0.88 + rnd(0.12)).toFixed(2)}">${ch === ' ' ? '&#160;' : esc(ch)}</text>`;
   }).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 60" width="150" height="60" role="img" aria-label="challenges math">${'<rect width="150" height="60" rx="10" fill="none"/>'}${noise}${chars}</svg>`;

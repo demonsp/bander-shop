@@ -4,37 +4,37 @@
 
 export const DEFAULT_SETTINGS = {
   store: {
-    name: 'گرین اپل',
-    nameEn: 'Green Apple',
-    tagline: 'لوازم جانبی موبایل و گجت، از دلِ بندر تا دستِ تو',
-    taglineEn: 'Mobile accessories & gadgets — straight from the port to your hand',
+    name: 'یاسایی',
+    nameEn: 'Yassaei Electronics',
+    tagline: 'لوازم الکترونیک و الکتریکی، از دلِ تهران تا دستِ تو',
+    taglineEn: 'Electronics & electrical supplies — straight from the port to your hand',
     phone: '07733334455',
     phone2: '09120000000',
     whatsapp: '09120000000',
-    email: 'info@bander-mobile.ir',
-    address: 'بوشهر، خیابان ساحلی، نبش کوچه‌ی لنج‌سازان، پاساژ مروارید خلیج، طبقه‌ی همکف، پلاک ۱۲',
-    addressEn: 'Bushehr, Saheli St., Pearls of the Gulf Passage, Ground floor, No. 12',
-    city: 'بوشهر',
-    cityEn: 'Bushehr',
+    email: 'info@yassaei.ir',
+    address: 'تهران، نارمک، میدان هفت‌حوض، بورس لوازم الکترونیک و الکتریکی، فروشگاه یاسایی',
+    addressEn: 'Tehran, Narmak, Haft-Hoz sq., Electronics bourse, Yassaei Store',
+    city: 'تهران',
+    cityEn: 'Tehran',
     workingHours: [
       { day: 'شنبه تا چهارشنبه', fa: 'شنبه تا چهارشنبه', en: 'Sat – Wed', time: '۹:۰۰ تا ۲۱:۰۰', timeEn: '09:00 – 21:00' },
       { day: 'پنجشنبه', fa: 'پنجشنبه', en: 'Thursday', time: '۹:۰۰ تا ۲۲:۰۰', timeEn: '09:00 – 22:00' },
       { day: 'جمعه', fa: 'جمعه', en: 'Friday', time: '۱۶:۰۰ تا ۲۱:۰۰', timeEn: '16:00 – 21:00' },
     ],
-    socials: { instagram: 'https://instagram.com/jam.greenapple', telegram: 'https://t.me/greenapple_shop_bot', eitaa: '', whatsapp: '' },
-    mapCoords: { lat: 28.9684, lng: 50.8385 },
+    socials: { instagram: 'https://instagram.com/jam.yassaei', telegram: 'https://t.me/yassaei_shop_bot', eitaa: '', whatsapp: '' },
+    mapCoords: { lat: 35.731026, lng: 51.488461 },
     enamad: '',
     established: 1396,
-    description: 'فروشگاه تخصصی لوازم جانبی موبایل و گجت‌های پوشیدنی در بندر بوشهر؛ با ضمانت اصالت کالا، مهلت تست و ارسال به سراسر ایران.',
-    descriptionEn: 'Specialized mobile accessory and gadget store in Bushehr port, with authenticity guarantee, test period and nationwide shipping.',
+    description: 'فروشگاه تخصصی لوازم الکترونیک و الکتریکی‌های پوشیدنی در تهران؛ با ضمانت اصالت کالا، مهلت تست و ارسال به سراسر ایران.',
+    descriptionEn: 'Specialized electronics parts & electrical goods store in Tehran, with authenticity guarantee, test period and nationwide shipping.',
   },
 
   theme: {
     variant: 'fresh',        // 'fresh' = پوستهٔ تازه · 'classic' = پوستهٔ قبلی (کلید برگشت)
-    accent: '#31afd4',
-    accentEn: '#31afd4',
+    accent: '#f59e0b',
+    accentEn: '#f59e0b',
     mode: 'dark',            // dark | light
-    portTheme: true,         // پوسته‌ی بندری (موج، لنج، نخل) — قابل خاموش/روشن کردن از پنل
+    portTheme: false,        // پوسته‌ی موج و دریا — برای فروشگاه یاسایی خاموش
     animations: true,
     radius: 16,              // گردی گوشه‌ها
     density: 'normal',       // compact | normal | comfy
@@ -53,8 +53,8 @@ export const DEFAULT_SETTINGS = {
     tickerItems: [
       'ارسال رایگان سفارش‌های بالای ۲ میلیون تومان به سراسر ایران',
       'ضمانت اصالت کالا؛ مرجوع تا ۷ روز بدون پرسش',
-      'پرداخت در محل برای سفارش‌های داخل بوشهر',
-      'گرین اپل جم؛ تازه‌های گجت هر هفته در پیج اینستاگرام',
+      'پرداخت در محل برای سفارش‌های داخل تهران',
+      'یاسایی جم؛ تازه‌های گجت هر هفته در پیج اینستاگرام',
     ],
     quickView: true,
     floatingChat: true,
@@ -105,8 +105,8 @@ export const DEFAULT_SETTINGS = {
     expressFee: 45000,
     handlingHours: 24,
     zones: [
-      { id: 'city', name: 'داخل شهر بوشهر', nameEn: 'Within Bushehr', fee: 35000, eta: '۲ تا ۶ ساعت' },
-      { id: 'province', name: 'استان بوشهر', nameEn: 'Bushehr Province', fee: 65000, eta: '۱ تا ۲ روز' },
+      { id: 'city', name: 'داخل شهر تهران', nameEn: 'Within Tehran', fee: 35000, eta: '۲ تا ۶ ساعت' },
+      { id: 'province', name: 'استان تهران', nameEn: 'Tehran Province', fee: 65000, eta: '۱ تا ۲ روز' },
       { id: 'country', name: 'سراسر ایران', nameEn: 'Nationwide', fee: 89000, eta: '۲ تا ۴ روز' },
     ],
   },
@@ -142,9 +142,9 @@ export const DEFAULT_SETTINGS = {
   },
 
   seo: {
-    title: 'گرین اپل | فروشگاه لوازم جانبی موبایل و گجت در بوشهر',
-    description: 'خرید کابل، شارژر، قاب و گلس آیفون و سامسونگ، پاوربانک، هندزفری، اسپیکر، ساعت و عینک هوشمند با ضمانت اصالت و ارسال از بندر بوشهر به سراسر ایران.',
-    keywords: 'لوازم جانبی موبایل, بوشهر, قاب آیفون, گلس, شارژر, پاوربانک, هندزفری, اسپیکر, ساعت هوشمند',
+    title: 'یاسایی | فروشگاه لوازم الکترونیک و الکتریکی در تهران',
+    description: 'خرید قطعات برد، ابزار لحیم‌کاری، کابل و سیم، روشنایی و لوازم الکتریکی با ضمانت اصالت و ارسال از تهران به سراسر ایران.',
+    keywords: 'لوازم جانبی موبایل, تهران, قاب آیفون, گلس, شارژر, پاوربانک, هندزفری, اسپیکر, ساعت هوشمند',
   },
 
   currency: { code: 'IRT', label: 'تومان', labelEn: 'Toman' },
@@ -185,17 +185,17 @@ export const DEFAULT_SETTINGS = {
 export const DEFAULT_PAGES = {
   about: {
     hero: {
-      title: 'درباره‌ی گرین اپل',
-      titleEn: 'About Green Apple',
-      subtitle: 'یک مغازه‌ی ۲۰ متری کنار خلیج فارس، با سلیقه‌ای به وسعت دریا',
-      subtitleEn: 'A 20-square-meter shop by the Persian Gulf, with taste as wide as the sea',
+      title: 'درباره‌ی یاسایی',
+      titleEn: 'About Yassaei Electronics',
+      subtitle: 'فروشگاهی ۲۰۰ متری در نارمک تهران، با تنوعی به وسعت یک بورس تمام‌عیار',
+      subtitleEn: 'A 200m² store in Narmak, Tehran — a whole bazaar under one roof',
     },
     sections: [
       {
         title: 'داستان ما',
         titleEn: 'Our story',
-        body: 'گرین اپل از سال ۱۳۹۶ در قلب بندر بوشهر و چند قدمی اسکله شروع به کار کرد. جایی که بوی دریا و صدای لنج‌ها با جعبه‌های تازه‌رسیده‌ی گجت قاطی می‌شود. ما با یک قفسه‌ی کوچک کابل و شارژر شروع کردیم و امروز بیش از صدها قلم کالای اصل و باکیفیت را در زمینه‌ی لوازم جانبی موبایل، گجت‌های پوشیدنی و تجهیزات تولید محتوا ارائه می‌دهیم. شاید متراژ مغازه‌ی ما کوچک باشد، اما تنوع کالاهایمان و وسواسمان روی اصالت کالا اصلاً کوچک نیست.',
-        bodyEn: 'Green Apple started in 2017 in the heart of Bushehr port, a few steps from the dock. We began with a single shelf of cables and chargers; today we offer hundreds of genuine accessories, wearables and content-creation gear. Our shop may be small, but our variety and our obsession with authenticity are not.',
+        body: 'یاسایی از سال ۱۳۹۶ در میدان هفت‌حوض نارمک با یک ویترین کوچک قطعات الکترونیک شروع کرد؛ امروز همان مغازه بیش از ۲۰۰ متر است و از مقاومت یک‌هزارتومانی تا کنتاکتور صنعتی را یک‌جا جلویتان می‌گذارد. وسواس ما روی اصالت کالا و مشاورهٔ درست قبل از فروش است.',
+        bodyEn: 'Yassaei Electronics started in 2017 in the heart of Tehran port, a few steps from the dock. We began with a single shelf of cables and chargers; today we offer hundreds of genuine accessories, wearables and content-creation gear. Our shop may be small, but our variety and our obsession with authenticity are not.',
       },
       {
         title: 'چرا مشتریان ما را انتخاب می‌کنند؟',
@@ -203,7 +203,7 @@ export const DEFAULT_PAGES = {
         list: [
           { icon: 'shield', fa: 'ضمانت اصالت کالا؛ همه‌ی اجناس از منابع معتبر و با فاکتور رسمی تأمین می‌شوند.', en: 'Authenticity guarantee; all items sourced from trusted suppliers with official invoices.' },
           { icon: 'clock', fa: 'مهلت تست ۷ روزه طبق ماده‌ی ۳۷ قانون تجارت الکترونیکی؛ اگر راضی نبودی، پس بده.', en: '7-day trial period per Article 37 of Iran E-Commerce Law.' },
-          { icon: 'wallet', fa: 'قیمت بندری؛ به‌خاطر نزدیکی به منابع وارداتی، قیمت‌هایمان رقابتی‌تر از بازار پایتخت است.', en: 'Port prices — closer to import sources means more competitive prices.' },
+          { icon: 'wallet', fa: 'قیمت تهرانی؛ به‌خاطر نزدیکی به منابع وارداتی، قیمت‌هایمان رقابتی‌تر از بازار پایتخت است.', en: 'Port prices — closer to import sources means more competitive prices.' },
           { icon: 'truck', fa: 'ارسال سریع به سراسر ایران + تحویل حضوری در مغازه با بسته‌بندی ضربه‌گیر.', en: 'Fast nationwide shipping plus in-store pickup with protective packaging.' },
           { icon: 'headset', fa: 'مشاوره‌ی رایگان و صادقانه؛ اگر کالایی به درد تو نخورد، خودمان می‌گوییم نخر.', en: 'Free, honest advice — if an item is not right for you, we will tell you.' },
           { icon: 'tools', fa: 'خدمات پس از فروش: تعویض کابل و شارژر معیوب در مهلت گارانتی فروشگاه.', en: 'After-sales service: in-store warranty replacement for faulty cables and chargers.' },
@@ -275,8 +275,8 @@ export const DEFAULT_PAGES = {
 
   faq: [
     { cat: 'orders', q: 'چطور سفارشم را پیگیری کنم؟', qEn: 'How do I track my order?', a: 'وارد حساب کاربری شو و به بخش «سفارش‌های من» برو. وضعیت هر سفارش (در انتظار پرداخت، تأیید شده، در حال آماده‌سازی، ارسال شده، تحویل شده) همراه با زمان دقیق و کد رهگیری نمایش داده می‌شود. هر تغییر وضعیت هم با اعلان در سایت به تو اطلاع داده می‌شود.', aEn: 'Sign in and open My Orders. Each order shows its exact status, timestamps and tracking code, and every change sends you a notification.' },
-    { cat: 'orders', q: 'امکان پرداخت در محل وجود دارد؟', qEn: 'Is cash on delivery available?', a: 'بله، برای سفارش‌های داخل استان بوشهر تا سقف مبلغ تعیین‌شده امکان پرداخت در محل وجود دارد. برای مبالغ بالاتر، پرداخت آنلاین یا کیف پول پیشنهاد می‌شود.', aEn: 'Yes, within Bushehr province up to a set limit. For higher amounts we suggest online payment or wallet.' },
-    { cat: 'shipping', q: 'هزینه و زمان ارسال چقدر است؟', qEn: 'Shipping cost and time?', a: 'داخل شهر بوشهر با پیک: ۲ تا ۶ ساعت. داخل استان: ۱ تا ۲ روز. سایر نقاط ایران با پست پیشتاز یا تیپاکس: ۲ تا ۴ روز کاری. هزینه‌ی ارسال بر اساس منطقه در صفحه‌ی پرداخت محاسبه و شفاف نمایش داده می‌شود و بالای مبلغ تعیین‌شده رایگان است.', aEn: 'City courier 2–6 hours, province 1–2 days, nationwide 2–4 working days. Fees are calculated transparently at checkout and free above a threshold.' },
+    { cat: 'orders', q: 'امکان پرداخت در محل وجود دارد؟', qEn: 'Is cash on delivery available?', a: 'بله، برای سفارش‌های داخل استان تهران تا سقف مبلغ تعیین‌شده امکان پرداخت در محل وجود دارد. برای مبالغ بالاتر، پرداخت آنلاین یا کیف پول پیشنهاد می‌شود.', aEn: 'Yes, within Tehran province up to a set limit. For higher amounts we suggest online payment or wallet.' },
+    { cat: 'shipping', q: 'هزینه و زمان ارسال چقدر است؟', qEn: 'Shipping cost and time?', a: 'داخل شهر تهران با پیک: ۲ تا ۶ ساعت. داخل استان: ۱ تا ۲ روز. سایر نقاط ایران با پست پیشتاز یا تیپاکس: ۲ تا ۴ روز کاری. هزینه‌ی ارسال بر اساس منطقه در صفحه‌ی پرداخت محاسبه و شفاف نمایش داده می‌شود و بالای مبلغ تعیین‌شده رایگان است.', aEn: 'City courier 2–6 hours, province 1–2 days, nationwide 2–4 working days. Fees are calculated transparently at checkout and free above a threshold.' },
     { cat: 'shipping', q: 'تحویل حضوری چطور است؟', qEn: 'How does in-store pickup work?', a: 'در صفحه‌ی پرداخت گزینه‌ی «تحویل حضوری» را انتخاب کن. پس از تأیید سفارش، اعلان آماده‌سازی برایت ارسال می‌شود و می‌توانی در ساعات کاری با در دست داشتن کد سفارش به مغازه بیایی. تحویل حضوری رایگان است.', aEn: 'Pick "In-store pickup" at checkout. Once the order is confirmed you get a notification and can collect it during working hours with your order code. Free of charge.' },
     { cat: 'returns', q: 'اگر کالا را دوست نداشتم می‌توانم برگردانم؟', qEn: 'Can I return an item I do not like?', a: 'بله. تا ۷ روز کاری پس از تحویل، بدون نیاز به ذکر دلیل و بدون جریمه می‌توانی انصراف بدهی (ماده‌ی ۳۷ قانون تجارت الکترونیکی). کالا باید نو، با بسته‌بندی اصلی و لوازم همراه باشد. هزینه‌ی بازگرداندن کالا بر عهده‌ی خریدار است و مبلغ پس از رسیدن کالا و بررسی، حداکثر تا ۴۸ ساعت کاری به کیف پول یا حساب بانکی‌ات برمی‌گردد.', aEn: 'Yes — within 7 working days, without reason or penalty, as long as the item is unused with original packaging. Return shipping is on the buyer; refunds are processed within 48 working hours after inspection.' },
     { cat: 'returns', q: 'کدام کالاها قابل بازگشت نیستند؟', qEn: 'Which items are not returnable?', a: 'کالاهایی که پلمپ آن‌ها باز شده و ماهیت بهداشتی دارند (مثل هندزفری درون‌گوشی باز شده)، کالاهای ساخته‌شده بر اساس سفارش شخصی، گلس‌های نصب‌شده، و کالاهای دیجیتال. این موارد طبق بند «د» ماده‌ی ۳۸ و آیین‌نامه‌ی اجرایی آن از حق انصراف مستثنا هستند.', aEn: 'Opened hygiene-sensitive items (e.g. in-ear earbuds), custom-made goods, installed screen guards and digital goods are exempt per Article 38(d).' },
@@ -286,20 +286,20 @@ export const DEFAULT_PAGES = {
     { cat: 'account', q: 'اشتراک پلاس چه فایده‌ای دارد؟', qEn: 'What are the benefits of Plus?', a: 'با پرداخت ماهانه‌ی اشتراک پلاس، ارسال همه‌ی سفارش‌هایت رایگان می‌شود، مرسوله‌ها به‌صورت خودکار بیمه می‌شوند، ۳٪ تخفیف روی کالاها می‌گیری، ارسال فوری نیم‌بها می‌شود و تیکت‌هایت در اولویت پاسخ‌گویی قرار می‌گیرند.', aEn: 'Plus gives free shipping on all orders, automatic insurance, 3% off products, half-price express delivery and priority support.' },
     { cat: 'account', q: 'ورود دو مرحله‌ای چیست و چطور فعالش کنم؟', qEn: 'What is 2FA and how do I enable it?', a: 'ورود دو مرحله‌ی ای امنیت حساب را چند برابر می‌کند: علاوه بر رمز عبور، یک کد ۶ رقمی هم لازم است. سه روش داری: اپ احراز هویت (TOTP مثل Google Authenticator)، کد پیامکی و کد ایمیل. از مسیر «حساب کاربری ← امنیت ← ورود دومرحله‌ای» فعالش کن و کدهای پشتیبان را حتماً در جای امن نگه دار.', aEn: '2FA adds a 6-digit code on top of your password. Choose authenticator app (TOTP), SMS or email codes from Account → Security → Two-factor.' },
     { cat: 'account', q: 'رمز عبورم را فراموش کرده‌ام.', qEn: 'I forgot my password.', a: 'در صفحه‌ی ورود روی «بازیابی رمز عبور» بزن، شماره‌ی موبایل یا ایمیل ثبت‌شده را وارد کن تا کد بازیابی برایت ارسال شود. اگر به هیچ‌کدام دسترسی نداری، از طریق تیکت با احراز هویت دستی کمکت می‌کنیم.', aEn: 'Use "Forgot password" on the login page with your registered phone or email. If you have no access, open a ticket for manual verification.' },
-    { cat: 'store', q: 'ساعت کاری و آدرس مغازه کجاست؟', qEn: 'Working hours and address?', a: 'بوشهر، خیابان ساحلی، پاساژ مروارید خلیج، همکف، پلاک ۱۲. شنبه تا چهارشنبه ۹ تا ۲۱، پنجشنبه ۹ تا ۲۲ و جمعه ۱۶ تا ۲۱. در بخش «تماس با ما» کروکی گرافیکی محل و لینک نقشه‌های مختلف (نشان، بلد، گوگل مپ و اوپن‌استریت‌مپ) قرار دارد.', aEn: 'Bushehr, Saheli St., Pearls of the Gulf Passage. Sat–Wed 9–21, Thu 9–22, Fri 16–21. The contact page has a hand-drawn map and links to several map providers.' },
+    { cat: 'store', q: 'ساعت کاری و آدرس مغازه کجاست؟', qEn: 'Working hours and address?', a: 'تهران، میدان هفت‌حوض، بورس لوازم الکترونیک و الکتریک هفت‌حوض، همکف، پلاک ۱۲. شنبه تا چهارشنبه ۹ تا ۲۱، پنجشنبه ۹ تا ۲۲ و جمعه ۱۶ تا ۲۱. در بخش «تماس با ما» کروکی گرافیکی محل و لینک نقشه‌های مختلف (نشان، بلد، گوگل مپ و اوپن‌استریت‌مپ) قرار دارد.', aEn: 'Tehran, Narmak, Haft-Hoz sq., Haft-Hoz Electronics Bourse. Sat–Wed 9–21, Thu 9–22, Fri 16–21. The contact page has a hand-drawn map and links to several map providers.' },
     { cat: 'store', q: 'برای خرید عمده یا همکاری چه کنم؟', qEn: 'What about wholesale or partnership?', a: 'یک تیکت با موضوع «همکاری و تبلیغات» ثبت کن و حجم تقریبی و نوع کالا را بنویس. قیمت همکاری و شرایط پرداخت جداگانه اعلام می‌شود. اگر بنر یا تبلیغی برای کسب‌وکار خودت می‌خواهی روی سایت ما نمایش داده شود، از همین بخش درخواست بده.', aEn: 'Open a ticket with the Partnership subject describing volume and product type. Ad placements can be requested through the same channel.' },
     { cat: 'security', q: 'اطلاعاتم پیش شما امن است؟', qEn: 'Is my data safe with you?', a: 'بله. رمز عبور به‌صورت هش‌شده با الگوریتم scrypt ذخیره می‌شود و هیچ‌کس (حتی ما) متن رمز را نمی‌بیند. اطلاعات بانکی اصلاً روی سرور ما ذخیره نمی‌شود و پرداخت از طریق درگاه معتبر انجام می‌گیرد. دسترسی کارکنان به بخش‌های مختلف با ماتریس دسترسی محدود شده و همه‌ی تغییرات در گزارش رویدادها ثبت می‌شود. جزئیات کامل در صفحه‌ی «حریم خصوصی» آمده است.', aEn: 'Yes. Passwords are scrypt-hashed, card data never touches our servers, staff access is limited by a permission matrix and every change is audit-logged. Details are in the Privacy page.' },
   ],
 
   terms: {
     hero: { title: 'قوانین و مقررات', titleEn: 'Terms & Conditions', subtitle: 'آخرین به‌روزرسانی: مرداد ۱۴۰۴', subtitleEn: 'Last updated: August 2025' },
-    intro: 'کاربر گرامی، ورود به وب‌سایت «گرین اپل» و ثبت سفارش به منزله‌ی پذیرش کامل قوانین و مقررات زیر است. خواهشمندیم پیش از خرید این متن را با دقت بخوانید. این قوانین بر اساس قانون تجارت الکترونیکی (مصوب ۱۳۸۲)، قانون حمایت از حقوق مصرف‌کنندگان (مصوب ۱۳۸۸)، آیین‌نامه‌ی اجرایی آن‌ها و سایر مقررات جاری جمهوری اسلامی ایران تنظیم شده است.',
-    introEn: 'By using Green Apple and placing an order you fully accept the terms below, drafted in line with Iran\'s E-Commerce Law (2004) and Consumer Protection Law (2009) and their executive bylaws.',
+    intro: 'کاربر گرامی، ورود به وب‌سایت «یاسایی» و ثبت سفارش به منزله‌ی پذیرش کامل قوانین و مقررات زیر است. خواهشمندیم پیش از خرید این متن را با دقت بخوانید. این قوانین بر اساس قانون تجارت الکترونیکی (مصوب ۱۳۸۲)، قانون حمایت از حقوق مصرف‌کنندگان (مصوب ۱۳۸۸)، آیین‌نامه‌ی اجرایی آن‌ها و سایر مقررات جاری جمهوری اسلامی ایران تنظیم شده است.',
+    introEn: 'By using Yassaei Electronics and placing an order you fully accept the terms below, drafted in line with Iran\'s E-Commerce Law (2004) and Consumer Protection Law (2009) and their executive bylaws.',
     sections: [
       {
         title: '۱. تعاریف', titleEn: '1. Definitions',
-        body: '«فروشگاه» یعنی کسب‌وکار گرین اپل به نشانی و شماره‌ی تماس درج‌شده در سایت. «کاربر» یعنی هر شخصی که از سایت بازدید می‌کند. «مشتری» یعنی کاربری که در سایت ثبت‌نام کرده و سفارش ثبت می‌کند. «سفارش» یعنی درخواست خرید یک یا چند کالا که در سامانه ثبت و به مشتری کد رهگیری داده می‌شود.',
-        bodyEn: '"Store" means Green Apple. "User" means any visitor. "Customer" means a registered user who places an order. "Order" means a purchase request registered in the system with a tracking code.',
+        body: '«فروشگاه» یعنی کسب‌وکار یاسایی به نشانی و شماره‌ی تماس درج‌شده در سایت. «کاربر» یعنی هر شخصی که از سایت بازدید می‌کند. «مشتری» یعنی کاربری که در سایت ثبت‌نام کرده و سفارش ثبت می‌کند. «سفارش» یعنی درخواست خرید یک یا چند کالا که در سامانه ثبت و به مشتری کد رهگیری داده می‌شود.',
+        bodyEn: '"Store" means Yassaei Electronics. "User" means any visitor. "Customer" means a registered user who places an order. "Order" means a purchase request registered in the system with a tracking code.',
       },
       {
         title: '۲. شرایط استفاده از سایت', titleEn: '2. Conditions of use',
@@ -415,8 +415,8 @@ export const DEFAULT_PAGES = {
       },
       {
         title: '۱۴. حل اختلاف و مرجع رسیدگی', titleEn: '14. Dispute resolution',
-        body: 'در صورت بروز هرگونه اختلاف، اولویت با حل مسالمت‌آمیز از طریق پشتیبانی، تیکت و مذاکره است. در صورت عدم حصول نتیجه، مراجع ذی‌صلاح شامل اتحادیه‌ی صنفی مربوط، سازمان صنعت، معدن و تجارت استان، مرکز توسعه‌ی تجارت الکترونیکی و در نهایت دادسرای جرایم رایانه‌ای و محاکم قضایی شهرستان بوشهر صالح به رسیدگی هستند. قوانین حاکم بر این توافق‌نامه، قوانین جاری جمهوری اسلامی ایران است.',
-        bodyEn: 'Disputes are first handled amicably through support and tickets. Failing that, the relevant trade union, the provincial Industry & Trade Organization, the E-Commerce Development Center, the Computer Crimes Prosecution Office and the courts of Bushehr have jurisdiction. Iranian law governs.',
+        body: 'در صورت بروز هرگونه اختلاف، اولویت با حل مسالمت‌آمیز از طریق پشتیبانی، تیکت و مذاکره است. در صورت عدم حصول نتیجه، مراجع ذی‌صلاح شامل اتحادیه‌ی صنفی مربوط، سازمان صنعت، معدن و تجارت استان، مرکز توسعه‌ی تجارت الکترونیکی و در نهایت دادسرای جرایم رایانه‌ای و محاکم قضایی شهرستان تهران صالح به رسیدگی هستند. قوانین حاکم بر این توافق‌نامه، قوانین جاری جمهوری اسلامی ایران است.',
+        bodyEn: 'Disputes are first handled amicably through support and tickets. Failing that, the relevant trade union, the provincial Industry & Trade Organization, the E-Commerce Development Center, the Computer Crimes Prosecution Office and the courts of Tehran have jurisdiction. Iranian law governs.',
       },
       {
         title: '۱۵. تغییرات قوانین', titleEn: '15. Amendments',
@@ -430,8 +430,8 @@ export const DEFAULT_PAGES = {
 
   privacy: {
     hero: { title: 'حریم خصوصی', titleEn: 'Privacy Policy', subtitle: 'داده‌های تو امانت ماست', subtitleEn: 'Your data is our trust' },
-    intro: 'ما در گرین اپل باور داریم اعتماد مشتری از هر دارایی‌ای ارزشمندتر است. این صفحه توضیح می‌دهد چه اطلاعاتی جمع‌آوری می‌شود، چرا، چگونه نگهداری می‌شود و تو چه حقوقی داری.',
-    introEn: 'At Green Apple we believe customer trust is our most valuable asset. This page explains what we collect, why, how it is protected and what rights you have.',
+    intro: 'ما در یاسایی باور داریم اعتماد مشتری از هر دارایی‌ای ارزشمندتر است. این صفحه توضیح می‌دهد چه اطلاعاتی جمع‌آوری می‌شود، چرا، چگونه نگهداری می‌شود و تو چه حقوقی داری.',
+    introEn: 'At Yassaei Electronics we believe customer trust is our most valuable asset. This page explains what we collect, why, how it is protected and what rights you have.',
     sections: [
       {
         title: 'چه اطلاعاتی جمع‌آوری می‌کنیم؟', titleEn: 'What we collect',
@@ -604,14 +604,14 @@ export const DEFAULT_PAGES = {
   },
 
   contact: {
-    hero: { title: 'تماس با ما', titleEn: 'Contact us', subtitle: 'کنار اسکله، پاساژ مروارید خلیج', subtitleEn: 'By the dock, Pearls of the Gulf Passage' },
+    hero: { title: 'تماس با ما', titleEn: 'Contact us', subtitle: 'نارمک، میدان هفت‌حوض، بورس لوازم الکترونیک و الکتریک هفت‌حوض', subtitleEn: 'By the dock, Haft-Hoz Electronics Bourse' },
   },
 };
 
 export const ORDER_STATUSES = [
   { id: 'pending_payment', fa: 'در انتظار پرداخت', en: 'Pending payment', color: '#f0a500' },
   { id: 'pending_review', fa: 'در انتظار بررسی', en: 'Pending review', color: '#5b8def' },
-  { id: 'confirmed', fa: 'تأیید شده', en: 'Confirmed', color: '#31afd4' },
+  { id: 'confirmed', fa: 'تأیید شده', en: 'Confirmed', color: '#f59e0b' },
   { id: 'preparing', fa: 'در حال آماده‌سازی', en: 'Preparing', color: '#8b5cf6' },
   { id: 'ready_pickup', fa: 'آماده‌ی تحویل حضوری', en: 'Ready for pickup', color: '#14b8a6' },
   { id: 'shipped', fa: 'ارسال شده', en: 'Shipped', color: '#f97316' },

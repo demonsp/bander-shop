@@ -163,7 +163,7 @@ act('od-invoice', async (e, el) => {
       <div class="invoice-print" dir="rtl">
         <div class="inv-head">
           <div>
-            <strong>${esc(st.name || 'Green Apple')}</strong>
+            <strong>${esc(st.name || 'Yassaei Electronics')}</strong>
             <div class="tiny">${esc(st.address || '')}</div>
             <div class="tiny">${fmtTel(st.phone || '')}</div>
           </div>

@@ -41,26 +41,12 @@ export async function render() {
 
   return h`
     ${bannerSlot('home_hero', adInSlot('home_hero'))}
-    ${feat('partners') && (S.settings.partners?.items?.length) ? h`
-    <section class="partners-sec partners-top">
-      ${sectionHead({ titleIcon: 'store', title: t('home.partnersTitle') })}
-      <div class="marquee" aria-label="${t('home.partnersTitle')}">
-        <div class="marquee-track">
-          ${[...S.settings.partners.items, ...S.settings.partners.items].map((p) => {
-            const br = (S.brands || []).find((b) => b.name === p.fa || (p.en && (b.nameEn === p.en || b.nameEn?.toLowerCase() === p.en.toLowerCase())));
-            const href = br ? `#/products?brand=${br.id}` : `#/search?q=${encodeURIComponent(p.fa)}`;
-            return h`<a class="partner-chip" href="${href}" title="${isFa() ? p.fa : (p.en || p.fa)}">
-              <img class="pt-logo" src="/assets/img/brands/${br ? br.id : 'no_name'}.svg" alt="" loading="lazy" decoding="async">
-              <b>${isFa() ? p.fa : (p.en || p.fa)}</b></a>`;
-          }).join('')}
-        </div>
-      </div>
-    </section>` : ''}
+    
 
     <section class="hero">
-      <div class="hero-bg"><img src="/assets/img/hero-port.svg" alt="" decoding="async"></div>
+      <div class="hero-bg"><img src="/assets/img/hero-circuit.svg" alt="" decoding="async"></div>
       <div class="hero-inner">
-        <span class="hero-kicker">${icon('anchor')} ${t('home.heroKicker')}</span>
+        <span class="hero-kicker">${icon('zap')} ${t('home.heroKicker')}</span>
         <h1 class="hero-title">${t('home.heroTitle')}</h1>
         <p class="hero-text">${t('home.heroText')}</p>
         <div class="hero-cta">
@@ -82,6 +68,22 @@ export async function render() {
       ${sectionHead({ titleIcon: 'layers', title: t('home.categories'), sub: t('home.categoriesSub'), link: '#/products', linkLabel: t('common.showAll') })}
       <div class="cat-grid">${topCats.map((c) => catCard(c, c.count ?? null))}</div>
     </section>
+
+    ${feat('partners') && (S.settings.partners?.items?.length) ? h`
+    <section class="partners-sec partners-top">
+      ${sectionHead({ titleIcon: 'store', title: t('home.partnersTitle') })}
+      <div class="marquee" aria-label="${t('home.partnersTitle')}">
+        <div class="marquee-track">
+          ${[...S.settings.partners.items, ...S.settings.partners.items].map((p) => {
+            const br = (S.brands || []).find((b) => b.name === p.fa || (p.en && (b.nameEn === p.en || b.nameEn?.toLowerCase() === p.en.toLowerCase())));
+            const href = br ? `#/products?brand=${br.id}` : `#/search?q=${encodeURIComponent(p.fa)}`;
+            return h`<a class="partner-chip" href="${href}" title="${isFa() ? p.fa : (p.en || p.fa)}">
+              <img class="pt-logo" src="/assets/img/brands/${br ? br.id : 'no_name'}.svg" alt="" loading="lazy" decoding="async">
+              <b>${isFa() ? p.fa : (p.en || p.fa)}</b></a>`;
+          }).join('')}
+        </div>
+      </div>
+    </section>` : ''}
 
     ${list.length ? h`
     <section class="section">
@@ -116,11 +118,23 @@ export async function render() {
     </section>` : ''}
 
     <section class="section">
+      <div class="card pf-card">
+        <strong>${icon('search')} ${t('home.partFinder')}</strong>
+        <p class="muted small mt-s">${t('home.partFinderText')}</p>
+        <div class="row row-wrap mt-s">
+          ${S.settings?.store?.phone ? h`<a class="btn btn-primary btn-sm" href="tel:${S.settings.store.phone}">${icon('phone')} ${t('home.partFinderCta')}: <bdi>${fmtTel(S.settings.store.phone)}</bdi></a>` : ''}
+          <a class="btn btn-outline btn-sm" href="#/pages/contact">${icon('chat')} ${t('nav.contact')}</a>
+          ${(S.settings?.store?.socials?.instagram) ? h`<a class="btn btn-ghost btn-sm" href="${S.settings.store.socials.instagram}" target="_blank" rel="noopener">${icon('camera')} ${t('social.instagram')}</a>` : ''}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
       ${sectionHead({ titleIcon: 'shield', title: t('home.whyUs'), sub: t('home.whyUsSub') })}
       <div class="pwa-grid">
         <div class="pwa-card"><span class="pwa-ic">${icon('shield')}</span><div><div class="b">${t('home.point1')}</div><div class="muted small">${isFa() ? 'همهٔ کالاها پیش از فروش تست می‌شوند و با فاکتور رسمی و گارانتی فروشگاه تحویل می‌گیرید.' : 'Every item is tested before sale and delivered with an official invoice and store warranty.'}</div></div></div>
         <div class="pwa-card"><span class="pwa-ic">${icon('package-check')}</span><div><div class="b">${t('home.point2')}</div><div class="muted small">${isFa() ? 'طبق قانون، ۷ روز کاری فرصت داری بدون دلیل کالا را برگردانی؛ فقط هزینهٔ برگشت با توست.' : 'By law you have 7 working days to return an item without reason; only return shipping is on you.'}</div></div></div>
-        <div class="pwa-card"><span class="pwa-ic">${icon('truck')}</span><div><div class="b">${t('home.point3')}</div><div class="muted small">${isFa() ? 'سفارش‌ها هر روز کاری از بوشهر راهی می‌شوند؛ داخل شهر با پیک و بقیهٔ ایران با پست.' : 'Orders leave Bushehr every working day — by courier in the city and by post nationwide.'}</div></div></div>
+        <div class="pwa-card"><span class="pwa-ic">${icon('truck')}</span><div><div class="b">${t('home.point3')}</div><div class="muted small">${isFa() ? 'سفارش‌ها هر روز کاری از تهران راهی می‌شوند؛ داخل شهر با پیک و بقیهٔ ایران با پست.' : 'Orders leave Tehran every working day — by courier in the city and by post nationwide.'}</div></div></div>
         <div class="pwa-card"><span class="pwa-ic">${icon('headset')}</span><div><div class="b">${t('footer.support')}</div><div class="muted small">${isFa() ? 'چت آنلاین، تیکت و تلفن؛ نصب گلس و مشاورهٔ خرید هم در مغازه رایگان است.' : 'Live chat, tickets and phone; screen-guard installation and buying advice are free in store.'}</div></div></div>
       </div>
     </section>
@@ -180,7 +194,7 @@ export async function render() {
 
     <section class="section">
       <div class="card">
-        <div class="minimap" data-act="open-map"" role="button" tabindex="0" aria-label="${t('contact.mapTitle')}">
+        <div class="minimap" data-act="open-map" role="button" tabindex="0" aria-label="${t('contact.mapTitle')}">
           ${raw(minimapSvg())}
           <span class="minimap-hint">${icon('pin')} ${t('contact.mapHint')}</span>
         </div>

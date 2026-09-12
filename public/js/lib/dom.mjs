@@ -86,6 +86,8 @@ const GLYPH_ICON = {
   battery: 'battery', dongle: 'plug', speaker: 'speaker', audio: 'headset', wearable: 'watch',
   content: 'camera', gaming: 'zap', car: 'truck', light: 'light', mics: 'mic', misc: 'box',
   watch: 'watch', phone: 'phone',
+  chip: 'chip', solder: 'solder', tools: 'wrench', fan: 'fan', tv: 'tv', keyboard: 'keyboard',
+  measure: 'chart', network: 'globe', parts: 'chip',
 };
 export const catIcon = (glyph) => GLYPH_ICON[glyph] || 'box';
 
@@ -114,8 +116,11 @@ export function safeHref(u) {
   return /^https?:\/\//i.test(s) ? s : '';
 }
 export function fmtTel(v) {
-  const s = String(v ?? '').trim();
-  if (!s) return '';
+  const s0 = String(v ?? '').trim();
+  if (!s0) return '';
+  // شمارهٔ ثابت: ۰۲۱-۷۷۹۰۶۶۶۷ ؛ موبایل: ۰۹۱۲ … (گروه‌بندی خوانا)
+  const s = /^(0\d{2})(\d{4})(\d{4})$/.test(s0) ? s0.replace(/^(0\d{2})(\d{4})(\d{4})$/, '$1-$2-$3')
+        : /^(09\d{2})(\d{3})(\d{4})$/.test(s0) ? s0.replace(/^(09\d{2})(\d{3})(\d{4})$/, '$1 $2 $3') : s0;
   if (LOCALE === 'fa') return s.replace(/\d/g, (x) => FA_DIGITS[+x]);
   return s;
 }

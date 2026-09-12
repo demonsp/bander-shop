@@ -81,7 +81,7 @@ export async function render() {
 }
 
 // ── دسته‌ها ─────────────────────────────────────────────────
-const GLYPHS = ['box', 'cable', 'plug', 'battery', 'speaker', 'watch', 'glasses', 'mic', 'camera', 'phone', 'card', 'zap', 'image', 'headset', 'anchor', 'palm', 'wave', 'globe', 'layers', 'tag'];
+const GLYPHS = ['box', 'cable', 'plug', 'battery', 'speaker', 'watch', 'glasses', 'mic', 'camera', 'phone', 'card', 'zap', 'image', 'headset', 'anchor', 'palm', 'wave', 'globe', 'layers', 'tag', 'chip', 'solder', 'wrench', 'fan', 'tv', 'keyboard', 'chart'];
 
 function catForm(c) {
   return modal({

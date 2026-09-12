@@ -196,7 +196,7 @@ act('page-feedback', async (e, form) => {
 function contactHtml(page) {
   const st = store();
   const socials = st.socials || {};
-  const fallbackInstagram = 'https://instagram.com/greenapple.shop';
+  const fallbackInstagram = 'https://instagram.com/jam.yassaei';
   const socialList = [
     { key: 'instagram', icon: 'camera', url: safeHref(socials.instagram || fallbackInstagram) },
     { key: 'telegram', icon: 'send', url: safeHref(socials.telegram) },

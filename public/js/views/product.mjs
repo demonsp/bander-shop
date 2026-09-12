@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────
 //  صفحهٔ محصول (PDP) با نظرات، سؤالات و کالاهای مشابه
 // ─────────────────────────────────────────────────────────────
-import { html as h, raw, icon, esc, fmtNum, fmtMoney, stars, fmtDate, timeAgo, linkify, applyDyn } from '../lib/dom.mjs';
+import { html as h, raw, icon, esc, fmtNum, fmtMoney, stars, fmtDate, timeAgo, linkify, applyDyn , fmtTel} from '../lib/dom.mjs';
 import { t, lang, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S, feat, ship, catById, catName, prodName, brandName, inWishlist, inCompare, hasAlert, pushRecent, adInSlot } from '../state.mjs';
@@ -33,6 +33,7 @@ export async function render(ctx) {
     ...(p.videos || []).slice(0, 4).map((u) => ({ url: u, kind: 'video', poster: images[0] || '' })),
   ];
   const stock = p.stock ?? 0;
+  const storePhone = String(S.settings?.store?.phone || '').trim();
   const zones = ship().zones || [];
 
   return h`
@@ -76,7 +77,7 @@ export async function render(ctx) {
 
         <div class="buy-price">
           ${p.oldPrice > p.price ? h`<span class="pc-old">${fmtMoney(p.oldPrice)}</span>` : ''}
-          <span class="buy-now">${fmtMoney(p.price)}</span>
+          ${p.price ? h`<span class="buy-now">${fmtMoney(p.price)}</span>` : h`<span class="buy-now pc-inquire">${t('price.inquire')}</span>`}
           ${p.discountPct > 0 ? h`<span class="pc-off">${fmtNum(p.discountPct)}٪</span>` : ''}
         </div>
         ${p.oldPrice > p.price ? h`<p class="hint">${t('pdp.save')}: ${fmtMoney(p.oldPrice - p.price)}</p>` : ''}
@@ -87,11 +88,18 @@ export async function render(ctx) {
           ${stock > 0 && stock <= 3 ? h` <span class="badge-pill bp-warn">${t('common.lowStock')}</span>` : ''}
         </div>
 
+        ${p.price ? h`
         <div class="row mt">
           ${qtyWidget({ value: 1, max: Math.max(1, stock), name: 'qty' })}
           <button type="button" class="btn btn-primary btn-lg grow" data-act="pdp-add" data-id="${p.id}" ${stock <= 0 ? 'disabled' : ''}>${icon('cart')} ${t('pdp.addToCart')}</button>
         </div>
-        <button type="button" class="btn btn-outline btn-block mt-s" data-act="pdp-buy" data-id="${p.id}" ${stock <= 0 ? 'disabled' : ''}>${icon('zap')} ${t('pdp.buyNow')}</button>
+        <button type="button" class="btn btn-outline btn-block mt-s" data-act="pdp-buy" data-id="${p.id}" ${stock <= 0 ? 'disabled' : ''}>${icon('zap')} ${t('pdp.buyNow')}</button>` : h`
+        <div class="row mt">
+          ${storePhone ? h`<a class="btn btn-primary btn-lg grow" href="tel:${storePhone}">${icon('phone')} ${t('pdp.callStore')}</a>` : ''}
+          <a class="btn btn-outline btn-lg" href="#/pages/contact">${icon('map')} ${t('pdp.visitStore')}</a>
+        </div>
+        <p class="hint mt-s">${icon('info')} ${t('pdp.serviceHint')}</p>`}
+        ${p.price && storePhone ? h`<a class="btn btn-ghost btn-block mt-s" href="tel:${storePhone}">${icon('phone')} ${t('pdp.callStore')}: <bdi>${fmtTel(storePhone)}</bdi></a>` : ''}
 
         ${stock <= 0 && feat('priceAlerts') ? h`
           <button type="button" class="btn btn-ghost btn-block mt-s ${hasAlert(p.id) ? 'active' : ''}" data-act="notify-me" data-id="${p.id}">
@@ -199,12 +207,15 @@ export async function render(ctx) {
 
     <div class="pdp-bar no-print">
       <div class="pdp-bar-p">
-        <div class="b">${fmtMoney(p.price)}</div>
+        ${p.price ? h`<div class="b">${fmtMoney(p.price)}</div>` : h`<div class="b pc-inquire">${t('price.inquireShort')}</div>`}
         ${(p.oldPrice || 0) > p.price ? h`<div class="tiny muted del">${fmtMoney(p.oldPrice)}</div>` : ''}
       </div>
-      ${(p.stock || 0) > 0
-        ? h`<button class="btn btn-primary" data-act="pdp-add" data-id="${p.id}">${icon('cart')} ${t('pdp.addToCart')}</button>`
-        : h`<button class="btn btn-ghost" data-act="notify-me" data-id="${p.id}">${icon('bell')} ${t('common.notifyMe')}</button>`}
+      ${!p.price
+        ? (storePhone ? h`<a class="btn btn-primary" href="tel:${storePhone}">${icon('phone')} ${t('pdp.callStore')}</a>`
+                      : h`<a class="btn btn-primary" href="#/pages/contact">${icon('chat')} ${t('nav.contact')}</a>`)
+        : (p.stock || 0) > 0
+          ? h`<button class="btn btn-primary" data-act="pdp-add" data-id="${p.id}">${icon('cart')} ${t('pdp.addToCart')}</button>`
+          : h`<button class="btn btn-ghost" data-act="notify-me" data-id="${p.id}">${icon('bell')} ${t('common.notifyMe')}</button>`}
     </div>
   `;
 }

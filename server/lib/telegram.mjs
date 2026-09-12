@@ -9,7 +9,7 @@
 import crypto from 'node:crypto';
 import { db, logAudit } from './db.mjs';
 
-const CANON = 'https://greenapple-shop.onrender.com';
+const CANON = 'https://yassaei-electronics.onrender.com';
 export const TG_WEBHOOK_PATH = '/api/tg/webhook';
 export const tgSecret = (token) => crypto.createHash('sha256').update(String(token || '')).digest('hex').slice(0, 24);
 let webhookState = { url: '', ok: false, err: '' };
@@ -98,9 +98,9 @@ export async function handleUpdate(up) {
   let reply = '';
   if (text === '/start') {
     st.telegramSubs[chatId] = name;
-    reply = st.settings?.telegram?.welcome || 'سلام! من ربات پشتیبانی گرین اپل هستم. /help را ببین.';
+    reply = st.settings?.telegram?.welcome || 'سلام! من ربات پشتیبانی یاسایی هستم. /help را ببین.';
   } else if (text === '/help') {
-    reply = '🍏 راهنمای ربات گرین اپل:\n\n۱) /status کدسفارش — پیگیری وضعیت سفارش\nمثال: /status BM-123456\n\n۲) /products عبارت — جستجو در کالاها\nمثال: /products کابل\n\n۳) /contact — تلفن و آدرس فروشگاه\n\n۴) هر پیام متنی دیگر = پیام به پشتیبانی انسانی؛\nپاسخ‌ش را همین‌جا می‌گیری.\n\nاشتباه زدی؟ ایرادی ندارد؛ همین راهنما را دوباره بخواه: /help';
+    reply = '🍏 راهنمای ربات یاسایی:\n\n۱) /status کدسفارش — پیگیری وضعیت سفارش\nمثال: /status BM-123456\n\n۲) /products عبارت — جستجو در کالاها\nمثال: /products کابل\n\n۳) /contact — تلفن و آدرس فروشگاه\n\n۴) هر پیام متنی دیگر = پیام به پشتیبانی انسانی؛\nپاسخ‌ش را همین‌جا می‌گیری.\n\nاشتباه زدی؟ ایرادی ندارد؛ همین راهنما را دوباره بخواه: /help';
   } else if (text.startsWith('/status')) {
     reply = answerStatus(text.slice(7));
   } else if (text.startsWith('/products')) {
@@ -115,7 +115,7 @@ export async function handleUpdate(up) {
     st.telegramInbox = st.telegramInbox || [];
     st.telegramInbox.unshift({ id: `tg${up.update_id}`, chatId, name, text, at: new Date().toISOString(), replied: false });
     if (st.telegramInbox.length > 300) st.telegramInbox.length = 300;
-    reply = 'پیامت ثبت شد؛ پشتیبانی گرین اپل به‌زودی در همین چت پاسخ می‌دهد. 🍏\n(اگر دنبال سفارش یا کالا بودی: /status کدسفارش یا /products عبارت)';
+    reply = 'پیامت ثبت شد؛ پشتیبانی یاسایی به‌زودی در همین چت پاسخ می‌دهد. 🍏\n(اگر دنبال سفارش یا کالا بودی: /status کدسفارش یا /products عبارت)';
   }
   if (reply && chatId) {
     try { await tgSend(chatId, String(reply)); }

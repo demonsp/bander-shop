@@ -249,7 +249,7 @@ export function lightbox(images, startIndex = 0, title = '') {
     const media = it.kind === 'video'
       ? `<video class="lb-img lb-video" src="${it.url}" controls playsinline autoplay preload="metadata"></video>`
       : `<img class="lb-img" src="${it.url}" alt="${title || t('img.alt')}" decoding="async" draggable="false">
-       <div class="watermark-overlay"><div class="watermark-text">${document.querySelector('b.ws-name')?.textContent || 'Yassaei'}</div></div>`;
+       <div class="watermark-overlay"><div class="watermark-text">${document.title.split('·').pop().trim()}</div></div>`;
     return h`
     <figure class="lb-figure">
       ${raw(media)}
@@ -479,8 +479,8 @@ export async function copyWithToast(text, msg) {
 /** راهنمای نصب PWA */
 export function installHintModal() {
   const steps = lang() === 'fa'
-    ? ['منوی مرورگر (⋮ یا دکمهٔ اشتراک‌گذاری) را باز کن.', 'گزینهٔ «افزودن به صفحهٔ اصلی» یا «Install app» را بزن.', 'تأیید کن؛ آیکون گرین اپل به صفحهٔ اصلی اضافه می‌شود.']
-    : ['Open the browser menu (⋮ or the Share button).', 'Choose “Add to Home screen” or “Install app”.', 'Confirm — the Green Apple icon appears on your home screen.'];
+    ? ['منوی مرورگر (⋮ یا دکمهٔ اشتراک‌گذاری) را باز کن.', 'گزینهٔ «افزودن به صفحهٔ اصلی» یا «Install app» را بزن.', 'تأیید کن؛ آیکون یاسایی به صفحهٔ اصلی اضافه می‌شود.']
+    : ['Open the browser menu (⋮ or the Share button).', 'Choose “Add to Home screen” or “Install app”.', 'Confirm — the Yassaei Electronics icon appears on your home screen.'];
   modal({
     title: t('misc.addToHome'),
     size: 'sm',

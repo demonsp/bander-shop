@@ -297,10 +297,10 @@ function igCaption(p) {
     `💰 قیمت: ${nf(p.price)} تومان${old > p.price ? ` (به‌جای ${nf(old)} — ${fmtNum(p.discountPct || 0)}٪ تخفیف)` : ''}`,
     stock > 0 ? '📦 موجود در انبار — همین حالا سفارش بده' : '📦 فعلاً ناموجود؛ پیام بده تا موجود شد خبرت کنیم',
     '🛡 ضمانت اصالت کالا + مهلت تست و مرجوع تا ۷ روز',
-    '🚚 ارسال از بندر بوشهر به سراسر ایران',
+    '🚚 ارسال از تهران به سراسر ایران',
     '',
     `🔗 سفارش آنلاین: ${link}`,
-    `📞 تلفن: ${st.phone || ''} · 🍏 اینستاگرام: @jam.greenapple`,
+    `📞 تلفن: ${st.phone || ''} · 🍏 اینستاگرام: @jam.yassaei`,
   ] : [
     `✨ ${name} ✨`,
     desc,
@@ -315,8 +315,8 @@ function igCaption(p) {
 
 function igTags(p) {
   const base = isFa()
-    ? ['گرین_اپل', 'لوازم_جانبی_موبایل', 'گجت', 'بوشهر', 'جم', 'خرید_آنلاین']
-    : ['GreenApple', 'MobileAccessories', 'Gadget', 'Bushehr', 'OnlineShopping'];
+    ? ['یاسایی', 'لوازم_الکترونیک', 'قطعات', 'تهران', 'نارمک', 'خرید_آنلاین']
+    : ['Yassaei', 'Electronics', 'Parts', 'Tehran', 'OnlineShopping'];
   const extra = [p.brandName, p.categoryName].filter(Boolean).map((x) => String(x).trim().replace(/\s+/g, '_'));
   return [...new Set([...base, ...extra])].map((x) => `#${x}`).join(' ');
 }
@@ -334,7 +334,7 @@ act('adm-p-igpack', async (e, el) => {
           <img class="igpack-img" src="${esc(img)}" alt="">
           <div class="grow">
             <p class="small muted">${t('adm.igImgHint')}</p>
-            <a class="btn btn-ghost btn-sm mt-s" href="${esc(img)}" download="greenapple-${esc(p.sku || p.id)}.jpg" target="_blank" rel="noopener">${icon('download')} ${t('adm.igDl')}</a>
+            <a class="btn btn-ghost btn-sm mt-s" href="${esc(img)}" download="yassaei-${esc(p.sku || p.id)}.jpg" target="_blank" rel="noopener">${icon('download')} ${t('adm.igDl')}</a>
           </div>
         </div>` : h`<p class="notice notice-warn mb">${icon('info')}<span>${t('adm.igNoImg')}</span></p>`}
       ${textareaField({ label: t('adm.igCap'), name: 'igcap', rows: 10, value: igCaption(p) })}

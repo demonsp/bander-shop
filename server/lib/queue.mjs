@@ -128,7 +128,7 @@ export function removeFromQueue(token) { if (token) waiting.delete(token); }
 // ── صفحهٔ صف (HTML خودبسنده، درون‌خطی — با CSP اختصاصی سرو می‌شود) ──
 export function queuePageHtml({ pos, waiting: total, pollSec, storeName, lang = 'fa' }) {
   const en = lang === 'en';
-  const safeName = String(storeName || (en ? 'Green Apple' : 'گرین اپل')).replace(/[<>&"']/g, '');
+  const safeName = String(storeName || (en ? 'Yassaei Electronics' : 'یاسایی')).replace(/[<>&"']/g, '');
   const T = en ? {
     dir: 'ltr', title: 'High traffic — your turn is coming',
     p1: 'To keep the site fast and error-free for everyone, entry is managed in a queue.',
@@ -158,7 +158,7 @@ export function queuePageHtml({ pos, waiting: total, pollSec, storeName, lang = 
     color: #e8f4f8; font-family: Vazirmatn, Tahoma, sans-serif; padding: 24px;
   }
   .card {
-    width: min(480px, 100%); background: #101c22ee; border: 1px solid #31afd433;
+    width: min(480px, 100%); background: #101c22ee; border: 1px solid #f59e0b33;
     border-radius: 22px; padding: 34px 28px; text-align: center;
     box-shadow: 0 24px 70px #0009, 0 0 0 1px #ffffff08 inset;
   }
@@ -168,14 +168,14 @@ export function queuePageHtml({ pos, waiting: total, pollSec, storeName, lang = 
   .pos {
     margin: 20px auto 6px; width: 128px; height: 128px; border-radius: 50%;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    background: conic-gradient(#31afd4 var(--pct, 10%), #1b2c34 0);
+    background: conic-gradient(#f59e0b var(--pct, 10%), #1b2c34 0);
     position: relative;
   }
   .pos::before { content: ''; position: absolute; inset: 10px; border-radius: 50%; background: #0d171c; }
-  .pos b { position: relative; font-size: 34px; color: #31afd4; font-variant-numeric: tabular-nums; }
+  .pos b { position: relative; font-size: 34px; color: #f59e0b; font-variant-numeric: tabular-nums; }
   .pos span { position: relative; font-size: 11px; color: #7fa8b5; margin-top: 2px; }
   .bar { height: 6px; border-radius: 99px; background: #1b2c34; overflow: hidden; margin: 18px 0 10px; }
-  .bar i { display: block; height: 100%; width: 30%; border-radius: 99px; background: linear-gradient(90deg, #31afd4, #7ce0f7); animation: slide 1.6s ease-in-out infinite; }
+  .bar i { display: block; height: 100%; width: 30%; border-radius: 99px; background: linear-gradient(90deg, #f59e0b, #7ce0f7); animation: slide 1.6s ease-in-out infinite; }
   @keyframes slide { 0% { transform: translateX(-110%); } 100% { transform: translateX(420%); } }
   .st { font-size: 12px; color: #6f95a2; }
   .err { color: #ffb4a2; font-size: 12px; margin-top: 10px; display: none; }

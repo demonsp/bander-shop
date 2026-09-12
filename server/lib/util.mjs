@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  ابزارهای عمومی سمت سرور  ·  Green Apple Store
+//  ابزارهای عمومی سمت سرور  ·  Yassaei Electronics
 // ─────────────────────────────────────────────────────────────
 import crypto from 'node:crypto';
 
@@ -273,4 +273,4 @@ export function titleCase(s) {
 }
 
 /** برچسب بیلد جاری — برای نمایش در پنل ادمین و status */
-export const BUILD = 'bm-v35';
+export const BUILD = 'ys-v7';
