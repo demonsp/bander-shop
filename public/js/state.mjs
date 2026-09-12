@@ -441,10 +441,14 @@ export const CONSENT_VERSION = 2;
 export const CONSENT_TTL_DAYS = 180;
 export const hasConsent = () => {
   const c = S.consent;
-  if (!c?.at) return false;
+  if (!c || !c.at) return false;
+  // If version doesn't match, we ignore it and ask again
   if ((c.v || 1) !== CONSENT_VERSION) return false;
-  const age = Date.now() - Date.parse(c.at);
-  return Number.isFinite(age) && age >= 0 && age < CONSENT_TTL_DAYS * 86400000;
+  // Let's use Date.parse and ensure it's not NaN
+  const parsedAt = Date.parse(c.at);
+  if (Number.isNaN(parsedAt)) return false;
+  const age = Date.now() - parsedAt;
+  return age >= 0 && age < CONSENT_TTL_DAYS * 86400000;
 };
 export function setConsent(data) {
   S.consent = { ...data, v: CONSENT_VERSION, at: new Date().toISOString() };
