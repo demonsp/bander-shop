@@ -1600,14 +1600,13 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
 .watermark-text {
   font-size: clamp(24px, 5vw, 48px);
   font-weight: 900;
-  color: rgba(150, 150, 150, 0.15);
+  color: rgba(200, 200, 200, 0.25);
   transform: rotate(-35deg);
   user-select: none;
   white-space: nowrap;
-  text-shadow: 1px 1px 0 rgba(255,255,255,0.1), -1px -1px 0 rgba(0,0,0,0.1);
-  mix-blend-mode: overlay;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
 }
 [data-theme="dark"] .watermark-text, [data-mode="dark"] .watermark-text {
-  color: rgba(255, 255, 255, 0.08);
-  text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+  color: rgba(255, 255, 255, 0.15);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
