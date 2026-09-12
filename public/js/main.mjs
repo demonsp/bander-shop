@@ -629,7 +629,7 @@ function wirePalette() {
       if (it) pick(Number(it.dataset.idx));
     });
     let idx = 0;
-    const onKey = (e) => {
+    onKey = (e) => {
       const items = list.querySelectorAll('.cmdk-item[data-idx]');
       if (e.key === 'Escape') { e.preventDefault(); close(); }
       else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
