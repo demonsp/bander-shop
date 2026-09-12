@@ -226,7 +226,7 @@ function renderFooter() {
     <li>${icon('chat')}<span>${t('contact.mobile')}: <a href="tel:${st.phone2 || st.phone}">${fmtTel(st.phone2 || '')}</a></span></li>
     <li>${icon('mail')}<span><a href="mailto:${st.email}">${st.email}</a></span></li>
     <li>${icon('pin')}<span>${isFa() ? (st.address || '') : (st.addressEn || st.address || '')}</span></li>
-    <li>${icon('clock')}<span>${t('footer.workingHours')}:<br> ${(st.workingHours || []).map((w) => `${isFa() ? w.fa : w.en} ${isFa() ? w.time : w.timeEn}`).join('<br>')}</span></li>\n
+    <li>${icon('clock')}<span>${t('footer.workingHours')}:<br> ${(st.workingHours || []).map((w) => `${isFa() ? w.fa : w.en} ${isFa() ? w.time : w.timeEn}`).join('<br>')}</span></li>`;
   // کروکی نقشه در پانویس
   qs('#fMinimap').innerHTML = minimapSvg();
   qs('#fMinimap').setAttribute('title', t('contact.mapTitle'));
