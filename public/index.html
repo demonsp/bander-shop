@@ -23,8 +23,14 @@
       var ws = document.getElementById('welcomeScreen');
       if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.remove(); }, 500); }
       var bs = document.getElementById('bootSplash');
-      if (bs) bs.innerHTML = '<div class="empty" style="color:#ef4444"><h4>خطا در اجرای برنامه</h4><p class="muted small" style="direction:ltr;text-align:left;font-family:monospace;margin:10px 0;background:#1e1e1e;padding:10px;border-radius:6px;max-height:150px;overflow:auto;">' + (e.message || 'Unknown error') + '<br>' + (e.filename || '') + ':' + (e.lineno || '') + '</p><button class="btn btn-primary mt" onclick="window.location.reload(true)">تلاش مجدد</button><br><button class="btn btn-ghost mt-s" onclick="navigator.serviceWorker.getRegistrations().then(function(regs){for(var r of regs)r.unregister();window.location.reload(true);})">حذف کش و تلاش مجدد</button></div>';
-    });
+      if (!bs) return;
+      if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+        bs.innerHTML = '<div class="empty" style="color:#ef4444"><h4>خطا در بارگذاری</h4><p class="muted small" style="margin-top:8px">فایل‌های اصلی سایت بارگذاری نشد (احتمال قطعی اینترنت یا نسخه قدیمی).<br>لطفاً کش مرورگر را پاک کنید.</p><button class="btn btn-primary mt" onclick="navigator.serviceWorker.getRegistrations().then(function(regs){for(var r of regs)r.unregister();window.location.reload(true);})">حذف کش و تلاش مجدد</button></div>';
+        return;
+      }
+      if (bs.innerHTML.indexOf('button') > -1) return;
+      bs.innerHTML = '<div class="empty" style="color:#ef4444"><h4>خطا در اجرای برنامه</h4><p class="muted small" style="direction:ltr;text-align:left;font-family:monospace;margin:10px 0;background:#1e1e1e;padding:10px;border-radius:6px;max-height:150px;overflow:auto;">' + (e.message || 'Unknown error') + '<br>' + (e.filename || '') + ':' + (e.lineno || '') + '</p><button class="btn btn-primary mt" onclick="window.location.reload(true)">تلاش مجدد</button><br><button class="btn btn-ghost mt-s" onclick="navigator.serviceWorker.getRegistrations().then(function(regs){for(var r of regs)r.unregister();window.location.reload(true);})">حذف کش و تلاش مجدد</button></div>';
+    }, true);
     window.addEventListener('unhandledrejection', function(e) {
       var ws = document.getElementById('welcomeScreen');
       if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.remove(); }, 500); }
