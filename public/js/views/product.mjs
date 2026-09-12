@@ -55,7 +55,7 @@ export async function render(ctx) {
         <div class="row row-wrap">
           ${feat('wishlist') ? h`<button type="button" class="btn btn-ghost btn-sm ${inWishlist(p.id) ? 'btn-danger' : ''}" data-act="wish-toggle" data-id="${p.id}">${icon('heart')} ${inWishlist(p.id) ? t('card.wishlistRemove') : t('card.wishlistAdd')}</button>` : ''}
           ${feat('compare') ? h`<button type="button" class="btn btn-ghost btn-sm ${inCompare(p.id) ? 'active' : ''}" data-act="compare-toggle" data-id="${p.id}">${icon('scale')} ${t('compare.add')}</button>` : ''}
-          <button type="button" class="btn btn-ghost btn-sm" data-act="share" data-title="${prodName(p)}">${icon('share')} ${t('pdp.share')}</button>
+          
         </div>
       </div>
 
@@ -68,7 +68,11 @@ export async function render(ctx) {
           <a href="#/products?authenticity=${p.authenticity || 'generic'}" class="badge-pill ${p.authenticity === 'original' ? 'bp-success' : p.authenticity === 'highcopy' ? 'bp-warn' : 'bp-muted'}">${t(`auth.${p.authenticity || 'generic'}`)}</a>
           ${p.featured ? h`<a href="#/products?sort=popular" class="badge-pill bp-violet">${icon('star')} ${t('home.featured')}</a>` : ''}
         </div>
-        <div class="pc-rate mt-s">${stars(p.ratingAvg)} <span class="muted small">${fmtNum(rstats.avg || p.ratingAvg)} · ${fmtNum(rstats.count || p.ratingCount)} ${t('common.reviews')}</span></div>
+        <div class="row row-between mt-s">
+          <div class="pc-rate">${stars(p.ratingAvg)} <span class="muted small">${fmtNum(rstats.avg || p.ratingAvg)} · ${fmtNum(rstats.count || p.ratingCount)} ${t('common.reviews')}</span></div>
+          <button type="button" class="btn btn-ghost btn-sm" data-act="share" data-title="${prodName(p)}" style="color:var(--accent);">${icon('share')} ${t('pdp.share')}</button>
+        </div>
+        ${p.createdAt ? h`<p class="muted tiny mt-s" style="opacity:0.8">${icon('calendar')} ${isFa() ? 'تاریخ ثبت محصول:' : 'Added on:'} ${fmtDate(p.createdAt)}</p>` : ''}
 
         <div class="buy-price">
           ${p.oldPrice > p.price ? h`<span class="pc-old">${fmtMoney(p.oldPrice)}</span>` : ''}
