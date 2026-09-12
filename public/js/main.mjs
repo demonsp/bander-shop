@@ -32,6 +32,9 @@ import { bannerHtml, minimapSvg } from './components.mjs';
 async function init() {
   
   installDelegation();
+  if (location.search.includes('_nocache')) {
+    history.replaceState(null, '', location.pathname + location.hash);
+  }
   wireStaticControls();
   await boot();
   renderChrome();
@@ -874,10 +877,10 @@ function registerSW() {
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              toast({
+              toast(isFa() ? 'برای اعمال تغییرات روی دکمه زیر کلیک کنید.' : 'Click update to apply changes.', {
                 type: 'info',
                 title: isFa() ? 'نسخهٔ جدید آماده است' : 'Update Available',
-                timeout: 10000,
+                timeout: 15000,
                 action: { label: isFa() ? 'بروزرسانی' : 'Update', onClick: () => { document.getElementById('btnRefresh')?.click(); } }
               });
             }

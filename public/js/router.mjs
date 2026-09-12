@@ -163,14 +163,24 @@ export async function render(ctx) {
   if (my !== token) return;
   loadingBar(false);
   document.dispatchEvent(new CustomEvent('view:rendered', { detail: ctx }));
-  markActiveNav(ctx.path);
+  markActiveNav(ctx);
   if (!ctx.keepScroll) { window.scrollTo(0, 0); setTimeout(() => window.scrollTo(0, 0), 50); }
   try { view.closest('#view')?.focus({ preventScroll: true }); } catch { /* noop */ }
 }
 
-function markActiveNav(path) {
+function markActiveNav(ctx) {
+  const path = ctx.path;
+  const isDeals = path === '/products' && ctx.query.get('discount') === '1';
   document.querySelectorAll('.nav-link[data-nav-key]').forEach((a) => {
-    a.classList.toggle('active', a.dataset.navKey === path || (a.dataset.navKey !== '/' && path.startsWith(a.dataset.navKey)));
+    let active = false;
+    if (a.dataset.navKey === '/deals') {
+      active = isDeals;
+    } else if (a.dataset.navKey === '/products') {
+      active = path === '/products' && !isDeals;
+    } else {
+      active = a.dataset.navKey === path || (a.dataset.navKey !== '/' && path.startsWith(a.dataset.navKey));
+    }
+    a.classList.toggle('active', active);
   });
   document.querySelectorAll('.mobile-nav a[data-mn]').forEach((a) => {
     const key = a.dataset.mn;

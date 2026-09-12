@@ -70,6 +70,68 @@ export async function render(ctx) {
 
           <form data-act="login-pass" data-apf="password">
             ${field({ label: t('auth.identifier'), name: 'identifier', required: true, autocomplete: 'username' })}
+            ${field({ label: t('common.password'), name: 'password', type: 'password', required: true, autocomplete: 'current-password' })}
+            <div class="row row-between mb">
+              ${checkField({ label: t('auth.remember'), name: 'remember', checked: true })}
+              <button type="button" class="link-btn" data-goto="forgot">${t('auth.forgot')}</button>
+            </div>
+            ${captchaField()}
+            <button class="btn btn-primary btn-block" type="submit">${icon('logout')} ${t('common.login')}</button>
+          </form>
+
+          <form data-act="otp-send" data-purpose="login" data-apf="phone" hidden>
+            ${field({ label: t('common.phone'), name: 'target', type: 'tel', required: true, placeholder: '09xxxxxxxxx' })}
+            ${captchaField()}
+            <button class="btn btn-primary btn-block" type="submit">${icon('send')} ${t('auth.sendCode')}</button>
+          </form>
+          <form data-act="otp-send" data-purpose="login" data-apf="email" hidden>
+            ${field({ label: t('common.email'), name: 'target', type: 'email', required: true })}
+            ${captchaField()}
+            <button class="btn btn-primary btn-block" type="submit">${icon('send')} ${t('auth.sendCode')}</button>
+          </form>
+
+          <form data-act="otp-login" data-apf="code" hidden>
+            <p class="notice notice-info mb">${icon('mail')}<span data-sentto></span></p>
+            <p class="notice notice-warn mb" data-democode hidden>${icon('info')}<span></span></p>
+            ${field({ label: t('auth.otpCode'), name: 'code', required: true, autocomplete: 'one-time-code', attrs: 'inputmode="numeric" maxlength="6"' })}
+            <button class="btn btn-primary btn-block" type="submit">${icon('check')} ${t('common.login')}</button>
+            <div class="row row-between mt-s">
+              <button type="button" class="link-btn" data-resend>${t('auth.resend')}</button>
+              <span class="muted tiny" data-resend-timer></span>
+            </div>
+          </form>
+
+          <form data-act="login-2fa" data-apf="2fa" hidden>
+            <p class="notice notice-info mb">${icon('shield')}<span>${t('auth.2faText')}</span></p>
+            <div class="btn-group mb" data-2fa-method></div>
+            ${field({ label: t('auth.otpCode'), name: 'code', required: true, autocomplete: 'one-time-code', attrs: 'inputmode="numeric"' })}
+            <button class="btn btn-primary btn-block" type="submit">${icon('shield')} ${t('auth.2faVerify')}</button>
+          </form>
+        </div>
+
+        <!-- ثبت‌نام -->
+        <div class="tab-panel" data-ap="register" ${!isRegister ? 'hidden' : ''}>
+          <div class="btn-group mb" data-regmode>
+            <button type="button" class="btn active" data-m="username">${t('auth.methodPassword')}</button>
+            <button type="button" class="btn" data-m="phone">${t('auth.methodPhone')}</button>
+            <button type="button" class="btn" data-m="email">${t('auth.methodEmail')}</button>
+          </div>
+          <form data-act="register" data-next="${next}">
+            ${field({ label: t('common.fullName'), name: 'name', required: true, autocomplete: 'name' })}
+            <span data-reg-username>${field({ label: t('common.username'), name: 'username', autocomplete: 'username', hint: lang() === 'fa' ? 'حروف انگلیسی، عدد و _ ، حداقل ۳ نویسه' : 'letters, digits and _ , min 3 chars' })}</span>
+            <span data-reg-target-phone hidden>${field({ label: t('common.phone'), name: 'phoneTarget', type: 'tel', placeholder: '09xxxxxxxxx' })}</span>
+            <span data-reg-target-email hidden>${field({ label: t('common.email'), name: 'emailTarget', type: 'email' })}</span>
+            <span data-reg-code hidden>
+              <div class="row">
+                <span class="grow">${field({ label: t('auth.otpCode'), name: 'code', attrs: 'inputmode="numeric" maxlength="6"' })}</span>
+                <button type="button" class="btn btn-ghost" data-reg-send>${t('auth.sendCode')}</button>
+              </div>
+              <p class="notice notice-warn mb" data-reg-demo hidden>${icon('info')}<span></span></p>
+            </span>
+            <span data-reg-extra>
+              ${field({ label: `${t('common.phone')} (${t('common.optional')})`, name: 'phone', type: 'tel' })}
+              ${field({ label: `${t('common.email')} (${t('common.optional')})`, name: 'email', type: 'email' })}
+            </span>
             ${field({ label: t('common.password'), name: 'password', type: 'password', required: true, hint: t('auth.passwordRules'), autocomplete: 'new-password' })}
             <div class="row row-between mt-s gap-2">
               <span class="grow">${field({ label: 'کد معرف (اختیاری)', name: 'referralCode', placeholder: 'مثلاً Z8A4X' })}</span>

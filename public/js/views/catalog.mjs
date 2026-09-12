@@ -57,6 +57,7 @@ export async function render(ctx) {
     while (c) { chain.unshift(c); c = c.parentId ? catById(c.parentId) : null; }
     for (const x of chain) crumb.push({ label: catName(x), href: `#/category/${x.id}` });
   } else if (query.get('q')) crumb.push({ label: `${t('search.resultsFor')} «${query.get('q')}»` });
+  else if (query.get('discount') === '1') crumb.push({ label: t('nav.deals', { default: 'تخفیف‌ها' }) });
   else crumb.push({ label: t('catalog.title') });
 
   const fopt = (type, value, label, count, checked) => h`
@@ -71,7 +72,7 @@ export async function render(ctx) {
     ${breadcrumbs(crumb)}
     <div class="section-head">
       <div>
-        <h1 class="section-title">${activeCat ? catName(activeCat) : query.get('q') ? t('search.resultsFor') + ' «' + query.get('q') + '»' : t('catalog.title')}</h1>
+        <h1 class="section-title">${activeCat ? catName(activeCat) : query.get('q') ? t('search.resultsFor') + ' «' + query.get('q') + '»' : query.get('discount') === '1' ? t('nav.deals', { default: 'تخفیف‌ها' }) : t('catalog.title')}</h1>
         <p class="section-sub">${fmtNum(data.total || 0)} ${t('catalog.count')}</p>
       </div>
       <button type="button" class="btn btn-ghost only-mobile" data-act="cat-filters">${icon('filter')} ${t('catalog.showFilters')}</button>
