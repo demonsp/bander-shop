@@ -444,6 +444,14 @@ export function registerShop(router) {
       }
       logAudit(user, 'order.create', order.code, { total: q.total, delivery, paymentMethod, items: lines.length });
       pushNotification(st, {
+        userId: null,
+        type: 'admin_alert',
+        level: 'success',
+        title: `سفارش جدید: ${order.code}`,
+        body: `یک سفارش جدید (${lines.length} قلم) به مبلغ ${q.total.toLocaleString('fa-IR')} تومان ثبت شد.`,
+        link: '#/admin/orders'
+      });
+      pushNotification(st, {
         userId: user?.id || null, type: 'order', level: 'info',
         title: `سفارش ${order.code} ثبت شد`, titleEn: `Order ${order.code} placed`,
         body: paymentMethod === 'wallet' && order.status === 'confirmed'

@@ -515,6 +515,13 @@ export function registerAdmin(router) {
       if (tracking) { o.payment.tracking = tracking; o.tracking = tracking; }
       if (note) o.adminNote = note;
       if (status && status !== o.status) {
+        const terminal = ['cancelled', 'refunded', 'returned'];
+        if (terminal.includes(o.status)) {
+          throw badRequest('terminal_state', 'این سفارش لغو یا مرجوع شده است و وضعیت آن قابل تغییر نیست.');
+        }
+        if (o.status === 'delivered' && status !== 'returned') {
+          throw badRequest('terminal_state', 'سفارش تحویل‌شده فقط می‌تواند به وضعیت مرجوعی تغییر کند.');
+        }
         o.status = status;
         o.updatedAt = nowISO();
         o.timeline.push({ status, at: nowISO(), note: note || statusInfoText(status), by: ctx.user.name });
@@ -522,7 +529,7 @@ export function registerAdmin(router) {
           restoreStock(st, o);
           const back = (o.walletUsed || 0) + (o.payment?.status === 'paid' ? Math.max(0, o.total - (o.walletUsed || 0)) : 0);
           const u = st.users.find((x) => x.id === o.userId);
-          if (u && back > 0 && status !== 'cancelled') {
+          if (u && back > 0) {
             u.wallet = u.wallet || { balance: 0, transactions: [] };
             u.wallet.balance += back;
             u.wallet.transactions.unshift({ id: uid('tx'), at: nowISO(), type: 'refund', amount: back, status: 'done', note: `بازگشت وجه سفارش ${o.code}`, ref: '' });
