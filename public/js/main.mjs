@@ -139,7 +139,7 @@ function renderChrome() {
   if (st.freeShipOver) fb.push(isFa() ? `ارسال رایگان سفارش‌های بالای ${fmtNum(st.freeShipOver)} تومان` : `Free shipping over ${fmtNum(st.freeShipOver)}`);
   fb.push(isFa() ? 'ضمانت اصالت کالا؛ مرجوع تا ۷ روز' : 'Authenticity guarantee; 7-day returns');
   if (st.phone) fb.push(isFa() ? `پشتیبانی هر روز ۹ تا ۲۱ — ${fmtTel(st.phone)}` : `Support 9–21 daily — ${fmtTel(st.phone)}`);
-  if (st.socials?.instagram) fb.push(isFa() ? 'تازه‌های گجت هر هفته در اینستاگرام یاسایی' : 'New gadgets weekly on Instagram');
+  if (st.socials?.instagram || true) fb.push(isFa() ? 'تازه‌های گجت هر هفته در اینستاگرام گرین اپل' : 'New gadgets weekly on Instagram');
   const tickerItems = S.ticker?.length ? S.ticker : fb;
   topbar.hidden = false;
   topbar.classList.toggle('no-ticker', u.showTicker === false);
@@ -221,24 +221,25 @@ function renderNav() {
       const subCats = S.categories.filter(c => c.parentId === catId);
       const brands = S.brands.slice(0, 10);
       
-      let html = `<a href="#/category/${catId}" class="mega-see-all">${t('nav.allCategories')} ${catName(S.categories.find(c => c.id === catId) || {})} ${icon('chevron-left')}</a>`;
-      html += '<div class="mega-sub-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">';
+      let html = `<a href="#/category/${catId}" class="mega-see-all" style="margin-top:0;">${t('nav.allCategories')} ${catName(S.categories.find(c => c.id === catId) || {})} ${icon('chevron-left')}</a>`;
+      html += '<div class="mega-sub-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; align-items: start; align-content: start;">';
       
       if (subCats.length) {
-        html += '<div class="mega-sub-col"><h3>دسته‌بندی‌های زیرمجموعه</h3>';
+        html += '<div class="mega-sub-col" style="display:flex; flex-direction:column; gap:8px;"><h3>دسته‌بندی‌های زیرمجموعه</h3>';
         subCats.forEach(sc => {
-          html += `<a href="#/category/${sc.id}">${catName(sc)}</a>`;
+          html += `<a href="#/category/${sc.id}" style="margin:0;">${catName(sc)}</a>`;
         });
         html += '</div>';
       }
       
-      html += `<div class="mega-sub-col" style="${!subCats.length ? 'grid-column: 1 / -1;' : ''}"><h3>برندهای پرطرفدار این دسته</h3><div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
+      html += `<div class="mega-sub-col" style="${!subCats.length ? 'grid-column: 1 / -1;' : ''} display:flex; flex-direction:column; gap:8px;"><h3>برندهای پرطرفدار این دسته</h3><div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
       brands.forEach(b => {
-        html += `<a href="#/products?cat=${catId}&brand=${b.id}" class="chip" style="margin-bottom: 0;">${brandName(b)}</a>`;
+        html += `<a href="#/products?cat=${catId}&brand=${b.id}" class="chip" style="margin:0;">${brandName(b)}</a>`;
       });
       html += '</div></div></div>';
       
       megaContent.innerHTML = html;
+      megaContent.scrollTop = 0;
     };
 
     sideLinks.forEach(link => {
@@ -266,7 +267,7 @@ function renderFooter() {
   // شبکه‌های اجتماعی
   const soc = st.socials || {};
   const socList = [
-    ['instagram', safeHref(soc.instagram), 'camera'],
+    ['instagram', safeHref(soc.instagram || 'https://instagram.com/greenapple.shop'), 'camera'],
     ['telegram', safeHref(soc.telegram), 'send'],
     ['whatsapp', soc.whatsapp ? `https://wa.me/${String(soc.whatsapp).replace(/\D/g, '')}` : '', 'chat'],
     ['eitaa', safeHref(soc.eitaa), 'globe'],
