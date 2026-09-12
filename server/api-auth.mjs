@@ -366,7 +366,11 @@ export function registerAuth(router) {
     }
     await db.tx((st) => {
       const u = st.users.find((x) => x.id === user.id);
-      if (usedBackup !== null) u.twoFA.backupCodes.splice(usedBackup, 1);
+      if (type === 'backup') {
+        const c = code.trim().toUpperCase().replace(/-/g, '');
+        const realIdx = (u.twoFA?.backupCodes || []).findIndex(b => b.replace(/-/g, '').toUpperCase() === c);
+        if (realIdx >= 0) u.twoFA.backupCodes.splice(realIdx, 1);
+      }
       u.lastLoginAt = nowISO();
       u.loginCount = (u.loginCount || 0) + 1;
       logAudit(u, 'auth.login', u.username, { type: '2fa', method: type });

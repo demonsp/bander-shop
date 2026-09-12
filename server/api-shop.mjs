@@ -44,7 +44,7 @@ function getCart(ctx, create = false) {
         for (const it of gCart.items) {
           const ex = cart.items.find(x => x.productId === it.productId);
           if (ex) ex.qty += it.qty;
-          else cart.items.push(it);
+          else { if (cart.items.length < 50) cart.items.push(it); }
         }
         gCart.items = []; // Empty the guest cart
         cart.updatedAt = nowISO();
