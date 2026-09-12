@@ -17,7 +17,7 @@ export const routes = [
   { pattern: '/product/:id', load: () => import('./views/product.mjs'), title: (c) => c.params.id },
   { pattern: '/search/image', load: () => import('./views/search-image.mjs'), title: () => t('search.imageTitle'), guard: 'feature:imageSearch' },
   { pattern: '/cart', load: () => import('./views/cart.mjs'), title: () => t('cart.title') },
-  { pattern: '/checkout', load: () => import('./views/checkout.mjs'), title: () => t('checkout.title') },
+  { pattern: '/checkout', load: () => import('./views/checkout.mjs'), title: () => t('checkout.title'), guard: 'auth' },
   { pattern: '/checkout/done/:id', load: () => import('./views/checkout-done.mjs'), title: () => t('checkout.successTitle') },
   { pattern: '/pay/:id', load: () => import('./views/pay.mjs'), title: () => t('common.payment') },
   { pattern: '/compare', load: () => import('./views/compare.mjs'), title: () => t('compare.title'), guard: 'feature:compare' },

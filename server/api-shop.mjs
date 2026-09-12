@@ -286,7 +286,8 @@ export function registerShop(router) {
 
   // ── محاسبهٔ هزینهٔ ارسال/بیمه/تخفیف ─────────────────────
   router.post('/api/checkout/quote', async (ctx) => {
-    const cart = getCart(ctx);
+    // 🔴 BUG FIX: Fetching/pruning cart was outside db.tx(), causing memory corruption and race conditions
+    const cart = await db.tx(st => getCart({ ...ctx, state: st }));
     if (!cart || !cart.items.length) throw badRequest('empty_cart', 'سبد خرید خالی است.');
     const delivery = V.oneOf(ctx.body?.delivery, ['pickup', 'courier'], 'delivery', 'courier');
     const zone = V.oneOf(ctx.body?.zone, ['city', 'province', 'country'], 'zone', 'country');

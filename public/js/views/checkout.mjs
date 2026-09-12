@@ -82,42 +82,6 @@ export async function render(ctx) {
 
             <div class="divider"></div>
             <strong class="row mb-s">${icon('pin')} ${t('checkout.address')}</strong>
-            ${!S.me ? h`
-              <div class="form-grid mt-s">
-                ${field({ label: isFa() ? 'استان' : 'Province', name: 'guestProvince' })}
-                ${field({ label: isFa() ? 'شهر' : 'City', name: 'guestCity' })}
-                ${field({ label: isFa() ? 'آدرس کامل (خیابان، کوچه، پلاک، واحد)' : 'Full Address', name: 'guestAddress', span2: true })}
-                ${field({ label: isFa() ? 'کد پستی (اختیاری)' : 'Postal Code', name: 'guestZip', type: 'tel', attrs: 'inputmode="numeric"' })}
-              </div>
-            ` : addresses.length ? h`
-              <div class="col" data-addresses>
-                ${addresses.map((a, i) => h`
-                  <label class="addr-card">
-                    <input type="radio" name="addressId" value="${a.id}" ${a.isDefault || i === 0 ? 'checked' : ''}>
-                    <span class="dot"></span>
-                    <span>
-                      <span class="b">${esc(a.title || t('common.address'))}</span>
-                      <span class="hint">${esc(a.receiver || '')} · ${fmtTel(a.phone || '')}<br>${esc(a.street || '')}${a.city ? `، ${esc(a.city)}` : ''}${a.postal ? ` · ${esc(a.postal)}` : ''}</span>
-                    </span>
-                  </label>`)}
-              </div>
-              <button type="button" class="btn btn-ghost btn-sm mt-s" data-act="addr-add">${icon('plus')} ${t('checkout.addAddress')}</button>
-            ` : h`
-              <p class="notice notice-warn">${icon('alert')}<span>${t('checkout.noAddress')}</span></p>
-              <button type="button" class="btn btn-ghost btn-sm mt-s" data-act="addr-add">${icon('plus')} ${t('checkout.addAddress')}</button>
-            `}
-          </div>
-        </section>
-
-        ${!S.me ? h`
-        <section class="card">
-          <strong class="row mb-s">${icon('user')} ${t('checkout.guestInfo')}</strong>
-          <p class="hint mb-s">${t('checkout.guestHint')}</p>
-          <div class="form-grid">
-            ${field({ label: t('checkout.guestName'), name: 'guestName', required: true, autocomplete: 'name' })}
-            ${field({ label: t('checkout.guestPhone'), name: 'guestPhone', type: 'tel', required: true, autocomplete: 'tel', attrs: 'inputmode="numeric" maxlength="11" placeholder="09xxxxxxxxx"', hint: t('checkout.guestPhoneHint') })}
-          </div>
-        </section>` : ''}
 
         <section class="card">
           <strong class="row mb-s">${icon('wallet')} ${t('checkout.paymentMethod')}</strong>
@@ -129,7 +93,6 @@ export async function render(ctx) {
                 <span><span class="b">${isFa() ? m.fa : m.en}</span><span class="hint">${esc(m.note || '')}${m.id === 'gateway' && ordersCfg().gatewayMode === 'demo' ? ` — ${t('checkout.gatewayDemo')}` : ''}${['snapppay', 'azki', 'digipay'].includes(m.id) && (!S.me || S.me.kycStatus !== 'approved') ? ' <span style="color:var(--danger)">(نیازمند احراز هویت)</span>' : ''}</span></span>
               </label>`)}
           </div>
-          ${!S.me ? h`<p class="hint mt-s" data-guest-cod-note hidden>${t('checkout.guestCodPickup')}</p>` : ''}
           ${S.me && feat('wallet') && (S.me.wallet?.balance || 0) > 0 ? switchField({ label: t('checkout.useWallet'), desc: t('checkout.walletBalance', { amount: fmtNum(S.me.wallet.balance) }), name: 'useWallet', checked: true }) : ''}
           <label class="field mt"><span class="label">${t('checkout.note')}</span><textarea class="textarea" name="note" rows="2" maxlength="400" placeholder="${t('checkout.notePlaceholder')}"></textarea></label>
         </section>
