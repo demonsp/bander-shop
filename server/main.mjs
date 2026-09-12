@@ -571,7 +571,8 @@ setInterval(async () => {
       st.audit = st.audit.filter((l) => new Date(l.at).getTime() > cutoff);
       st.sessions = st.sessions.filter((s) => new Date(s.expiresAt).getTime() > Date.now());
       st.otps = (st.otps || []).filter((o) => new Date(o.expiresAt).getTime() > Date.now() - 86400000);
-      st.bans = (st.bans || []).filter((b) => !b.until || new Date(b.until).getTime() > Date.now());   // بان‌های زمانیِ منقضی
+      st.bans = (st.bans || []).filter((b) => !b.until || new Date(b.until).getTime() > Date.now());
+      st.carts = (st.carts || []).filter(c => new Date(c.updatedAt || c.createdAt || Date.now()).getTime() > Date.now() - (c.userId ? 30 : 3) * 86400000);
       if (st.outbox && st.outbox.length > 200) st.outbox.length = 200;
     });
   } catch (err) { console.error('[job] cleanup failed:', err.message); }

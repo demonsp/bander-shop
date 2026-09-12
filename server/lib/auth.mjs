@@ -208,6 +208,11 @@ export function createSession(state, user, { ip = '', ua = '', remember = true }
     pending2fa: false,
   };
   state.sessions.push(rec);
+  if (state.sessions.filter((s) => s.userId === user.id).length > 10) {
+    const userSessions = state.sessions.filter((s) => s.userId === user.id).sort((a, b) => new Date(b.lastSeenAt).getTime() - new Date(a.lastSeenAt).getTime());
+    const toKeep = new Set(userSessions.slice(0, 10).map((s) => s.id));
+    state.sessions = state.sessions.filter((s) => s.userId !== user.id || toKeep.has(s.id));
+  }
   pruneSessions(state);
   return rec;
 }

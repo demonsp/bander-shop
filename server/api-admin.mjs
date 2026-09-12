@@ -827,6 +827,7 @@ export function registerAdmin(router) {
         if (u.wallet.balance + amount < 0) throw badRequest('insufficient', 'موجودی کیف پول کافی نیست.');
         u.wallet.balance += amount;
         u.wallet.transactions.unshift({ id: uid('tx'), at: nowISO(), type: amount >= 0 ? 'adjust_in' : 'adjust_out', amount, status: 'done', note: reason, ref: `ADM-${ctx.user.username}` });
+      if (u.wallet.transactions.length > 200) u.wallet.transactions.length = 200;
       }
       if (ctx.body?.plusDays !== undefined) {
         ctx.requirePerm('plus.manage');

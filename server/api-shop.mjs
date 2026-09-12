@@ -399,6 +399,7 @@ export function registerShop(router) {
       if (walletUsed > 0 && user) {
         user.wallet.balance -= walletUsed;
         user.wallet.transactions.unshift({ id: uid('tx'), at: nowISO(), type: 'purchase', amount: -walletUsed, status: 'done', note: 'پرداخت سفارش', ref: '' });
+      if ((typeof u !== 'undefined' ? u : user).wallet.transactions.length > 200) (typeof u !== 'undefined' ? u : user).wallet.transactions.length = 200;
       }
       // ۴) کوپن
       if (q.coupon) { q.coupon.used = (q.coupon.used || 0) + 1; }
@@ -676,6 +677,7 @@ export function registerShop(router) {
         t.status = 'open';
       }
       const isStaff = ['owner', 'staff'].includes(ctx.user.role);
+      if (t.messages.length >= 100) throw badRequest('limit', 'تعداد پیام‌های این تیکت به سقف خود (۱۰۰) رسیده است. لطفا تیکت جدیدی باز کنید.');
       t.messages.push({ from: isStaff ? 'staff' : 'user', userId: ctx.user.id, name: ctx.user.name, body, attachments, at: nowISO() });
       t.updatedAt = nowISO();
       logAudit(ctx.user, 'ticket.message', t.code, { from: isStaff ? 'staff' : 'user' });
@@ -807,6 +809,7 @@ export function registerShop(router) {
   // ── بارگذاری تصویر ──────────────────────────────────────
   router.post('/api/upload', async (ctx) => {
     ctx.requireUser();
+    ctx.rateLimit(`upload:${ctx.user.id}`, 30, 24 * 60 * 60 * 1000);
     const data = String(ctx.body?.data || '');
     if (!data) throw badRequest('no_data', 'فایلی ارسال نشد.');
     const buf = Buffer.from(data.replace(/^data:[^;]+;base64,/, ''), 'base64');
@@ -932,6 +935,7 @@ export function safeCancelOrder(st, o, note, by) {
       at: o.updatedAt, type: 'refund', amount: refundAmount, status: 'done',
       note: `بازگشت وجه سفارش ${o.code}`, ref: o.payment?.ref || ''
     });
+      if ((typeof u !== 'undefined' ? u : user).wallet.transactions.length > 200) (typeof u !== 'undefined' ? u : user).wallet.transactions.length = 200;
     o.refund = { amount: refundAmount, method: 'wallet', at: o.updatedAt };
   }
   if (o.payment) {

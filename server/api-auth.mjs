@@ -736,6 +736,7 @@ export function registerAuth(router) {
       const ref = `SIM-${Date.now().toString(36).toUpperCase()}`;
       u.wallet.balance += amount;
       u.wallet.transactions.unshift({ id: uid('tx'), at: nowISO(), type: 'deposit', amount, status: 'done', note: 'شارژ کیف پول (درگاه آزمایشی)', ref });
+      if (u.wallet.transactions.length > 200) u.wallet.transactions.length = 200;
       logAudit(u, 'wallet.deposit', String(amount), { ref });
       return { balance: u.wallet.balance, transactions: u.wallet.transactions.slice(0, 50) };
     });
@@ -756,6 +757,7 @@ export function registerAuth(router) {
         if ((u.wallet?.balance || 0) < price) throw badRequest('insufficient_balance', 'موجودی کیف پول کافی نیست.');
         u.wallet.balance -= price;
         u.wallet.transactions.unshift({ id: uid('tx'), at: nowISO(), type: 'purchase', amount: -price, status: 'done', note: `خرید اشتراک پلاس ${days} روزه`, ref: '' });
+      if (u.wallet.transactions.length > 200) u.wallet.transactions.length = 200;
       }
       const base = u.plus?.active && new Date(u.plus.until) > new Date() ? new Date(u.plus.until) : new Date();
       u.plus = { active: true, startedAt: u.plus?.startedAt || nowISO(), until: new Date(base.getTime() + days * 86400000).toISOString(), method };
