@@ -6,6 +6,7 @@ import { t } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S } from '../state.mjs';
 import { timelineHtml, statusBadge, payBadge } from '../components.mjs';
+import { fireConfetti } from '../ui.mjs';
 
 function fromSession(id) {
   try {
@@ -48,5 +49,5 @@ export async function render(ctx) {
     </div>`;
 }
 
-export function mount(root) { applyDyn(root); return null; }
+export function mount(root) { applyDyn(root); setTimeout(fireConfetti, 100); return null; }
 export const title = () => t('checkout.successTitle');

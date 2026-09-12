@@ -4,7 +4,7 @@
 import { html as h, icon, esc, fmtNum, fmtDate } from '../lib/dom.mjs';
 import { t, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
-import { toastSuccess, toastError, toastApiError, withBusy, errorState } from '../ui.mjs';
+import { toastSuccess, toastError, toastApiError, withBusy, errorState, fireConfetti } from '../ui.mjs';
 import { act } from '../actions.mjs';
 import { S } from '../state.mjs';
 
@@ -52,7 +52,7 @@ export async function render() {
 act('lot-join', async (e, el) => {
   if (!S.me) { toastError(t('nav.login')); return; }
   await withBusy(el, async () => {
-    try { await api.post(`/api/lotteries/${el.dataset.id}/join`, {}); toastSuccess(t('lot.joinDone')); import('../router.mjs').then((m) => m.refresh(true)); }
+    try { await api.post(`/api/lotteries/${el.dataset.id}/join`, {}); toastSuccess(t('lot.joinDone')); fireConfetti(); import('../router.mjs').then((m) => m.refresh(true)); }
     catch (err) { toastApiError(err); }
   });
 });

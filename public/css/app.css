@@ -1174,7 +1174,11 @@ body.kiosk-page .site-footer{display:none}
 .pdp-bar::after{content:"";position:absolute;top:100%;inset-inline:0;height:150px;background:inherit;backdrop-filter:inherit;z-index:-1}
 .pdp-bar .del{text-decoration:line-through}
 .pdp-bar-p{display:flex;flex-direction:column;line-height:1.2}
-@media (max-width:760px){ .pdp-bar{display:flex;bottom:calc(62px + env(safe-area-inset-bottom))} }
+
+@media (max-width:760px){
+  .pdp-bar { bottom: calc(62px + env(safe-area-inset-bottom)); }
+}
+
 
 /* ── کپچا «من ربات نیستم» ── */
 .captcha{border:1px dashed var(--border);border-radius:12px;padding:10px 12px;margin-bottom:12px;background:var(--surface-2)}
@@ -1571,3 +1575,13 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
 [data-theme="darband"] .topbar { background: transparent; border-bottom: 1px solid var(--border-strong); backdrop-filter: blur(10px); color: var(--text); }
 [data-theme="darband"] .topbar .tb-sep { background: var(--border-strong); }
 
+
+.confetti {
+  position: fixed; top: -10px; width: 8px; height: 16px;
+  z-index: 9999; pointer-events: none;
+  animation: confetti-fall linear forwards;
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg) rotateX(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg) rotateX(720deg); opacity: 0; }
+}

@@ -483,7 +483,30 @@ act('adm-lot-run', async (e, el) => {
   const ok = await confirmDialog({ text: t('adm.lotRunWarn'), danger: true });
   if (!ok) return;
   await withBusy(el, async () => {
-    try { const r = await api.post(`/api/admin/lotteries/${el.dataset.id}/run`, {}); toastSuccess(`${t('adm.lotDone')}: ${(r.lottery?.winners || []).map((w) => w.name).join('، ')}`, { timeout: 6000 }); refresh(true); }
+    try {
+      const r = await api.post(`/api/admin/lotteries/${el.dataset.id}/run`, {});
+      const winners = (r.lottery?.winners || []).map((w) => w.name).join('، ');
+      import('../../ui.mjs').then(({ fireConfetti, adaptive }) => {
+        const div = document.createElement('div');
+        div.innerHTML = '<div class="t-center" style="padding:40px 0;"><h1 class="slot-machine" style="font-size:32px; color:var(--accent); font-weight:800;">???</h1><p class="muted mt-s">در حال انتخاب برنده خوش‌شانس...</p></div>';
+        const m = adaptive({
+          title: 'در حال قرعه‌کشی...',
+          body: div
+        });
+        const slot = m.panel.querySelector('.slot-machine');
+        let ticks = 0;
+        const iv = setInterval(() => {
+          slot.textContent = '09' + Math.floor(100000000 + Math.random()*900000000); // looks like phone number
+          ticks++;
+          if (ticks > 25) {
+            clearInterval(iv);
+            slot.textContent = winners || 'بدون برنده!';
+            fireConfetti();
+            setTimeout(() => { m.close(); refresh(true); }, 5000);
+          }
+        }, 120);
+      });
+    }
     catch (err) { toastApiError(err); }
   });
 });

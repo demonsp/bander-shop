@@ -277,6 +277,25 @@ function wireLens(root) {
 
 export function mount(root, ctx) {
   applyDyn(root);
+  // Sticky PDP Bar Logic
+  const pdpBar = root.querySelector('.pdp-bar');
+  const mainCartBtn = root.querySelector('button[data-act="pdp-add"]');
+  if (pdpBar && mainCartBtn && window.IntersectionObserver) {
+    pdpBar.style.transform = 'translateY(150%)';
+    pdpBar.style.transition = 'transform 0.3s ease';
+    pdpBar.style.display = 'flex'; // Ensure it's flex so transform works
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) {
+          pdpBar.style.transform = 'translateY(0)';
+        } else {
+          pdpBar.style.transform = 'translateY(150%)';
+        }
+      });
+    }, { threshold: 0.1 });
+    obs.observe(mainCartBtn);
+  }
+
   pushRecent(ctx.params.id);
   wireTabs(root);
   wireLens(root);

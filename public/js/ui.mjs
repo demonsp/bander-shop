@@ -636,3 +636,19 @@ document.addEventListener('pointerdown', (e) => {
   if (!uiSoundEnabled()) return;
   if (e.target.closest?.('button, a, [role="button"], .pcard, .chip, .gal-thumb')) uiClickSound(true);
 }, true);
+
+export function fireConfetti() {
+  const colors = ['var(--accent)', 'var(--accent-2)', '#ffeb3b', '#f44336', '#4caf50', '#2196f3', '#e91e63'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.opacity = Math.random() + 0.5;
+    el.style.transform = `scale(${Math.random() * 0.8 + 0.4})`;
+    el.style.animationDuration = (Math.random() * 2.5 + 2.5) + 's';
+    el.style.animationDelay = (Math.random() * 0.2) + 's';
+    document.body.appendChild(el);
+    setTimeout(() => el.isConnected && el.remove(), 5500);
+  }
+}

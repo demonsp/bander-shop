@@ -71,7 +71,7 @@ act('pay-sim', async (e, el) => {
       const r = await api.post(`/api/payments/simulate/${el.dataset.id}`, { success: ok });
       await refreshMe();
       await loadCart();
-      if (ok) { toastSuccess(t('checkout.paymentSuccess')); navigate(`#/checkout/done/${el.dataset.id}`); }
+      if (ok) { toastSuccess(t('checkout.paymentSuccess')); fireConfetti(); navigate(`#/checkout/done/${el.dataset.id}`); }
       else { toastApiError({ code: 'payment_failed', message: t('checkout.paymentFailed'), details: 'Payment failed' }); navigate('#/account/orders'); }
     } catch (err) { toastApiError(err); }
   });
