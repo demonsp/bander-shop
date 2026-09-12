@@ -5,7 +5,7 @@ import { fmtTel, html as h, icon, fmtNum, fmtMoney, esc, applyDyn, debounce } fr
 import { t, isFa } from '../i18n.mjs';
 import { api } from '../lib/api.mjs';
 import { S, ship, feat, ordersCfg, isPlus, refreshMe, loadCart } from '../state.mjs';
-import { summaryRows, emptyState, field, checkField, switchField } from '../components.mjs';
+import { summaryRows, emptyState, field, checkField, switchField, selectField } from '../components.mjs';
 import { toast, toastSuccess, toastError, toastApiError, modal, withBusy } from '../ui.mjs';
 import { act } from '../actions.mjs';
 import { navigate, refresh } from '../router.mjs';
@@ -71,11 +71,12 @@ export async function render(ctx) {
           </div>
 
           <div data-courier-opts class="mt">
-            <label class="field"><span class="label">${t('checkout.zone')}</span>
-              <select class="select" name="zone">
-                ${zones.map((z) => h`<option value="${z.id}">${isFa() ? z.name : z.nameEn} — ${fmtNum(z.fee)} ${t('common.toman')} · ${isFa() ? z.eta : ''}</option>`)}
-              </select>
-            </label>
+            ${selectField({
+      label: t('checkout.zone'),
+      name: 'zone',
+      value: defZone,
+      options: zones.map(z => ({ value: z.id, label: `${isFa() ? z.name : z.nameEn} — ${fmtNum(z.fee)} ${t('common.toman')} · ${isFa() ? z.eta : ''}` }))
+    })}
             ${sh.expressEnabled ? switchField({ label: t('checkout.express'), desc: `${fmtNum(sh.expressFee || 0)} ${t('common.toman')}${isPlus() ? ` · ${t('acc.plus')}: −${fmtNum(sh.expressDiscountPct || 50)}٪` : ''}`, name: 'express' }) : ''}
             ${feat('insurance') ? switchField({ label: t('checkout.insuranceOpt'), desc: isPlus() && (S.settings?.plus?.autoInsurance) ? t('checkout.insuranceAuto') : t('checkout.insuranceDesc'), name: 'insurance', checked: isPlus() }) : ''}
 

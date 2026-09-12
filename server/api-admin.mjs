@@ -1462,6 +1462,7 @@ function sanitizeSection(section, patch, current) {
       b('portTheme', true); b('animations', true);
       if (patch.variant !== undefined) out.variant = V.oneOf(patch.variant, ['classic', 'fresh'], 'variant');
       if (patch.mode !== undefined) out.mode = V.oneOf(patch.mode, ['dark', 'light'], 'mode');
+      if (patch.theme !== undefined) out.theme = V.optStr(patch.theme, { max: 30, field: 'تم' });
       if (patch.bgStyle !== undefined) out.bgStyle = V.oneOf(patch.bgStyle, ['waves', 'grid', 'plain'], 'bgStyle');
       if (patch.density !== undefined) out.density = V.oneOf(patch.density, ['compact', 'normal', 'comfy'], 'density');
       if (patch.contrast !== undefined) out.contrast = V.oneOf(patch.contrast, ['normal', 'high'], 'contrast');

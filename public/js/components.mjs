@@ -218,13 +218,16 @@ export function textareaField({ label = '', name, value = '', placeholder = '', 
     </label>`;
 }
 export function selectField({ label = '', name, options = [], value = '', required = false, hint = '', span2 = false, placeholder = '' }) {
+  const selectedOpt = options.find((o) => String(o.value) === String(value));
+  const txt = selectedOpt ? selectedOpt.label : (placeholder || t('common.select'));
+  const optsStr = esc(JSON.stringify(options));
   return h`
     <label class="field ${span2 ? 'span-2' : ''}">
       <span class="label">${label}${required ? h`<span class="req">*</span>` : ''}</span>
-      <select class="select" name="${name}" ${required ? 'required' : ''}>
-        ${placeholder ? h`<option value="">${placeholder}</option>` : ''}
-        ${options.map((o) => h`<option value="${o.value}" ${String(o.value) === String(value) ? 'selected' : ''}>${o.label}</option>`)}
-      </select>
+      <button type="button" class="input select" data-act="open-select" data-name="${name}" data-opts="${optsStr}" data-val="${value}" data-title="${label}" style="text-align: start; padding-inline-end: 32px;">
+        <span class="sb-txt" style="display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${txt}</span>
+      </button>
+      <input type="hidden" name="${name}" value="${value}" ${required ? 'required' : ''}>
       ${hint ? h`<span class="hint">${hint}</span>` : ''}
     </label>`;
 }

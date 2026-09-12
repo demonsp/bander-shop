@@ -219,9 +219,7 @@ act('captcha-check', async (e, input) => {
       st.style.color = 'var(--danger)';
     }
     input.value = '';
-    if (err?.code === 'captcha_expired') {
-      await loadCaptcha(box);
-    }
+    await loadCaptcha(box);
   } finally {
     delete box.dataset.verifying;
   }
@@ -231,6 +229,38 @@ act('captcha-check', async (e, input) => {
 act('noop', () => {});
 
 // ── نصب واگذارشده‌ها ────────────────────────────────────────
+import { adaptive } from './ui.mjs';
+
+act('open-select', (e, btn) => {
+  const name = btn.dataset.name;
+  const title = btn.dataset.title || t('common.select');
+  const val = btn.dataset.val;
+  let opts = [];
+  try { opts = JSON.parse(btn.dataset.opts || '[]'); } catch {}
+
+  const s = adaptive({
+    title,
+    body: h`<div class="col" style="gap:4px; padding-bottom: 20px;">
+      ${opts.map(o => h`<button class="btn" style="justify-content: flex-start; padding: 14px 16px; background: ${String(o.value) === String(val) ? 'var(--primary)' : 'var(--surface-2)'}; color: ${String(o.value) === String(val) ? '#fff' : 'inherit'}; border-radius: 12px; font-size: 15px;" data-v="${o.value}">${o.label}</button>`).join('')}
+    </div>`
+  });
+
+  s.panel.querySelectorAll('button[data-v]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const v = b.dataset.v;
+      btn.dataset.val = v;
+      const txtEl = btn.querySelector('.sb-txt');
+      if (txtEl) txtEl.textContent = b.textContent;
+      const hidden = btn.parentElement.querySelector(`input[name="${name}"]`);
+      if (hidden) {
+        hidden.value = v;
+        hidden.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      s.close();
+    });
+  });
+});
+
 export function installDelegation() {
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-act]');
@@ -279,14 +309,7 @@ export function installDelegation() {
   });
 
 
-  // تأیید کپچا هم‌زمان با تایپ (بدون نیاز به blur/کلیک دوم)
-  let capDebounce = 0;
-  document.addEventListener('input', (e) => {
-    const el = e.target;
-    if (!el.matches?.('[data-act=captcha-check]')) return;
-    clearTimeout(capDebounce);
-    capDebounce = setTimeout(() => { const fn = registry.get('captcha-check'); if (fn && !el.disabled) fn(new Event('change'), el); }, 1200);
-  });
+  
 
   // کلیک روی دکمه‌های شمارنده
   document.addEventListener('click', (e) => {
