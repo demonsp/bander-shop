@@ -1,5 +1,5 @@
 /* سرویس‌ورکر گرین اپل — پوستهٔ آفلاین + کش هوشمند */
-const VERSION = 'bm-v79';
+const VERSION = 'bm-v80';
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
 const DATA = `${VERSION}-data`;
@@ -132,12 +132,12 @@ const JS_PRECACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(SHELL);
-    await Promise.allSettled(PRECACHE.map((u) => cache.add(new Request(u, { cache: 'reload' }))));
+    await Promise.all(PRECACHE.map((u) => cache.add(new Request(u, { cache: 'reload' })).catch(() => {})));
     // ماژول‌ها و css را پیش‌کش کن تا اولین بازدید هم آفلاین کامل کار کند
     const rc = await caches.open(RUNTIME);
     // صف با هم‌روندی محدود تا سرور تک‌رشته‌ای زیر بار موج نصب نخوابد
     const queue = [...JS_PRECACHE];
-    const workers = await Promise.allSettled([1, 2, 3, 4, 5, 6].map(async () => {
+    const workers = await Promise.all([1, 2, 3, 4, 5, 6].map(async () => {
       while (queue.length) {
         const u = queue.shift();
         try { await rc.add(new Request(u, { cache: 'reload' })); }
