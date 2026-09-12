@@ -138,7 +138,7 @@ export async function render(ctx) {
           <span class="grow"></span>
           <label class="row" >
             <span class="muted small nowrap">${t('common.sort')}</span>
-            <button type="button" class="select" data-act="choose-sort" style="text-align: right; display: flex; justify-content: space-between; align-items: center; min-width: 140px; padding-block: 8px;">
+            <button type="button" class="input" data-act="choose-sort" style="text-align: right; display: flex; justify-content: space-between; align-items: center; min-width: 140px; padding-block: 8px; cursor: pointer; gap: 8px;">
               <span data-txt>${t(`catalog.sort.${sort}`)}</span>
               ${icon('chevron-down')}
             </button>

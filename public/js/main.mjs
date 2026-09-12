@@ -213,40 +213,40 @@ function renderNav() {
   const sideLinks = nav.querySelectorAll('.mega-side-link');
   const megaContent = nav.querySelector('.mega-content');
   if (sideLinks.length && megaContent) {
-    sideLinks.forEach(link => {
-      link.addEventListener('mouseenter', () => {
-        sideLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-        const catId = link.dataset.cat;
-        
-        // Find subcategories if any
-        const subCats = S.categories.filter(c => c.parentId === catId);
-        
-        // Also let's show top brands
-        const brands = S.brands.slice(0, 10);
-        
-        let html = '<div class="mega-sub-grid">';
-        
-        if (subCats.length) {
-          html += '<div class="mega-sub-col"><h3>دسته‌بندی‌های زیرمجموعه</h3>';
-          subCats.forEach(sc => {
-            html += `<a href="#/category/${sc.id}">${catName(sc)}</a>`;
-          });
-          html += '</div>';
-        }
-        
-        // Just show brands as an example column to fill the space
-        html += '<div class="mega-sub-col"><h3>برندهای پرطرفدار</h3>';
-        brands.forEach(b => {
-          html += `<a href="#/products?brand=${b.id}">${brandName(b)}</a>`;
+    const loadCat = (link) => {
+      sideLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      const catId = link.dataset.cat;
+      
+      const subCats = S.categories.filter(c => c.parentId === catId);
+      const brands = S.brands.slice(0, 10);
+      
+      let html = `<a href="#/category/${catId}" class="mega-see-all">${t('nav.allCategories')} ${catName(S.categories.find(c => c.id === catId) || {})} ${icon('chevron-left')}</a>`;
+      html += '<div class="mega-sub-grid">';
+      
+      if (subCats.length) {
+        html += '<div class="mega-sub-col"><h3>دسته‌بندی‌های زیرمجموعه</h3>';
+        subCats.forEach(sc => {
+          html += `<a href="#/category/${sc.id}">${catName(sc)}</a>`;
         });
         html += '</div>';
-        
-        html += '</div>';
-        
-        megaContent.innerHTML = html;
+      }
+      
+      html += '<div class="mega-sub-col"><h3>برندهای پرطرفدار این دسته</h3>';
+      brands.forEach(b => {
+        html += `<a href="#/products?cat=${catId}&brand=${b.id}">${brandName(b)}</a>`;
       });
+      html += '</div></div>';
+      
+      megaContent.innerHTML = html;
+    };
+
+    sideLinks.forEach(link => {
+      link.addEventListener('mouseenter', () => loadCat(link));
     });
+    
+    // Auto-load the first category so the menu is never empty
+    if (sideLinks[0]) loadCat(sideLinks[0]);
   }
 }
 

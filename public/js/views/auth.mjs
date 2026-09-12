@@ -78,7 +78,7 @@ export async function render(ctx) {
                 <label class="field">
                   <span class="label">نحوه آشنایی (اختیاری)</span>
                   <input type="hidden" name="hearAboutUs" value="">
-                  <button type="button" class="select" data-act="choose-hear" style="text-align: right; display: flex; justify-content: space-between; align-items: center;">
+                  <button type="button" class="input" data-act="choose-hear" style="text-align: right; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                     <span data-txt>(انتخاب کنید)</span>
                     ${icon('chevron-down')}
                   </button>
