@@ -59,7 +59,7 @@ export function emit(ev, data) {
 
 // ── دسترسی به تنظیمات ────────────────────────────────────────
 // برچسب نسخهٔ کلاینت؛ با هر انتشار باید همراه sw.js و BUILD سرور بالا برود
-export const BUILD = 'bm-v44';
+export const BUILD = 'bm-v78';
 export const settings = () => S.settings || {};
 export const store = () => S.settings?.store || {};
 export const ui = () => S.settings?.ui || {};
