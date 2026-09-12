@@ -34,6 +34,13 @@ function registerFailure(k) {
   rec.count++;
   if (rec.count >= 6) rec.until = Date.now() + 10 * 60 * 1000;
   failedLogins.set(k, rec);
+  if (failedLogins.size > 10000) {
+    const now = Date.now();
+    for (const [key, val] of failedLogins) {
+      if (val.until && val.until < now) failedLogins.delete(key);
+    }
+    if (failedLogins.size > 10000) failedLogins.clear();
+  }
   return 6 - rec.count;
 }
 function clearFailure(k) { failedLogins.delete(k); }
@@ -144,6 +151,14 @@ export function registerAuth(router) {
     const c = newCaptcha();
     sendJson(ctx.res, 200, { ok: true, id: c.id, svg: c.svg });
   });
+  router.post('/api/captcha/unban', async (ctx) => {
+    const r = verifyCaptcha(ctx.body?.token, ctx.body?.answer);
+    if (!r.ok) throw badRequest(r.code, 'کپچا اشتباه است.');
+    ctx.clearRateLimits(ctx.ip);
+    if (ctx.user) ctx.clearRateLimits(ctx.user.id);
+    sendJson(ctx.res, 200, { ok: true });
+  });
+
   router.post('/api/captcha/verify', async (ctx) => {
     ctx.rateLimit(`cap:${ctx.ip}`, 40, 10 * 60 * 1000);
     const r = verifyCaptcha(ctx.body?.id, ctx.body?.answer);

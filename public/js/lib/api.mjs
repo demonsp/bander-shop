@@ -123,6 +123,13 @@ async function request(method, path, body, opts = {}) {
       await fetch('/api/bootstrap', { credentials: 'same-origin' }).catch(() => {});
       return request(method, path, body, { ...opts, _retried: true });
     }
+    if (res.status === 429 && !opts._captchaRetried && !path.includes('/api/captcha')) {
+      const actions = await import('../actions.mjs');
+      if (actions.showCaptchaChallenge) {
+        const passed = await actions.showCaptchaChallenge();
+        if (passed) return request(method, path, body, { ...opts, _captchaRetried: true });
+      }
+    }
     if (res.status === 503 && data?.code === 'queued' && !opts._queueRetried) {
       // سایت شلوغ است: صف → رسیدن نوبت → تکرار خودکار همان درخواست
       const passed = await waitForQueuePass(data?.details || {});

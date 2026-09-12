@@ -238,6 +238,11 @@ export function makeRateLimiter() {
       return { ok: true, remaining: limit - b.length };
     },
     reset(key) { buckets.delete(key); },
+    clearAll(matchString) {
+      for (const k of buckets.keys()) {
+        if (k.includes(matchString)) buckets.delete(k);
+      }
+    },
     sweep() {
       const t = Date.now();
       for (const [k, b] of buckets) {

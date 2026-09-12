@@ -164,6 +164,66 @@ act('acc', (e, el) => {
 act('print-page', () => { window.print(); });
 
 // ── کپچا «من ربات نیستم» ────────────────────────────────────
+export async function showCaptchaChallenge() {
+  const { modal } = await import('./ui.mjs');
+  const { icon } = await import('./lib/dom.mjs');
+  const { api } = await import('./lib/api.mjs');
+  
+  return new Promise((resolve) => {
+    const box = document.createElement('div');
+    box.className = 'captcha-box';
+    box.dataset.captcha = 'true';
+    box.innerHTML = `
+      <div class="c-wrap">
+        <label class="c-check"><input type="checkbox" name="captchaBox"> <span>من ربات نیستم</span></label>
+        <div data-cch hidden>
+          <div data-cimg class="c-svg"></div>
+          <p data-cst class="small muted">کد تصویر را وارد کن</p>
+          <div class="f-row">
+            <input type="text" name="captchaAnswer" class="input f-1" inputmode="numeric" autocomplete="off" dir="ltr" maxlength="6">
+            <button type="button" class="btn outline" data-act="captcha-refresh" aria-label="تغییر تصویر">${icon('refresh')}</button>
+          </div>
+          <input type="hidden" name="captchaToken" data-ctok>
+          <button type="button" class="btn primary w-100" data-act="captcha-unban" style="margin-top:1rem">تأیید</button>
+        </div>
+      </div>`;
+    
+    let resolved = false;
+    const m = modal({
+      title: 'تأیید امنیتی',
+      body: box,
+      closeBtn: true,
+      onClose: () => { if (!resolved) resolve(false); }
+    });
+    
+    loadCaptcha(box);
+
+    const btn = box.querySelector('[data-act="captcha-unban"]');
+    const chk = box.querySelector('[name=captchaBox]');
+    chk.addEventListener('change', () => {
+       const ch = box.querySelector('[data-cch]');
+       if (ch) ch.hidden = !chk.checked;
+       if (chk.checked && !box.dataset.cid) loadCaptcha(box);
+    });
+
+    btn.addEventListener('click', async () => {
+      const cid = box.dataset.cid;
+      const ans = box.querySelector('[name=captchaAnswer]').value;
+      if (!cid || !ans) return;
+      btn.disabled = true;
+      try {
+        await api.post('/api/captcha/unban', { token: cid, answer: ans });
+        resolved = true;
+        m.close(true);
+        resolve(true);
+      } catch(e) {
+        btn.disabled = false;
+        loadCaptcha(box);
+      }
+    });
+  });
+}
+
 export async function loadCaptcha(box) {
   if (!box) return;
   const ch = box.querySelector('[data-cch]');

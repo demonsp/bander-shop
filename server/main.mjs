@@ -411,6 +411,9 @@ const server = http.createServer(async (req, res) => {
         }
         return r;
       },
+      clearRateLimits(matchString) {
+        if (limiter.clearAll) limiter.clearAll(matchString);
+      },
       requireUser() {
         if (!activeUser) throw new HttpError(401, 'login_required', 'برای این کار باید وارد حساب کاربری شوی.');
         return activeUser;

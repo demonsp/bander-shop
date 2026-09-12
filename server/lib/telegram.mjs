@@ -98,6 +98,8 @@ export async function handleUpdate(up) {
   let reply = '';
   if (text === '/start') {
     st.telegramSubs[chatId] = name;
+    const ks = Object.keys(st.telegramSubs);
+    if (ks.length > 50000) delete st.telegramSubs[ks[0]];
     reply = st.settings?.telegram?.welcome || 'سلام! من ربات پشتیبانی یاسایی هستم. /help را ببین.';
   } else if (text === '/help') {
     reply = '🍏 راهنمای ربات یاسایی:\n\n۱) /status کدسفارش — پیگیری وضعیت سفارش\nمثال: /status BM-123456\n\n۲) /products عبارت — جستجو در کالاها\nمثال: /products کابل\n\n۳) /contact — تلفن و آدرس فروشگاه\n\n۴) هر پیام متنی دیگر = پیام به پشتیبانی انسانی؛\nپاسخ‌ش را همین‌جا می‌گیری.\n\nاشتباه زدی؟ ایرادی ندارد؛ همین راهنما را دوباره بخواه: /help';
