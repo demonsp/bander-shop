@@ -185,7 +185,7 @@ html[data-port="off"] .port-deco{display:none !important}
 [dir="ltr"] .searchbox{padding:5px 6px 5px 12px}
 .searchbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .sb-icon{width:18px;height:18px;color:var(--muted)}
-.sb-input{flex:1;min-width:0;background:none;border:0;outline:0;padding:7px 2px;font-size:14px}
+.sb-input{flex:1;min-width:0;background:none;border:0;outline:0;padding:7px 2px;font-size:16px}
 .sb-input::-webkit-search-cancel-button{-webkit-appearance:none}
 .sb-btn{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:background var(--dur),color var(--dur)}
 .sb-btn:hover{background:var(--accent-soft);color:var(--accent)}
@@ -286,7 +286,7 @@ html[data-port="off"] .port-deco{display:none !important}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
 .field > label,.label{font-size:13px;font-weight:600;color:var(--text-2);display:flex;align-items:center;gap:6px}
 .label .req{color:var(--danger)}
-.input,.select,.textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;font-size:14px;outline:0;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur)}
+.input,.select,.textarea{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;font-size:16px;outline:0;transition:border-color var(--dur),box-shadow var(--dur),background var(--dur)}
 .input:focus,.select:focus,.textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:var(--surface)}
 .input::placeholder,.textarea::placeholder{color:var(--muted);opacity:.75}
 .textarea{min-height:96px;resize:vertical;line-height:1.8}
@@ -467,7 +467,7 @@ input[type=color]{width:44px;height:36px;padding:2px;border:1px solid var(--bord
 .qty{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:11px;overflow:hidden;background:var(--surface-2)}
 .qty button{width:36px;height:38px;display:grid;place-items:center;color:var(--text-2);transition:background var(--dur)}
 .qty button:hover{background:var(--accent-soft);color:var(--accent)}
-.qty input{width:46px;height:38px;text-align:center;background:none;border:0;outline:0;font-weight:700;-moz-appearance:textfield}
+.qty input{width:46px;height:38px;text-align:center;background:none;border:0;outline:0;font-weight:700;-moz-appearance:textfield;font-size:16px}
 .qty input::-webkit-outer-spin-button,.qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .spec-table{width:100%;font-size:13.5px}
 .spec-table tr{border-bottom:1px dashed var(--border)}
@@ -1405,7 +1405,7 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
 
 @media (min-width: 900px) {
   .nav-inner { overflow-x: visible !important; }
-  .nav-more { position: relative !important; }
+  .nav-more { position: static !important; }
 }
 
 /* Nav Hover for categories */
@@ -1425,8 +1425,10 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
   border-radius: 12px !important;
-  /* Open exactly underneath the button and flow outwards to the left in RTL */
-  inset-inline-start: 0;
+  /* Always perfectly centered across the entire screen! */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  inset-inline-start: auto !important;
   top: calc(100% + 5px);
 }
 .hidden-default { display: none !important; }

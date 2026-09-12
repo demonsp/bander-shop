@@ -77,6 +77,12 @@ function wireRefresh() {
   const b = document.getElementById('btnRefresh');
   if (!b) return;
   b.addEventListener('click', async () => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      const { toastError } = await import('./ui.mjs');
+      const { isFa } = await import('./i18n.mjs');
+      toastError(isFa() ? 'برای بروزرسانی و حذف کش باید به اینترنت متصل باشید' : 'You must be online to refresh the app.');
+      return;
+    }
     try {
       if ('serviceWorker' in navigator) {
         const regs = await navigator.serviceWorker.getRegistrations();
