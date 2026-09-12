@@ -21,7 +21,7 @@
   <script id="error-catcher">
     window.addEventListener('error', function(e) {
       var ws = document.getElementById('welcomeScreen');
-      if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.remove(); }, 500); }
+      if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.parentNode.removeChild(ws); }, 500); }
       var bs = document.getElementById('bootSplash');
       if (!bs) return;
       if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
@@ -33,7 +33,7 @@
     }, true);
     window.addEventListener('unhandledrejection', function(e) {
       var ws = document.getElementById('welcomeScreen');
-      if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.remove(); }, 500); }
+      if (ws) { ws.style.opacity = '0'; setTimeout(function(){ ws.parentNode.removeChild(ws); }, 500); }
       var bs = document.getElementById('bootSplash');
       if (bs && bs.innerHTML.indexOf('button') === -1) {
          bs.innerHTML = '<div class="empty" style="color:#ef4444"><h4>خطای شبکه یا سرور</h4><p class="muted small" style="direction:ltr;text-align:left;font-family:monospace;margin:10px 0;background:#1e1e1e;padding:10px;border-radius:6px;max-height:150px;overflow:auto;">' + (e.reason ? (e.reason.message || e.reason) : 'Unknown promise rejection') + '</p><button class="btn btn-primary mt" onclick="window.location.reload(true)">تلاش مجدد</button></div>';
@@ -386,7 +386,7 @@
           var ws = document.getElementById('welcomeScreen');
           if (ws) {
              ws.style.opacity = '0';
-             setTimeout(function(){ ws.remove(); }, 500);
+             setTimeout(function(){ ws.parentNode.removeChild(ws); }, 500);
           }
           var bs = document.getElementById('bootSplash');
           if (bs && bs.innerHTML.indexOf('button') === -1) {

@@ -176,8 +176,8 @@ export const securityHeaders = (req) => ({
   'Permissions-Policy': 'geolocation=(self), camera=(self), microphone=(self), payment=()',
   'Content-Security-Policy': [
     "default-src 'self'",
-    "script-src 'self'",
-    "style-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
     "connect-src 'self'",

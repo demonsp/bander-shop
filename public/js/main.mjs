@@ -72,7 +72,7 @@ function hideWelcome() {
   const ws = document.getElementById('welcomeScreen');
   if (!ws) return;
   const wait = Math.max(0, 700 - (performance.now() - T0));
-  setTimeout(() => { ws.classList.add('gone'); setTimeout(() => ws.remove(), 520); }, wait);
+  setTimeout(() => { ws.classList.add('gone'); setTimeout(() => ws.parentNode && ws.parentNode.removeChild(ws), 520); }, wait);
 }
 
 // ── دکمهٔ تازه‌سازی بالای صفحه ──────────────────────────────
@@ -898,7 +898,7 @@ function registerSW() {
 on('boot-slow', () => document.body.classList.add('boot-slow'));
 on('boot-failed', () => {
   // ولکام‌اسکرین را بردار تا پیام خطا و دکمهٔ تلاش مجدد دیده شود
-  document.getElementById('welcomeScreen')?.remove();
+  const ws = document.getElementById('welcomeScreen'); if(ws && ws.parentNode) ws.parentNode.removeChild(ws);;
   const sp = qs('#bootSplash');
   if (!sp) return;
   sp.innerHTML = h`<div class="empty">
@@ -909,7 +909,7 @@ on('boot-failed', () => {
 });
 init().catch((e) => {
   console.error('[boot]', e);
-  document.getElementById('welcomeScreen')?.remove();
+  const ws = document.getElementById('welcomeScreen'); if(ws && ws.parentNode) ws.parentNode.removeChild(ws);;
   const splash = qs('#bootSplash');
   if (splash) splash.innerHTML = h`<div class="empty"><h4>${t('err.generic')}</h4><button class="btn btn-primary" data-act="reload">${t('common.retry')}</button></div>`;
 });
