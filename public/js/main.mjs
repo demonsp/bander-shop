@@ -729,7 +729,10 @@ function wireScroll() {
 }
 
 // ── توافق‌نامهٔ اولین بازدید ────────────────────────────────
+let isConsentOpen = false;
 function openConsent() {
+  if (isConsentOpen) return;
+  isConsentOpen = true;
   if (!feat('consent')) return;
   // اگر کاربر برای خواندن قوانین/حریم خصوصی از مودال خارج شده، در همین نشست دیگر مزاحمش نمی‌شویم
   if (sessionStorage.getItem('consentDeferred')) {
@@ -751,6 +754,7 @@ function openConsent() {
         <label class="check"><input type="checkbox" name="marketing"><span class="box">${icon('check')}</span><span>${t('consent.marketing')}</span></label>
       </form>`,
     footer: h`<button type="button" class="btn btn-ghost" data-consent-min>${t('consent.rejectOptional')}</button><button type="button" class="btn btn-primary" data-consent-go>${t('consent.accept')}</button>`,
+    onClose: () => { isConsentOpen = false; },
     onMount: (panel, handle) => {
       const form = panel.querySelector('[data-act="consent-form"]');
       // باگ‌گیری راند جاری: کلیک روی لینک داخلی مودال رضایت، قبلاً مودال را روی صفحه نگه می‌داشت
@@ -768,8 +772,8 @@ function openConsent() {
         toastSuccess(t('consent.thanks'));
         handle.close();
       };
-      panel.closest('.modal').querySelector('[data-consent-go]').addEventListener('click', go);
-      panel.closest('.modal').querySelector('[data-consent-min]').addEventListener('click', () => {
+      panel.closest('[role="dialog"]').querySelector('[data-consent-go]').addEventListener('click', go);
+      panel.closest('[role="dialog"]').querySelector('[data-consent-min]').addEventListener('click', () => {
         setConsent({ terms: true, privacy: true, marketing: false });
         if (S.me) api.patch('/api/me', { notificationsPrefs: { marketing: false } }).catch(() => {});
         toastSuccess(t('consent.thanks'));
