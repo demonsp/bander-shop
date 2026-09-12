@@ -822,6 +822,11 @@ export function registerAdmin(router) {
         destroyUserSessions(st, u.id);
       }
       if (ctx.body?.points !== undefined) u.points = V.int(ctx.body.points, { min: 0, max: 1000000, field: 'امتیاز' });
+      if (ctx.body?.kycStatus !== undefined) {
+        ctx.requirePerm('users.manage');
+        u.kycStatus = V.oneOf(ctx.body.kycStatus, ['none', 'pending', 'approved', 'rejected'], 'kycStatus');
+        if (ctx.body?.kycMessage !== undefined) u.kycMessage = String(ctx.body.kycMessage).slice(0, 300);
+      }
       logAudit(ctx.user, 'user.admin.update', u.username, { fields: Object.keys(ctx.body).join(',') });
       pushNotification(st, { userId: u.id, type: 'account', level: 'info', title: 'تغییر در حساب کاربری', body: 'اطلاعات حساب شما توسط تیم فروشگاه به‌روزرسانی شد.', link: '#/account/profile' });
       return u;
