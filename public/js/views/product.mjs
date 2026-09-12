@@ -11,6 +11,8 @@ import { act } from '../actions.mjs';
 import { navigate } from '../router.mjs';
 
 export async function render(ctx) {
+  const oldLd = document.getElementById('json-ld');
+  if (oldLd) oldLd.remove();
   const id = ctx.params.id;
   let data = null;
   try { data = await api.get(`/api/products/${encodeURIComponent(id)}`); }
@@ -35,6 +37,33 @@ export async function render(ctx) {
   const stock = p.stock ?? 0;
   const storePhone = String(S.settings?.store?.phone || '').trim();
   const zones = ship().zones || [];
+
+  const schema = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": prodName(p),
+    "image": p.images?.length ? p.images.map(img => window.location.origin + img) : [],
+    "description": (isFa() ? p.description : (p.descriptionEn || p.description)) || prodName(p),
+    "sku": p.sku || p.id,
+    "brand": { "@type": "Brand", "name": p.brandName || '' },
+    "offers": {
+      "@type": "Offer",
+      "url": window.location.href,
+      "priceCurrency": "IRR",
+      "price": String(p.price || 0),
+      "priceValidUntil": new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+      "itemCondition": "https://schema.org/NewCondition",
+      "availability": ((p.stock || 0) > (p.reserved || 0)) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+    }
+  };
+  if (rstats.avg > 0) {
+    schema.aggregateRating = { "@type": "AggregateRating", "ratingValue": String(rstats.avg), "reviewCount": String(rstats.count) };
+  }
+  const sc = document.createElement('script');
+  sc.id = 'json-ld';
+  sc.type = 'application/ld+json';
+  sc.textContent = JSON.stringify(schema);
+  document.head.appendChild(sc);
 
   return h`
     ${breadcrumbs([...chain.map((x) => ({ label: catName(x), href: `#/category/${x.id}` })), { label: prodName(p) }])}

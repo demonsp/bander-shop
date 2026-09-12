@@ -327,6 +327,7 @@ function renderUserArea() {
       ${me.isAdmin ? h`<div class="sep"></div><a href="#/admin">${icon('settings')} ${t('nav.admin')}</a>` : ''}
       <div class="sep"></div>
       <button type="button" data-act="sound-toggle" aria-pressed="${S.prefs?.uiSound ? 'true' : 'false'}">${icon(S.prefs?.uiSound ? 'volume' : 'volume-off')} ${t('misc.uiSound')} <span class="um-sw ${S.prefs?.uiSound ? 'on' : ''}" aria-hidden="true"></span></button>
+      <button type="button" data-act="switch-account-modal">${icon('users')} تعویض حساب کاربری</button>
       <button type="button" data-act="logout">${icon('logout')} ${t('common.logout')}</button>
     </div>`;
   const btn = menu.querySelector('[data-um]');
@@ -340,6 +341,62 @@ function renderUserArea() {
     if (!box.hidden && !e.target.closest('.user-menu')) { box.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
   });
 }
+
+act('switch-account-modal', async () => {
+  const { modal } = await import('./ui.mjs');
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem('saved_accounts') || '[]'); } catch {}
+  if (!saved.length) { toast('حساب دیگری ذخیره نشده است.'); return; }
+  
+  const body = el('div', { class: 'account-switcher' });
+  body.innerHTML = `<div class="f-col gap-10">
+    ${saved.map(a => `
+      <div class="card p-15 f-row align-center jc-between ${a.id === S.me?.id ? 'active' : ''}">
+        <div class="f-col">
+          <strong>${a.name || 'کاربر'}</strong>
+          <span class="small muted">${a.phone || ''} ${a.role === 'owner' ? '(مالک)' : ''}</span>
+        </div>
+        ${a.id !== S.me?.id ? `<button type="button" class="btn primary btn-sm" data-act="switch-login" data-token="${a.token}">ورود</button>` : '<span class="badge success">فعلی</span>'}
+      </div>
+    `).join('')}
+    <div class="sep"></div>
+    <a href="#/auth" class="btn outline w-100" data-lx>+ افزودن حساب جدید</a>
+  </div>`;
+  
+  const m = modal({ title: 'تعویض حساب کاربری', body, closeBtn: true });
+});
+
+act('switch-login', async (e, btn) => {
+  const token = btn.dataset.token;
+  if (!token) return;
+  await withBusy(btn, async () => {
+    try {
+      const r = await api.post('/api/auth/switch', { token });
+      S.me = r.me;
+      toastSuccess('حساب کاربری تغییر یافت.');
+      if (r.switchToken) {
+        try {
+          const arr = JSON.parse(localStorage.getItem("saved_accounts") || "[]");
+          const f = arr.filter(x => x.id !== S.me.id);
+          f.unshift({ id: S.me.id, token: r.switchToken, name: S.me.name, phone: S.me.phone, role: S.me.role });
+          localStorage.setItem("saved_accounts", JSON.stringify(f.slice(0, 5)));
+        } catch (err){}
+      }
+      closeAllLayers();
+      navigate('#/');
+      refresh();
+      await loadCart();
+      renderChrome();
+    } catch (err) {
+      toastApiError(err);
+      // Remove invalid token
+      try {
+        const arr = JSON.parse(localStorage.getItem("saved_accounts") || "[]");
+        localStorage.setItem("saved_accounts", JSON.stringify(arr.filter(a => a.token !== token)));
+      } catch(e){}
+    }
+  });
+});
 
 act('logout', async () => {
   const ok = await confirmDialog({ text: t('common.logout') + '؟', okText: t('common.logout') });

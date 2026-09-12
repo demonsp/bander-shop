@@ -42,7 +42,15 @@ async function gateCaptcha(form) {
 
 const state = { challenge: null, methods: [], sent: null, channel: 'phone', target: '', demoCode: '', mode: 'login', regMode: 'username' };
 
-function afterAuth(next) {
+function afterAuth(next, r) {
+  if (r && r.switchToken && window.S && S.me) {
+    try {
+      const arr = JSON.parse(localStorage.getItem("saved_accounts") || "[]");
+      const f = arr.filter(x => x.id !== S.me.id);
+      f.unshift({ id: S.me.id, token: r.switchToken, name: S.me.name, phone: S.me.phone, role: S.me.role });
+      localStorage.setItem("saved_accounts", JSON.stringify(f.slice(0, 5)));
+    } catch (e){}
+  }
   const dest = next && !next.startsWith('auth') ? `#/${next.replace(/^#|^\/|#$/g, '')}` : '#/';
   refreshBootstrap().then(() => loadCart()).then(() => mergeGuestData()).then(() => navigate(dest));
 }
@@ -291,7 +299,7 @@ export function mount(root, ctx) {
         } else {
           S.me = r.me;
           toastSuccess(t('auth.loginDone'));
-          afterAuth(next);
+          afterAuth(next, r);
         }
       } catch (err) {
         if (err?.code === 'captcha_required' || err?.details?.captchaRequired) refreshCaptchaIn(form);
@@ -336,7 +344,7 @@ export function mount(root, ctx) {
         if (r.twoFactor) { state.challenge = r.challengeToken; state.methods = r.methods || ['totp']; show2fa(root, r); return; }
         S.me = r.me;
         toastSuccess(t('auth.loginDone'));
-        afterAuth(next);
+        afterAuth(next, r);
       } catch (err) { toastApiError(err); }
     });
   });
@@ -362,7 +370,7 @@ export function mount(root, ctx) {
         const r = await api.post('/api/auth/login/2fa', { challengeToken: state.challenge, code: fd.get('code'), type });
         S.me = r.me;
         toastSuccess(t('auth.loginDone'));
-        afterAuth(next);
+        afterAuth(next, r);
       } catch (err) { toastApiError(err); }
     });
   });
@@ -391,7 +399,7 @@ export function mount(root, ctx) {
         const r = await api.post('/api/auth/register', payload);
         S.me = r.me;
         toastSuccess(t('auth.registerDone'));
-        afterAuth(next || '');
+        afterAuth(next || '', r);
       } catch (err) {
         if (err?.code === 'captcha_required') refreshCaptchaIn(form);
         toastApiError(err);
@@ -432,7 +440,7 @@ export function mount(root, ctx) {
         const r = await api.post('/api/auth/password/reset', { channel: state.channel, target: state.target, code: fd.get('code'), password: fd.get('password') });
         S.me = r.me;
         toastSuccess(t('auth.resetDone'));
-        afterAuth('');
+        afterAuth('', r);
       } catch (err) { toastApiError(err); }
     });
   });

@@ -150,7 +150,18 @@ export async function render(ctx) {
   try {
     const base = S.settings?.store?.[ctx.lang === 'en' ? 'nameEn' : 'name'] || (document.querySelector('.ws-name')?.textContent || 'فروشگاه');
     const tt = typeof mod.title === 'function' ? mod.title(ctx) : (mod.title || ctx.route.title?.(ctx) || '');
-    document.title = tt ? `${tt} · ${base}` : base;
+    const finalTitle = tt ? `${tt} · ${base}` : base;
+    document.title = finalTitle;
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) { metaDesc = document.createElement('meta'); metaDesc.name = 'description'; document.head.appendChild(metaDesc); }
+    let ogTitle = document.querySelector('meta[property="og:title"]');
+    if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', 'og:title'); document.head.appendChild(ogTitle); }
+    
+    // Fallback to store SEO description if module doesn't provide one
+    const storeDesc = S.settings?.seo?.description || S.settings?.store?.description || '';
+    const descText = typeof mod.metaDesc === 'function' ? mod.metaDesc(ctx) : (mod.metaDesc || storeDesc);
+    metaDesc.content = descText;
+    ogTitle.content = finalTitle;
   } catch { /* noop */ }
 
   // قلاب پس‌ازرندر

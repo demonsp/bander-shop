@@ -288,7 +288,7 @@ export function registerAuth(router) {
     });
 
     const session = startSession(ctx, result.user, true);
-    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, result.user), sessionId: session.id.slice(0, 8) });
+    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, result.user), sessionId: session.id.slice(0, 8), switchToken: session.token });
   });
 
   // ── ورود با رمز عبور ────────────────────────────────────
@@ -391,7 +391,7 @@ export function registerAuth(router) {
       logAudit(u, 'auth.login', u.username, { type: '2fa', method: type });
     });
     const session = startSession(ctx, user, true);
-    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, user), sessionId: session.id.slice(0, 8) });
+    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, user), sessionId: session.id.slice(0, 8), switchToken: session.token });
   });
 
   // ── ورود فقط با کد (بدون رمز) ───────────────────────────
@@ -417,7 +417,7 @@ export function registerAuth(router) {
       logAudit(u, 'auth.login', u.username, { method: 'otp', channel });
     });
     const session = startSession(ctx, user, true);
-    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, user), sessionId: session.id.slice(0, 8) });
+    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, user), sessionId: session.id.slice(0, 8), switchToken: session.token });
   });
 
   // ── بازیابی رمز عبور ────────────────────────────────────
@@ -458,10 +458,24 @@ export function registerAuth(router) {
       return u;
     });
     const session = startSession(ctx, user, true);
-    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, user), sessionId: session.id.slice(0, 8) });
+    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, user), sessionId: session.id.slice(0, 8), switchToken: session.token });
   });
 
   // ── خروج ────────────────────────────────────────────────
+  router.post('/api/auth/switch', async (ctx) => {
+    const token = V.str(ctx.body?.token, { max: 200, field: 'token' });
+    const session = (await import('./lib/auth.mjs')).findSession(ctx.state, token);
+    if (!session || new Date(session.expiresAt).getTime() < Date.now()) {
+      throw unauthorized('invalid_token', 'نشست منقضی شده است. لطفا دوباره وارد شوید.');
+    }
+    const user = ctx.state.users.find(u => u.id === session.userId);
+    if (!user || user.status !== 'active') throw unauthorized('invalid_user', 'حساب کاربری مسدود یا نامعتبر است.');
+    setSessionCookies(ctx, session, { secure: ctx.secure });
+    session.lastSeenAt = nowISO();
+    session.ip = ctx.ip;
+    sendJson(ctx.res, 200, { ok: true, me: mePayload(ctx.state, user), switchToken: session.token });
+  });
+
   router.post('/api/auth/logout', async (ctx) => {
     const token = ctx.cookies[SESSION_COOKIE];
     await db.tx((st) => {

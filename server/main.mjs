@@ -558,7 +558,7 @@ setInterval(async () => {
       for (const o of st.orders) {
         if (o.status !== 'pending_payment') continue;
         if (new Date(o.createdAt).getTime() > cutoff) continue;
-        import('./api-shop.mjs').then(m => m.safeCancelOrder(st, o, `لغو خودکار به دلیل عدم پرداخت پس از ${hours} ساعت`, 'سامانه'));
+        const shopApi = await import('./api-shop.mjs'); shopApi.safeCancelOrder(st, o, `لغو خودکار به دلیل عدم پرداخت پس از ${hours} ساعت`, 'سامانه');
         n++;
       }
       if (n) logAudit(null, 'job.autocancel', `${n} orders`, {});

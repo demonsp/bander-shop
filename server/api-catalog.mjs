@@ -72,7 +72,7 @@ function scoreDoc(d, tokens, rawQ) {
 export function runSearch(state, opts = {}) {
   const idx = buildIndex(state);
   const q = normalizeText(opts.q || '');
-  const tokens = q ? q.split(' ').filter(Boolean) : [];
+  const tokens = q ? q.split(' ').filter(Boolean).slice(0, 10) : [];
   const catId = opts.cat || null;
   const brandIds = new Set(opts.brands || []);
   const minPrice = Number(opts.minPrice) || 0;

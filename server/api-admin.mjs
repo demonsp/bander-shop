@@ -531,10 +531,10 @@ export function registerAdmin(router) {
         o.timeline.push({ status, at: nowISO(), note: note || statusInfoText(status), by: ctx.user.name });
         if (['cancelled', 'refunded', 'returned'].includes(status)) {
           if (status === 'cancelled' || status === 'refunded') {
-            import('./api-shop.mjs').then(m => m.safeCancelOrder(st, o, note || statusInfoText(status), ctx.user.name));
+            const shopApi = await import('./api-shop.mjs'); shopApi.safeCancelOrder(st, o, note || statusInfoText(status), ctx.user.name);
           } else {
              // Returned logic
-             import('./api-shop.mjs').then(m => m.safeCancelOrder(st, o, note || statusInfoText(status), ctx.user.name));
+             const shopApi = await import('./api-shop.mjs'); shopApi.safeCancelOrder(st, o, note || statusInfoText(status), ctx.user.name);
              o.status = 'returned';
              o.timeline[o.timeline.length - 1].status = 'returned';
           }
