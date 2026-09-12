@@ -137,9 +137,10 @@ export async function render(ctx) {
           <span class="grow"></span>
           <label class="row" >
             <span class="muted small nowrap">${t('common.sort')}</span>
-            <select class="select" data-sort>
-              ${SORTS.map((s) => h`<option value="${s}" ${s === sort ? 'selected' : ''}>${t(`catalog.sort.${s}`)}</option>`)}
-            </select>
+            <button type="button" class="select" data-act="choose-sort" style="text-align: right; display: flex; justify-content: space-between; align-items: center; min-width: 140px; padding-block: 8px;">
+              <span data-txt>${t(`catalog.sort.${sort}`)}</span>
+              ${icon('chevron-down')}
+            </button>
           </label>
           <div class="btn-group">
             <button type="button" class="btn ${S.prefs.view !== 'list' ? 'active' : ''}" data-view="grid" title="${t('catalog.viewGrid')}" aria-label="${t('catalog.viewGrid')}">${icon('grid')}</button>
@@ -174,7 +175,22 @@ export function mount(root, ctx) {
 
   const go = (href) => { location.hash = href.replace(/^#/, ''); };
 
-  root.querySelector('[data-sort]')?.addEventListener('change', (e) => go(withQuery(ctx, { sort: e.target.value === 'relevant' ? null : e.target.value })));
+  root.querySelector('[data-act="choose-sort"]')?.addEventListener('click', () => {
+    const { sheet } = ui;
+    const s = sheet({
+      title: t('common.sort'),
+      body: h`<div class="col" style="gap:4px; padding-bottom: 20px;">
+        ${SORTS.map((st) => h`<button class="btn ${st === sort ? 'active' : ''}" style="justify-content: flex-start; padding: 14px 16px; background: var(--surface-2); border-radius: 12px; font-size: 15px;" data-v="${st}">${t(`catalog.sort.${st}`)}</button>`).join('')}
+      </div>`
+    });
+    s.panel.querySelectorAll('button[data-v]').forEach(b => {
+      b.addEventListener('click', () => {
+        const val = b.dataset.v;
+        s.close();
+        go(withQuery(ctx, { sort: val === 'relevant' ? null : val }));
+      });
+    });
+  });
 
   root.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => {
     setPref('view', b.dataset.view, { sync: false });
