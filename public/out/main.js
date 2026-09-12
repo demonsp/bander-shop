@@ -3651,7 +3651,7 @@ ${o}`:n;try{await Rs(i),$(t("common.copied"),{timeout:1800})}catch{y(new Error(t
     <li>${c("chat")}<span>${t("contact.mobile")}: <a href="tel:${e.phone2||e.phone}">${se(e.phone2||"")}</a></span></li>
     <li>${c("mail")}<span><a href="mailto:${e.email}">${e.email}</a></span></li>
     <li>${c("pin")}<span>${w()?e.address||"":e.addressEn||e.address||""}</span></li>
-    <li>${c("clock")}<span>${t("footer.workingHours")}: ${(e.workingHours||[]).map(n=>`<bdi>${w()?n.fa:n.en} ${w()?n.time:n.timeEn}</bdi>`).join(" \xB7 ")}</span></li>`,N("#fMinimap").innerHTML=Qt(),N("#fMinimap").setAttribute("title",t("contact.mapTitle"))}function qs(){let e=N("#userMenu"),a=N("#btnAuth");if(!d.me){e.hidden=!0,a.hidden=!1,a.innerHTML=r`${c("user")}<span data-i18n="nav.login">${t("nav.login")}</span>`;return}a.hidden=!0,e.hidden=!1;let s=d.me,n=(s.name||s.username||"?").trim().charAt(0);e.innerHTML=r`
+    <li>${c("clock")}<span>${t("footer.workingHours")}: ${(e.workingHours||[]).map(n=>r`<bdi>${w()?n.fa:n.en} ${w()?n.time:n.timeEn}</bdi>`)}</span></li>`,N("#fMinimap").innerHTML=Qt(),N("#fMinimap").setAttribute("title",t("contact.mapTitle"))}function qs(){let e=N("#userMenu"),a=N("#btnAuth");if(!d.me){e.hidden=!0,a.hidden=!1,a.innerHTML=r`${c("user")}<span data-i18n="nav.login">${t("nav.login")}</span>`;return}a.hidden=!0,e.hidden=!1;let s=d.me,n=(s.name||s.username||"?").trim().charAt(0);e.innerHTML=r`
     <button type="button" class="um-btn" data-um aria-expanded="false" aria-haspopup="true">
       <span class="um-avatar">${p(n)}</span>
       <span class="um-name">${p(s.name||s.username)}</span>
