@@ -1484,3 +1484,21 @@ html[data-variant="fresh"] .bottom-nav{border-radius:20px 20px 0 0}
   transition: color 0.2s;
 }
 .mega-sub-col a:hover { color: var(--accent); }
+
+.mega-see-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 20px;
+  transition: opacity 0.2s;
+}
+.mega-see-all:hover { opacity: 0.8; }
+.mega-see-all .ic { width: 16px; height: 16px; }
+
+/* Hide desktop nav and mega menu on mobile */
+@media (max-width: 900px) {
+  .mainnav { display: none !important; }
+}
