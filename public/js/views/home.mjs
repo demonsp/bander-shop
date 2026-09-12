@@ -277,6 +277,7 @@ export function mount() {
     lastX = e.clientX;
   };
   const up = () => {
+    last = performance.now(); // reset timer on drop to avoid massive dt jump
     dragging = false;
     box.classList.remove('grabbing');
     if (moved > 8) suppressClick = true;

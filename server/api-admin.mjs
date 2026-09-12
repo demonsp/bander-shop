@@ -537,6 +537,10 @@ export function registerAdmin(router) {
              const shopApi = await import('./api-shop.mjs'); shopApi.safeCancelOrder(st, o, note || statusInfoText(status), ctx.user.name);
              o.status = 'returned';
              o.timeline[o.timeline.length - 1].status = 'returned';
+             if (o.payment?.status === 'paid' || o.payment?.status === 'refunded') {
+               st.stats.revenueTotal = Math.max(0, (st.stats.revenueTotal || 0) - o.total);
+               st.stats.ordersTotal = Math.max(0, (st.stats.ordersTotal || 0) - 1);
+             }
           }
           invalidateSearchIndex();
         }
