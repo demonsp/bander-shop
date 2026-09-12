@@ -7,6 +7,7 @@ import { api } from '../lib/api.mjs';
 import { S, setPref, catById, catName, brandName } from '../state.mjs';
 import { productGrid, breadcrumbs, pagination, emptyState } from '../components.mjs';
 import { navigate } from '../router.mjs';
+import { sheet } from '../ui.mjs';
 
 const SORTS = ['relevant', 'newest', 'oldest', 'cheapest', 'dearest', 'popular', 'rating', 'discount', 'name'];
 
@@ -239,7 +240,6 @@ act('cat-filters', (e, el) => {
 
 act('choose-sort', (e, el) => {
   const currentSort = new URLSearchParams(location.hash.split('?')[1] || '').get('sort') || 'relevant';
-  const { sheet } = ui;
   const s = sheet({
     title: t('common.sort'),
     body: h`<div class="col" style="gap:4px; padding-bottom: 20px;">
